@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-23 21:17:54.965576",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_c5cd",
+  "sku_code",
+  "sku_name",
+  "rate",
+  "discount",
+  "gst",
+  "category"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_c5cd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sku_code",
+   "fieldtype": "Data",
+   "label": "SKU Code"
+  },
+  {
+   "fieldname": "sku_name",
+   "fieldtype": "Data",
+   "label": "SKU Name"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Data",
+   "label": "Rate"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Data",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "gst",
+   "fieldtype": "Data",
+   "label": "GST"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-23 21:23:23.317741",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "SKUs",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
