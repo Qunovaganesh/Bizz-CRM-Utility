@@ -1,0 +1,12 @@
+<!-- In your custom web page or header -->
+<link rel="manifest" href="/assets/my_pwa_app/manifest.json">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/assets/my_pwa_app/sw.js')
+      .then(function (registration) {
+        console.log('Service Worker registered with scope:', registration.scope);
+      }).catch(function (err) {
+        console.log('Service Worker registration failed:', err);
+      });
+  }
+</script>

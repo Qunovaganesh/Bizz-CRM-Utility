@@ -7,8 +7,16 @@
  "field_order": [
   "section_break_6cxn",
   "amended_from",
+  "selfie",
+  "selfie_upload",
   "attendance_time",
-  "status"
+  "status",
+  "section_break_ptkb",
+  "latitude",
+  "column_break_xquf",
+  "longitude",
+  "section_break_pdpi",
+  "location"
  ],
  "fields": [
   {
@@ -36,13 +44,61 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Present\nAbsent"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Geolocation",
+   "label": "location"
+  },
+  {
+   "fieldname": "selfie",
+   "fieldtype": "Attach Image",
+   "label": "Selfie",
+   "no_copy": 1,
+   "options": "Attendance",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "selfie_upload",
+   "fieldtype": "HTML",
+   "label": "Selfie Upload",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_ptkb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xquf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_pdpi",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-23 20:58:00.213792",
+ "modified": "2025-06-24 06:46:50.953515",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Attendance",

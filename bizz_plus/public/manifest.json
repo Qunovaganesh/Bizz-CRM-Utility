@@ -1,0 +1,21 @@
+{
+    "name": "Bizz Plus",
+    "short_name": "FrappePWA",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4A90E2",
+    "icons": [
+      {
+        "src": "",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

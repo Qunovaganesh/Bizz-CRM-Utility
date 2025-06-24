@@ -7,6 +7,8 @@ app_license = "mit"
 
 # Apps
 # ------------------
+app_include_js = ["/assets/bizz_plus/sw.js"]
+app_include_html = "/assets/bizz_plus/pwa_meta.html"
 
 # required_apps = []
 
