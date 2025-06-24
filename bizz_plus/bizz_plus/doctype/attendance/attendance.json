@@ -11,6 +11,7 @@
   "selfie_upload",
   "attendance_time",
   "status",
+  "present",
   "section_break_ptkb",
   "latitude",
   "column_break_xquf",
@@ -92,13 +93,19 @@
   {
    "fieldname": "section_break_pdpi",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "present",
+   "fieldtype": "Button",
+   "label": "Present",
+   "options": "Present\nAbsent"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-06-24 06:46:50.953515",
+ "modified": "2025-06-24 08:38:01.404628",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Attendance",
