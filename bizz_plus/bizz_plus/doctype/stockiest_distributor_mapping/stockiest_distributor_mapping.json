@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-27 09:42:02.878090",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_eccl",
+  "stockiest",
+  "distributor"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_eccl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "distributor.company_name",
+   "fieldname": "stockiest",
+   "fieldtype": "Link",
+   "label": "Stockiest",
+   "options": "Distributor Company"
+  },
+  {
+   "fetch_from": "stockiest.company_name",
+   "fieldname": "distributor",
+   "fieldtype": "Link",
+   "label": "Distributor",
+   "options": "Distributor Company"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-27 09:44:57.807798",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Stockiest Distributor Mapping",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

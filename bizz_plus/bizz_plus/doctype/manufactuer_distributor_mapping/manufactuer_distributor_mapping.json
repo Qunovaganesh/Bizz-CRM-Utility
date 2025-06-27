@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-26 22:07:16.925648",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_l9p0",
+  "manufacturer",
+  "distributor"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_l9p0",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "manufacturer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Manufacturer",
+   "options": "Manufacturer Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "distributor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Distributor",
+   "options": "Distributor Company",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-27 10:09:43.708256",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Manufactuer Distributor Mapping",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

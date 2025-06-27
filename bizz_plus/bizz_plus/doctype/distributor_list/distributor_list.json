@@ -1,0 +1,42 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:distributor",
+ "creation": "2025-06-26 08:48:22.444360",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_ozdy",
+  "distributor"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_ozdy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "distributor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Distributor",
+   "options": "Distributor Company",
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-26 09:26:28.116168",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Distributor List",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

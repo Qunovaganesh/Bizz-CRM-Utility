@@ -25,6 +25,7 @@ app_include_html = "/assets/bizz_plus/pwa_meta.html"
 
 # Includes in <head>
 # ------------------
+fixtures = [{"doctype": "Custom Field"}]
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/bizz_plus/css/bizz_plus.css"
@@ -45,8 +46,7 @@ app_include_html = "/assets/bizz_plus/pwa_meta.html"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -139,13 +139,7 @@ app_include_html = "/assets/bizz_plus/pwa_meta.html"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+
 
 # Scheduled Tasks
 # ---------------
@@ -244,3 +238,15 @@ app_include_html = "/assets/bizz_plus/pwa_meta.html"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+override_doctype_class = {
+   "Lead": "bizz_plus.overrides.lead.CustomLead"
+}
+doctype_js = {"Lead" : "public/js/lead.js"}
+doctype_list_js = {"Lead" : "public/js/lead_list.js"}
+
+doc_events = {
+	"Lead": {
+		"on_update": "bizz_plus.api.pincode_api.after_insert_or_update_lead",
+		
+	}
+}

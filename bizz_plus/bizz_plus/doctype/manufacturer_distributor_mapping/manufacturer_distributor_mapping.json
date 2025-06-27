@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-25 16:05:56.915577",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "manufacturer",
+  "distributor",
+  "agreement_date",
+  "lft",
+  "rgt",
+  "is_group",
+  "old_parent",
+  "parent_manufacturer_distributor_mapping"
+ ],
+ "fields": [
+  {
+   "fieldname": "manufacturer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Manufacturer",
+   "options": "Manufacturer Company"
+  },
+  {
+   "fieldname": "distributor",
+   "fieldtype": "Link",
+   "label": "Distributors",
+   "options": "Distributor Company"
+  },
+  {
+   "fieldname": "agreement_date",
+   "fieldtype": "Date",
+   "label": "Agreement Date"
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Group"
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Old Parent",
+   "options": "Manufacturer Distributor Mapping"
+  },
+  {
+   "fieldname": "parent_manufacturer_distributor_mapping",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "ignore_user_permissions": 1,
+   "label": "Parent Manufacturer Distributor Mapping",
+   "options": "Manufacturer Distributor Mapping"
+  }
+ ],
+ "links": [],
+ "modified": "2025-06-26 09:57:42.131130",
+ "modified_by": "Administrator",
+ "module": "Bizz_Plus",
+ "name": "Manufacturer Distributor Mapping",
+ "nsm_parent_field": "parent_manufacturer_distributor_mapping",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "manufacturer",
+ "track_changes": 1
+}
