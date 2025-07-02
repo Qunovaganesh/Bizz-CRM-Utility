@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{submitter_name}-{MM}-{YY}-{####}",
+ "creation": "2025-07-01 08:05:11.722738",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_adnl",
+  "amended_from",
+  "submitted_by",
+  "submitter_name",
+  "submitted_on",
+  "expense_head",
+  "section_break_cniz",
+  "column_break_ifnr",
+  "column_break_qhwp",
+  "column_break_xozk",
+  "column_break_kbzl",
+  "total_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_adnl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "BizzPlus Expenses utility",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "submitted_by",
+   "fieldtype": "Link",
+   "label": "Submitted by",
+   "options": "User"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Float",
+   "label": "Total Amount",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "expense_head",
+   "fieldtype": "Table",
+   "label": "Expense head",
+   "options": "Expense Head"
+  },
+  {
+   "fieldname": "section_break_cniz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ifnr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_qhwp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_xozk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_kbzl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "submitted_by.full_name",
+   "fieldname": "submitter_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Submitter Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "submitted_on",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Submitted On",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-02 07:01:32.160841",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "BizzPlus Expenses utility",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

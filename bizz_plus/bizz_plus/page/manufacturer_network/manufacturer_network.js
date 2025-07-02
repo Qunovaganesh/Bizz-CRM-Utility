@@ -4,6 +4,7 @@ frappe.pages["manufacturer-network"].on_page_load = function (wrapper) {
 		title: __("Manufacturer Network	"),
 		single_column: true,
 	});
+	$(wrapper).find('.page-title').hide();
 };
 
 frappe.pages["manufacturer-network"].on_page_show = function (wrapper) {

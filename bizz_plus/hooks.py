@@ -249,4 +249,7 @@ doc_events = {
 		"on_update": "bizz_plus.api.pincode_api.after_insert_or_update_lead",
 		
 	}
+   "BizzPlus Expenses utility":{
+	   "*":"bizz_plus.api.pincode_api.notify"
+   }
 }

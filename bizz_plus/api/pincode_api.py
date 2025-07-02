@@ -238,3 +238,79 @@ def add_distributor_to_stockist(stockiest, distributor):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Add Stockist Mapping Error")
         return {"success": False, "error": str(e)}
+
+import frappe
+
+@frappe.whitelist()
+def cancel_and_delete_docs(doctype, docnames):
+    """
+    Cancel and delete submitted documents.
+    """
+    import json
+    if isinstance(docnames, str):
+        docnames = json.loads(docnames)
+
+    deleted = []
+    failed = []
+
+    for name in docnames:
+        try:
+            doc = frappe.get_doc(doctype, name)
+
+            if doc.docstatus == 1:
+                doc.cancel()
+
+            doc.delete()
+            deleted.append(name)
+        except Exception as e:
+            failed.append({"name": name, "error": str(e)})
+
+    return {
+        "deleted": deleted,
+        "failed": failed
+    }
+
+import frappe
+from frappe.utils import get_url_to_form
+
+def notify(doc, method=None):
+    # Case 1: On submit, notify Expense Approvers
+    if method == "on_submit":
+        send_to_approvers(doc)
+
+    # Case 2: On workflow state change to Reimbursed, notify submitter
+    if doc.workflow_state == "Reimbursed":
+        send_to_submitter(doc)
+
+def send_to_approvers(doc):
+    users = frappe.get_all("Has Role", filters={"role": "Expense Approver"}, fields=["parent"])
+    emails = [user.parent for user in users if frappe.db.get_value("User", user.parent, "enabled")]
+
+    if not emails:
+        return
+
+    link = get_url_to_form(doc.doctype, doc.name)
+    subject = f"New Expense Submitted: {doc.name}"
+    message = f"""
+        A new expense has been submitted by <b>{doc.submitted_by}</b>.<br><br>
+        <a href="{link}">Click here to review the document</a>.
+    """
+
+    frappe.sendmail(recipients=emails, subject=subject, message=message)
+
+def send_to_submitter(doc):
+    if not doc.submitted_by:
+        return
+
+    email = frappe.db.get_value("User", doc.submitted_by, "email")
+    if not email:
+        return
+
+    link = get_url_to_form(doc.doctype, doc.name)
+    subject = f"Your Expense {doc.name} has been Reimbursed"
+    message = f"""
+        Your submitted expense <b>{doc.name}</b> has been approved and marked as <b>Reimbursed</b>.<br><br>
+        <a href="{link}">Click here to view the document</a>.
+    """
+
+    frappe.sendmail(recipients=[email], subject=subject, message=message)

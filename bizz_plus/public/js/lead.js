@@ -24,6 +24,24 @@ frappe.ui.form.on("Lead", {
     },
 
     onload: function (frm) {
+
+        if (frappe.user.has_role("System Manager") )
+                return
+    
+
+
+        if (frappe.user.has_role("Brand Pilot") ){
+                frm.set_df_property("custom_lead_category", "read_only", 1);
+                frm.set_df_property("custom_lead_category", "hidden", 1);
+                frm.set_value("custom_lead_category", "Manufacturer Lead");
+    } 
+    else if (frappe.user.has_role("Super Stockiests and Distributor Pilots")) {
+                frm.set_df_property("custom_lead_category", "read_only", 1);
+                frm.set_df_property("custom_lead_category", "hidden", 1);
+                frm.set_value("custom_lead_category", "SS / Distributor Lead");
+        }
+
+                                 
         $('li[id="lead-dashboard_tab-tab"]').hide();
 
         // Hide Notes tab
@@ -35,6 +53,7 @@ frappe.ui.form.on("Lead", {
             frm.set_df_property("custom_lead_category", "read_only", 1);
             frm.set_df_property("custom_lead_category", "hidden", 1);
             frm.set_df_property("upload_agreement_tab","hidden",0)
+            frm.set_df_property("lead_owner","read_only",1)
             
             // custom_invoice_amount
             // custom_commission_in_percentage
