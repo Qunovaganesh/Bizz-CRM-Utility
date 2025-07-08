@@ -242,14 +242,17 @@ override_doctype_class = {
    "Lead": "bizz_plus.overrides.lead.CustomLead"
 }
 doctype_js = {"Lead" : "public/js/lead.js"}
-doctype_list_js = {"Lead" : "public/js/lead_list.js"}
+doctype_list_js = {"Lead" : "public/js/lead_list.js",
+                   "BizzPlus Expenses utility": "public/js/bizzplus_expenses_utility_list.js"
+                   }
 
 doc_events = {
 	"Lead": {
 		"on_update": "bizz_plus.api.pincode_api.after_insert_or_update_lead",
 		
-	}
-   "BizzPlus Expenses utility":{
-	   "*":"bizz_plus.api.pincode_api.notify"
+	},
+   "Expense Entry":{
+	   "on_update":"bizz_plus.api.pincode_api.notify",
+      "before_save":"bizz_plus.api.pincode_api.capture_previous_state"
    }
 }

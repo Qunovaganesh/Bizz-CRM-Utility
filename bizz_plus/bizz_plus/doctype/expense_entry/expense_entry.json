@@ -11,6 +11,9 @@
   "submitted_by",
   "submitter_name",
   "submitted_on",
+  "expense_approved_by",
+  "previous_workflow_state",
+  "grade",
   "expense_head",
   "section_break_cniz",
   "column_break_ifnr",
@@ -43,6 +46,7 @@
   {
    "fieldname": "total_amount",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Total Amount",
    "options": "User",
    "read_only": 1
@@ -89,16 +93,41 @@
    "in_standard_filter": 1,
    "label": "Submitted On",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "expense_approved_by",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Expense Approved By",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "previous_workflow_state",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Previous workflow state"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "grade",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Grade"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-02 07:01:32.160841",
+ "modified": "2025-07-04 11:23:31.633575",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
- "name": "BizzPlus Expenses utility",
+ "name": "Expense Entry",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

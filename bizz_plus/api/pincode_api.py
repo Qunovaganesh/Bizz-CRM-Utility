@@ -274,12 +274,17 @@ import frappe
 from frappe.utils import get_url_to_form
 
 def notify(doc, method=None):
-    # Case 1: On submit, notify Expense Approvers
-    if method == "on_submit":
+    #frappe.msgprint(method)
+    # if not hasattr(doc, "workflow_state"):
+    #     return
+    
+    if doc.workflow_state == "Submitted":
+        frappe.log_error("entered submit")
         send_to_approvers(doc)
-
-    # Case 2: On workflow state change to Reimbursed, notify submitter
-    if doc.workflow_state == "Reimbursed":
+    if doc.workflow_state == 'Approved':
+        frappe.log_error("entered remmit")
+        send_to_remitter(doc)
+    if doc.workflow_state in ["Reimbursed", "Rejected"]:
         send_to_submitter(doc)
 
 def send_to_approvers(doc):
@@ -297,6 +302,24 @@ def send_to_approvers(doc):
     """
 
     frappe.sendmail(recipients=emails, subject=subject, message=message)
+    frappe.msgprint("Notification sent to approvers")
+    
+def send_to_remitter(doc):
+    users = frappe.get_all("Has Role", filters={"role": "Expense Remitter"}, fields=["parent"])
+    emails = [user.parent for user in users if frappe.db.get_value("User", user.parent, "enabled")]
+
+    if not emails:
+        return
+
+    link = get_url_to_form(doc.doctype, doc.name)
+    subject = f"New Expense Approved: {doc.name}"
+    message = f"""
+        A new expense has been approved by</b>.<br><br>
+        <a href="{link}">Click here to review the document</a>.
+    """
+
+    frappe.sendmail(recipients=emails, subject=subject, message=message)
+    frappe.msgprint("Notification sent to Remitter")
 
 def send_to_submitter(doc):
     if not doc.submitted_by:
@@ -307,10 +330,46 @@ def send_to_submitter(doc):
         return
 
     link = get_url_to_form(doc.doctype, doc.name)
-    subject = f"Your Expense {doc.name} has been Reimbursed"
-    message = f"""
-        Your submitted expense <b>{doc.name}</b> has been approved and marked as <b>Reimbursed</b>.<br><br>
-        <a href="{link}">Click here to view the document</a>.
-    """
+
+    if doc.workflow_state == "Reimbursed":
+        subject = f"Your Expense {doc.name} has been Reimbursed"
+        message = f"""
+            Your submitted expense <b>{doc.name}</b> has been approved and marked as <b>Reimbursed</b>.<br><br>
+            <a href="{link}">Click here to view the document</a>.
+        """
+    elif doc.workflow_state == "Rejected":
+        subject = f"Your Expense {doc.name} has been Rejected"
+        message = f"""
+            Your submitted expense <b>{doc.name}</b> has been <b>Rejected</b>.<br><br>
+            <a href="{link}">Click here to view the document</a>.
+        """
+    else:
+        return
 
     frappe.sendmail(recipients=[email], subject=subject, message=message)
+
+def capture_previous_state(doc, method=None):
+    doc.previous_workflow_state = frappe.db.get_value(doc.doctype, doc.name, "workflow_state")
+
+@frappe.whitelist(allow_guest=True)
+def get_all_users_with_role(role):
+    """
+    Get all users with a specific role.
+    """
+    if not role:
+        return []
+
+    users = frappe.get_all("Has Role", filters={"role": role}, fields=["parent"])
+    user_emails = []
+
+    for user in users:
+        email = frappe.db.get_value("User", user.parent, "email")
+        if email:
+            user_emails.append(email)
+
+    return user_emails
+
+@frappe.whitelist(allow_guest=True)
+def get_user():
+    user=frappe.get_all("User", filters={"enabled": 1}, fields=["name", "email"])
+    return user

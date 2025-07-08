@@ -5,7 +5,10 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import now_datetime
 
-class BizzPlusExpensesutility(Document):
+class ExpenseEntry(Document):
     def before_submit(self):
         self.submitted_on = now_datetime()
+    def on_update(self):
+        if self.workflow_state=='Approved':
+            self.expense_approved_by=frappe.session.user
 
