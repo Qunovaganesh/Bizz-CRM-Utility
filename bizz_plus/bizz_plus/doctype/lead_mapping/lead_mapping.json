@@ -9,7 +9,8 @@
   "parent_lead",
   "mapped_lead",
   "last_status_change",
-  "status"
+  "status",
+  "terms_and_conditions"
  ],
  "fields": [
   {
@@ -38,12 +39,18 @@
    "in_list_view": 1,
    "label": "Mapped Lead",
    "options": "Lead"
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Table",
+   "label": "Terms and Conditions",
+   "options": "Lead Mapping TnC"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-12 16:22:30.121168",
+ "modified": "2025-07-12 19:54:29.954656",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Mapping",
