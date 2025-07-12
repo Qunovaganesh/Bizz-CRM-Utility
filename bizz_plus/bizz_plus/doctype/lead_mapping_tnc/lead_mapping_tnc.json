@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "clause",
+  "clause_text",
   "response"
  ],
  "fields": [
@@ -22,13 +23,20 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Response"
+  },
+  {
+   "fetch_from": "clause.clause",
+   "fieldname": "clause_text",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Clause Text"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-12 19:54:49.161705",
+ "modified": "2025-07-12 22:42:20.079963",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Mapping TnC",
