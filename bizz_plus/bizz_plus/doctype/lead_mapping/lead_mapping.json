@@ -11,7 +11,9 @@
   "last_status_change",
   "status",
   "terms_and_conditions",
-  "signed_agreement"
+  "signed_agreement",
+  "tax_invoices",
+  "payments"
  ],
  "fields": [
   {
@@ -51,12 +53,24 @@
    "fieldname": "signed_agreement",
    "fieldtype": "Attach",
    "label": "Signed Agreement"
+  },
+  {
+   "fieldname": "tax_invoices",
+   "fieldtype": "Table",
+   "label": "Tax Invoices",
+   "options": "Lead Mapping Tax Invoice"
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "label": "Payments",
+   "options": "Lead Mapping Payment"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-13 03:19:23.316038",
+ "modified": "2025-07-13 05:41:48.674483",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Mapping",
