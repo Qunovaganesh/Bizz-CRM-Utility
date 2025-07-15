@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-11 16:16:26.186494",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "parent_lead",
+  "mapped_lead",
+  "last_status_change",
+  "status",
+  "terms_and_conditions",
+  "signed_agreement",
+  "tax_invoices",
+  "payments"
+ ],
+ "fields": [
+  {
+   "fieldname": "last_status_change",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Last Status Change"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Registration\nLead\nProspect\nCustomer\nView"
+  },
+  {
+   "fieldname": "parent_lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Parent Lead",
+   "options": "Lead"
+  },
+  {
+   "fieldname": "mapped_lead",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Mapped Lead",
+   "options": "Lead"
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Table",
+   "label": "Terms and Conditions",
+   "options": "Lead Mapping TnC"
+  },
+  {
+   "fieldname": "signed_agreement",
+   "fieldtype": "Attach",
+   "label": "Signed Agreement"
+  },
+  {
+   "fieldname": "tax_invoices",
+   "fieldtype": "Table",
+   "label": "Tax Invoices",
+   "options": "Lead Mapping Tax Invoice"
+  },
+  {
+   "fieldname": "payments",
+   "fieldtype": "Table",
+   "label": "Payments",
+   "options": "Lead Mapping Payment"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-13 05:41:48.674483",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Lead Mapping",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,9 @@
+.DS_Store
+*.pyc
+*.egg-info
+*.swp
+tags
+node_modules
+__pycache__
+bizz_plus/www/crm
+bizz_plus/public/crm

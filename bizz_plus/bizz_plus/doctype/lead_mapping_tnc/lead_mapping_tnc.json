@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-12 19:52:49.318660",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "clause",
+  "clause_text",
+  "response"
+ ],
+ "fields": [
+  {
+   "fieldname": "clause",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Clause",
+   "options": "Lead Mapping TnC Master"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Response"
+  },
+  {
+   "fetch_from": "clause.clause",
+   "fieldname": "clause_text",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Clause Text"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-12 22:42:20.079963",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Lead Mapping TnC",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

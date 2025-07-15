@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-23 20:54:48.929145",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_6cxn",
+  "amended_from",
+  "selfie",
+  "selfie_upload",
+  "attendance_time",
+  "status",
+  "present",
+  "section_break_ptkb",
+  "latitude",
+  "column_break_xquf",
+  "longitude",
+  "section_break_pdpi",
+  "location"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_6cxn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Attendance",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "Now",
+   "fieldname": "attendance_time",
+   "fieldtype": "Datetime",
+   "label": "Attendance Time"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Present\nAbsent"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Geolocation",
+   "label": "location"
+  },
+  {
+   "fieldname": "selfie",
+   "fieldtype": "Attach Image",
+   "label": "Selfie",
+   "no_copy": 1,
+   "options": "Attendance",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "selfie_upload",
+   "fieldtype": "HTML",
+   "label": "Selfie Upload",
+   "no_copy": 1,
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_ptkb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xquf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_pdpi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "present",
+   "fieldtype": "Button",
+   "label": "Present",
+   "options": "Present\nAbsent"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-06-24 08:38:01.404628",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Attendance",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
