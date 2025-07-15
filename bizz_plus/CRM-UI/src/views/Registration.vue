@@ -234,7 +234,7 @@
             <div class="form-group">
               <label>Category</label>
               <ModernMultiSelect 
-                :options="filterOptions.categories"
+                :options="categories"
                 :selected="manufacturerForm.categories"
                 placeholder="Select categories..."
                 @update:selected="(val) => updateManufacturerCategories(val)"
@@ -585,7 +585,7 @@
             <div class="form-group full-width">
               <label>Category</label>
               <ModernMultiSelect 
-                :options="filterOptions.categories"
+                :options="categories"
                 :selected="distributorForm.categories"
                 placeholder="Select categories..."
                 @update:selected="(val) => updateDistributorCategories(val)"
@@ -766,7 +766,7 @@
             <div class="form-group">
               <label>Categories interested in</label>
               <ModernMultiSelect 
-                :options="filterOptions.categories"
+                :options="categories"
                 :selected="distributorForm.categoriesInterested"
                 placeholder="Select categories..."
                 @update:selected="(val) => distributorForm.categoriesInterested = val"
@@ -869,7 +869,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBusinessLogic } from '../composables/useBusinessLogic'
 import { useAlert } from '../composables/useAlert'
@@ -887,6 +887,30 @@ const leadCategory = ref<'manufacturer' | 'super-stockist' | 'distributor'>('man
 const isSubmitting = ref(false)
 const isLoadingLocation = ref(false)
 const isLocationAutoFilled = ref(false)
+
+// Categories state
+const categories = ref<string[]>([])
+const isLoadingCategories = ref(false)
+
+// Fetch categories from Category doctype
+const fetchCategories = async () => {
+  try {
+    isLoadingCategories.value = true
+    const response = await fetch('/api/resource/Category?fields=["name","category_name"]')
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories')
+    }
+    const data = await response.json()
+    // Transform the response to extract category names
+    categories.value = data.data.map((cat: any) => cat.category_name || cat.name)
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    // Fallback to static categories if API fails
+    categories.value = filterOptions.categories
+  } finally {
+    isLoadingCategories.value = false
+  }
+}
 
 // Address form (common across all types)
 const addressForm = reactive({
@@ -1294,7 +1318,7 @@ const submitForm = async () => {
       },
     }
 
-    const erpLeadObj = {
+    const erpLeadObj: any = {
       // =======
       // Manufacturer
       // =======
@@ -1365,6 +1389,24 @@ const submitForm = async () => {
       custom_no_of_warehouses_you_have: leadData.businessInfo.warehouseCount || '',
       custom_total_space_in_sq_ft: leadData.businessInfo.totalSpace || '',
       custom_count_of_field_sales_force: leadData.businessInfo.salesForceCount || '',
+    }
+
+    // Add categories as child doctype entries
+    const selectedCategories = leadCategory.value === 'manufacturer' ? manufacturerForm.categories : distributorForm.categories;
+    if (selectedCategories && selectedCategories.length > 0) {
+      erpLeadObj.custom_category_presence = selectedCategories.map((category, index) => ({
+        docstatus: 0,
+        doctype: "Lead Category Presence",
+        // owner: "Administrator",
+        // parent: "", // Will be set to the Lead name after creation
+        parentfield: "custom_category_presence",
+        parenttype: "Lead",
+        idx: index + 1,
+        category: category,
+        __islocal: 1,
+        __unsaved: 1,
+        __unedited: false
+      }));
     }
 
     console.log('Submitting lead data:', leadData)
@@ -1474,6 +1516,11 @@ const submitForm = async () => {
     isSubmitting.value = false
   }
 }
+
+// Fetch categories on component mount
+onMounted(() => {
+  fetchCategories()
+})
 </script>
 
 <style scoped>
