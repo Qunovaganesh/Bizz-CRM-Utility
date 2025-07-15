@@ -20,7 +20,7 @@
           </span>
         </div>
       </div>
-      <p>Manage invoices, payments, and customer validation</p>
+      <!-- <p>Manage invoices, payments, and customer validation</p> -->
     </div>
 
     <!-- Floating Back Button -->
