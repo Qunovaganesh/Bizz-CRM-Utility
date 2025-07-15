@@ -124,8 +124,10 @@
                 <option value="">Select</option>
                 <option value="1-10">1-10</option>
                 <option value="11-50">11-50</option>
-                <option value="51-100">51-100</option>
-                <option value="100+">100+</option>
+                <option value="51-200">51-200</option>
+                <option value="201-500">201-500</option>
+                <option value="501-1000">501-1000</option>
+                <option value="1000+">1000+</option>
               </select>
             </div>
             <div class="form-group">
@@ -536,8 +538,10 @@
                 <option value="">Select</option>
                 <option value="1-10">1-10</option>
                 <option value="11-50">11-50</option>
-                <option value="51-100">51-100</option>
-                <option value="100+">100+</option>
+                <option value="51-200">51-200</option>
+                <option value="201-500">201-500</option>
+                <option value="501-1000">501-1000</option>
+                <option value="1000+">1000+</option>
               </select>
             </div>
             <div class="form-group">
@@ -681,7 +685,7 @@
             </div>
             <div class="form-group">
               <label>Willingness to bear logistics</label>
-              <select v-model="distributorForm.logisticsWillingness" class="form-select">
+              <select v-model="distributorForm.logisticsWillingness" class="form-select" placeholder="Willingness to bear logistics?">
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
@@ -696,13 +700,15 @@
               />
             </div>
             <div class="form-group">
-              <label>No. of warehouses you have</label>
-              <select v-model="distributorForm.warehouseCount" class="form-select">
-                <option value="">Select</option>
-                <option value="1">1</option>
-                <option value="2-5">2-5</option>
-                <option value="6-10">6-10</option>
-                <option value="10+">10+</option>
+          <label>No. of warehouses you have</label>
+          <select v-model="distributorForm.warehouseCount" class="form-select">
+              <option value="">Select</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="more">More than 5</option>
               </select>
             </div>
             <div class="form-group">
@@ -845,6 +851,20 @@
       <p>Fetching location data...</p>
     </div>
 
+    <!-- Custom Alert -->
+    <CustomAlert
+      :isVisible="alertState.isVisible"
+      :type="alertState.type"
+      :title="alertState.title"
+      :message="alertState.message"
+      :confirmText="alertState.confirmText"
+      :cancelText="alertState.cancelText"
+      :showCancel="alertState.showCancel"
+      :closeOnOverlayClick="alertState.closeOnOverlayClick"
+      @confirm="handleConfirm"
+      @cancel="handleCancel"
+    />
+
   </div>
 </template>
 
@@ -852,12 +872,15 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBusinessLogic } from '../composables/useBusinessLogic'
+import { useAlert } from '../composables/useAlert'
 import ModernMultiSelect from '../components/ModernMultiSelect.vue'
+import CustomAlert from '../components/CustomAlert.vue'
 import { filterOptions, locationMapping, industryToCategoryMapping } from '../data/mockData'
 import { apiService, type LeadData } from '../services/api'
 
 const router = useRouter()
 const { manufacturers, distributors } = useBusinessLogic()
+const { alertState, showError, showSuccess, handleConfirm, handleCancel } = useAlert()
 
 // Form state
 const leadCategory = ref<'manufacturer' | 'super-stockist' | 'distributor'>('manufacturer')
@@ -1075,11 +1098,11 @@ const fetchLocationData = async () => {
       addressForm.city = ''
       addressForm.district = ''
       addressForm.state = ''
-      alert('Invalid pincode or location data not found')
+      showError('Invalid pincode or location data not found')
     }
   } catch (error) {
     console.error('Error fetching location data:', error)
-    alert('Error fetching location data. Please enter manually.')
+    showError('Error fetching location data. Please enter manually.')
   } finally {
     isLoadingLocation.value = false
   }
@@ -1191,7 +1214,7 @@ const submitForm = async () => {
     // Validate required fields
     const { isValid, errors } = validateForm()
     if (!isValid) {
-      alert(`Please fix the following errors:\n- ${errors.join('\n- ')}`)
+      showError(`Please fix the following errors:\n\n${errors.map(err => `• ${err}`).join('\n')}`, 'Validation Error')
       return
     }
 
@@ -1357,12 +1380,35 @@ const submitForm = async () => {
       })
       const data = await response.json()
       console.info('ERP Lead API response:', data)
+      
+      // Check for successful response
       if (data && data.data && !data.exc) {
-      router.push('/dashboard')
-      return
+        router.push('/dashboard')
+        return
       }
+      
+      // Handle specific errors
+      if (response.status === 417 && data.exc_type === 'UniqueValidationError') {
+        // Check if it's a duplicate title/name error
+        if (data.exception && data.exception.includes("Duplicate entry") && data.exception.includes("for key 'title'")) {
+          showError('Name or Company Name already exists', 'Duplicate Entry')
+          return
+        }
+      }
+      
+      // Handle other errors
+      if (data.exc || data.exception) {
+        const errorMessage = data._server_messages ? 
+          JSON.parse(data._server_messages)[0]?.message || 'An error occurred' : 
+          'An error occurred while saving the lead'
+        showError(errorMessage, 'Save Error')
+        return
+      }
+      
     } catch (err) {
       console.error('Error posting ERP Lead:', err)
+      showError('Network error occurred. Please check your connection and try again.', 'Network Error')
+      return
     }
 
     return
@@ -1371,7 +1417,12 @@ const submitForm = async () => {
 
     if (response.success) {
       // Success - show success message and redirect
-      alert(`${leadCategory.value === 'manufacturer' ? 'Manufacturer' : 'Distributor'} lead saved successfully!`)
+      showSuccess(`${leadCategory.value === 'manufacturer' ? 'Manufacturer' : 'Distributor'} lead saved successfully!`, 'Success')
+      .then(() => {
+        // Reset form and redirect after user clicks OK
+        resetForm()
+        router.push('/dashboard')
+      })
       
       // Optionally update local state for immediate UI updates
       if (leadCategory.value === 'manufacturer') {
@@ -1412,13 +1463,13 @@ const submitForm = async () => {
       // Error - show error message
       const errorMessage = response.message || 'Failed to save lead'
       const errors = response.errors?.join(', ') || ''
-      alert(`Error: ${errorMessage}${errors ? `\nDetails: ${errors}` : ''}`)
+      showError(`Error: ${errorMessage}${errors ? `\nDetails: ${errors}` : ''}`)
       console.error('API Error:', response)
     }
     
   } catch (error) {
     console.error('Error submitting form:', error)
-    alert('Network error occurred. Please check your connection and try again.')
+    showError('Network error occurred. Please check your connection and try again.')
   } finally {
     isSubmitting.value = false
   }
