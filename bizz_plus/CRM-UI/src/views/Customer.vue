@@ -2062,6 +2062,13 @@ onUnmounted(() => {
     gap: 24px;
   }
   
+  .table-container {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table-wrapper {
+    min-width: 600px;
+  }
   .invoice-form-card {
     min-width: auto;
   }
@@ -2084,6 +2091,7 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    word-break: break-word;
   }
   
   .action-grid {
@@ -2133,6 +2141,14 @@ onUnmounted(() => {
   .payment-history {
     padding: 14px;
   }
+
+  .table-container {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table-wrapper {
+    min-width: 400px;
+  }
   
   .invoice-form-card {
     padding: 14px;
@@ -2161,6 +2177,13 @@ onUnmounted(() => {
     min-width: 80px;
     min-height: 32px;
     width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 20px;
+    font-size: 15px;
+    min-height: 44px;
   }
   
   .relationship-header h1 {

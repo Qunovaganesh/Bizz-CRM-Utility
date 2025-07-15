@@ -1623,6 +1623,13 @@ onMounted(async () => {
     gap: 24px;
   }
   
+  .table-container {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table-wrapper {
+    min-width: 600px;
+  }
   .term-content {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -1646,10 +1653,21 @@ onMounted(async () => {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    word-break: break-word;
   }
   
   .section-actions {
     flex-direction: column;
+    gap: 8px;
+  }
+
+  .floating-header, .floating-back-button {
+    position: static;
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
   }
   
@@ -1668,6 +1686,13 @@ onMounted(async () => {
     padding: 16px;
   }
   
+  .table-container {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table-wrapper {
+    min-width: 400px;
+  }
   .term-card {
     padding: 16px;
   }
@@ -1681,6 +1706,13 @@ onMounted(async () => {
   .btn-add-term,
   .btn-save-changes {
     justify-content: center;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 20px;
+    font-size: 15px;
+    min-height: 44px;
   }
   
   .upload-area {

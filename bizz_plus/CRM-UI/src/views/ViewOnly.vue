@@ -55,6 +55,7 @@
               <h3>Interaction History</h3>
               <div class="panel-stats">
                 <span class="stat-badge">{{ apiInteractions.length }} interactions</span>
+    min-width: 100px;
               </div>
             </div>
             
@@ -70,6 +71,7 @@
                       <th>Reminder</th>
                     </tr>
                   </thead>
+    word-break: break-word;
                   <tbody>
                     <tr v-if="isLoadingInteractions">
                       <td colspan="5" class="loading-cell">Loading interactions...</td>
@@ -79,6 +81,23 @@
                     </tr>
                     <tr v-else v-for="interaction in apiInteractions" :key="interaction.name" class="table-row">
                       <td>
+
+  .table-container {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table-wrapper {
+    min-width: 600px;
+  }
+  .floating-header, .floating-back-button {
+    position: static;
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
                         <span class="date-cell">{{ formatDate(interaction.creation) }}</span>
                       </td>
                       <td>
@@ -119,6 +138,20 @@
                 <h4>Current Agreement</h4>
                 <span :class="getAgreementStatusClass(agreement.status)" class="status-indicator">
                   {{ agreement.status }}
+
+  .table-container {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table-wrapper {
+    min-width: 400px;
+  }
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 20px;
+    font-size: 15px;
+    min-height: 44px;
+  }
                 </span>
               </div>
               

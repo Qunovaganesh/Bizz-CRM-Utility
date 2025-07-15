@@ -1453,10 +1453,13 @@ onMounted(async () => {
   
   .table-container {
     max-height: 300px;
+    overflow-x: auto;
+    width: 100%;
   }
   
   .table-wrapper {
     max-height: 300px;
+    min-width: 600px;
   }
   
   .content-wrapper {
@@ -1468,8 +1471,19 @@ onMounted(async () => {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+    word-break: break-word;
   }
   
+  .floating-header, .floating-back-button, .floating-promote-button {
+    position: static;
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -1483,6 +1497,7 @@ onMounted(async () => {
   .modern-table td {
     padding: 12px 16px;
     font-size: 12px;
+    min-width: 100px;
   }
   
   .interactions-section,
@@ -1518,6 +1533,7 @@ onMounted(async () => {
   .modern-table td {
     padding: 8px 12px;
     font-size: 11px;
+    min-width: 80px;
   }
   
   .user-avatar {
@@ -1528,8 +1544,9 @@ onMounted(async () => {
   
   .btn-primary,
   .btn-secondary {
-    padding: 10px 20px;
-    font-size: 13px;
+    padding: 14px 20px;
+    font-size: 15px;
+    min-height: 44px;
   }
 }
 </style>
