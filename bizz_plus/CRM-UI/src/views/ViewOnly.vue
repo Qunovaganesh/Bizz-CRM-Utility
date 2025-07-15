@@ -33,107 +33,6 @@
       </div>
 
     <div class="content-wrapper">
-      <!-- Relationship Web Visualization -->
-      <div class="relationship-web">
-        <div class="section-header">
-          <h2>Business Relationship Network</h2>
-          <div class="section-icon">🌐</div>
-        </div>
-        
-        <div class="web-container">
-          <div class="relationship-map">
-            <div class="entity-node manufacturer-node">
-              <div class="node-avatar">🏭</div>
-              <div class="node-content">
-                <h4>{{ manufacturerName }}</h4>
-                <p>{{ manufacturerData.city }}, {{ manufacturerData.state }}</p>
-                <p>{{ manufacturerData.category }}</p>
-                <span class="entity-type">Manufacturer</span>
-              </div>
-            </div>
-            
-            <div class="connection-line">
-              <div class="connection-status">
-                <div class="status-indicator registered"></div>
-                <span class="connection-label">Active Partnership</span>
-                <div class="connection-metrics">
-                  <span class="metric">{{ distributorData.daysSinceStatus }} days</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="entity-node distributor-node">
-              <div class="node-avatar">🏪</div>
-              <div class="node-content">
-                <h4>{{ distributorName }}</h4>
-                <p>{{ distributorData.city }}, {{ distributorData.state }}</p>
-                <p>{{ distributorData.category }}</p>
-                <span class="entity-type">Distributor</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="customer-info">
-        <div class="section-header">
-          <h2>Partnership Information</h2>
-          <div class="section-icon">📊</div>
-        </div>
-        
-        <div class="info-cards-grid">
-          <div class="info-card">
-            <div class="info-icon">🆔</div>
-            <div class="info-content">
-              <label>Partnership ID</label>
-              <span>{{ partnershipId }}</span>
-            </div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">🏭</div>
-            <div class="info-content">
-              <label>Manufacturer</label>
-              <span>{{ manufacturerData.name }}</span>
-            </div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">🏪</div>
-            <div class="info-content">
-              <label>Distributor</label>
-              <span>{{ distributorData.name }}</span>
-            </div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">✅</div>
-            <div class="info-content">
-              <label>Status</label>
-              <span class="status-registered">{{ mappingStatus }}</span>
-            </div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">📦</div>
-            <div class="info-content">
-              <label>Category</label>
-              <span>{{ distributorData.category }}</span>
-            </div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">📅</div>
-            <div class="info-content">
-              <label>Partnership Date</label>
-              <span>{{ formatDate(currentLead?.creation || '') }}</span>
-            </div>
-          </div>
-          <div class="info-card">
-            <div class="info-icon">⏱️</div>
-            <div class="info-content">
-              <label>Days Active</label>
-              <span>{{ (isManufacturerView ? manufacturerData : distributorData).daysSinceStatus }} days</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="history-section">
         <div class="history-tabs">
           <button 
@@ -459,6 +358,108 @@
                   <h4>Agreement Status</h4>
                   <p class="summary-value">{{ agreement.status }}</p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      <div class="customer-info">
+        <div class="section-header">
+          <h2>Partnership Information</h2>
+          <div class="section-icon">📊</div>
+        </div>
+        
+        <div class="info-cards-grid">
+          <div class="info-card">
+            <div class="info-icon">🆔</div>
+            <div class="info-content">
+              <label>Partnership ID</label>
+              <span>{{ partnershipId }}</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🏭</div>
+            <div class="info-content">
+              <label>Manufacturer</label>
+              <span>{{ manufacturerData.name }}</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">🏪</div>
+            <div class="info-content">
+              <label>Distributor</label>
+              <span>{{ distributorData.name }}</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">✅</div>
+            <div class="info-content">
+              <label>Status</label>
+              <span class="status-registered">{{ mappingStatus }}</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📦</div>
+            <div class="info-content">
+              <label>Category</label>
+              <span>{{ distributorData.category }}</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📅</div>
+            <div class="info-content">
+              <label>Partnership Date</label>
+              <span>{{ formatDate(currentLead?.creation || '') }}</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">⏱️</div>
+            <div class="info-content">
+              <label>Days Active</label>
+              <span>{{ (isManufacturerView ? manufacturerData : distributorData).daysSinceStatus }} days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Relationship Web Visualization -->
+      <div class="relationship-web">
+        <div class="section-header">
+          <h2>Business Relationship Network</h2>
+          <div class="section-icon">🌐</div>
+        </div>
+        
+        <div class="web-container">
+          <div class="relationship-map">
+            <div class="entity-node manufacturer-node">
+              <div class="node-avatar">🏭</div>
+              <div class="node-content">
+                <h4>{{ manufacturerName }}</h4>
+                <p>{{ manufacturerData.city }}, {{ manufacturerData.state }}</p>
+                <p>{{ manufacturerData.category }}</p>
+                <span class="entity-type">Manufacturer</span>
+              </div>
+            </div>
+            
+            <div class="connection-line">
+              <div class="connection-status">
+                <div class="status-indicator registered"></div>
+                <span class="connection-label">Active Partnership</span>
+                <div class="connection-metrics">
+                  <span class="metric">{{ distributorData.daysSinceStatus }} days</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="entity-node distributor-node">
+              <div class="node-avatar">🏪</div>
+              <div class="node-content">
+                <h4>{{ distributorName }}</h4>
+                <p>{{ distributorData.city }}, {{ distributorData.state }}</p>
+                <p>{{ distributorData.category }}</p>
+                <span class="entity-type">Distributor</span>
               </div>
             </div>
           </div>
