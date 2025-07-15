@@ -15,10 +15,12 @@
           <div class="relationship-info">
             <span :class="isManufacturerView ? 'manufacturer selected-entity' : 'manufacturer'">
               {{ manufacturerName }}
+              <span class="entity-type">🏭 Manufacturer</span>
             </span>
-            <span class="connector">↔</span>
+            <span class="connector">⇄</span>
             <span :class="!isManufacturerView ? 'distributor selected-entity' : 'distributor'">
               {{ distributorName }}
+              <span class="entity-type">🏪 Distributor</span>
             </span>
             <span class="status-badge status-view">{{ currentMappingStatus }}</span>
           </div>

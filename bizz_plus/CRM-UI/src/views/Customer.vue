@@ -7,10 +7,12 @@
         <div class="relationship-info">
           <span :class="isManufacturerCustomer ? 'manufacturer selected-entity' : 'manufacturer'">
             {{ manufacturerName }}
+            <span class="entity-type">🏭 Manufacturer</span>
           </span>
-          <span class="connector">↔</span>
+          <span class="connector">⇄</span>
           <span :class="!isManufacturerCustomer ? 'distributor selected-entity' : 'distributor'">
             {{ distributorName }}
+            <span class="entity-type">🏪 Distributor</span>
           </span>
           <span :class="getStatusBadgeClass(customerStatus)">{{ customerStatus }}</span>
           <span v-if="currentLeadMapping?.last_status_change" class="status-date">
