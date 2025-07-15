@@ -551,9 +551,9 @@ const fetchLeads = async () => {
       apiFilters.custom_categories = ["in", filters.category]
     }
     
-    if (filters.status?.length > 0) {
-      apiFilters.custom_new_status = ["in", filters.status]
-    }
+    // if (filters.status?.length > 0) {
+    //   apiFilters.custom_new_status = ["in", filters.status]
+    // }
     
     // Add filters to URL if any exist
     if (Object.keys(apiFilters).length > 0) {
@@ -1403,9 +1403,9 @@ const fetchAssociatedLeads = async () => {
       apiFilters.custom_categories = ["in", associatedFilters.category]
     }
     
-    if (associatedFilters.status?.length > 0) {
-      apiFilters.custom_new_status = ["in", associatedFilters.status]
-    }
+    // if (associatedFilters.status?.length > 0) {
+    //   apiFilters.custom_new_status = ["in", associatedFilters.status]
+    // }
     
     // Add filters to URL
     url += `&filters=${encodeURIComponent(JSON.stringify(apiFilters))}`
@@ -1422,7 +1422,7 @@ const fetchAssociatedLeads = async () => {
       const leadMappings = await fetchLeadMappings(selectedEntityItem.value?.id || '')
       
       // Apply mapping status to each lead
-      const leadsWithMappingStatus = data.data.map((lead: any) => {
+      var leadsWithMappingStatus = data.data.map((lead: any) => {
         // Check if this lead has a mapping status
         const mappingStatus = leadMappings[lead.name] // lead.name is the lead ID
         
@@ -1434,6 +1434,14 @@ const fetchAssociatedLeads = async () => {
       })
       
       console.log('Leads with mapping status:', leadsWithMappingStatus)
+      console.log('associatedFilters.status', associatedFilters.status)
+
+      var selectedStatus = JSON.parse(JSON.stringify(associatedFilters.status))
+      if (selectedStatus.length > 0) {
+        leadsWithMappingStatus = leadsWithMappingStatus.filter((lead: any) => 
+          selectedStatus.includes(lead.finalStatus)
+        )
+      }
       
       associatedLeadsData.value = leadsWithMappingStatus
     }
