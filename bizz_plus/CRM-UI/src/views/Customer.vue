@@ -397,7 +397,7 @@
         </div>
       </div>
 
-      <div class="customer-actions">
+      <div class="customer-actions" v-if="customerStatus !== 'Customer' && paymentHistory.length > 0">
   <div class="section-header">
     <h2>Customer Actions</h2>
     <div class="section-icon">⚡</div>
