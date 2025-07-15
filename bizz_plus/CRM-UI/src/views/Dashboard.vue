@@ -114,7 +114,7 @@
         </div>
 
         <!-- Status Section -->
-        <div class="filter-card">
+        <!-- <div class="filter-card">
           <div class="filter-card-header">
             <span class="filter-icon">📊</span>
             <h4>Status</h4>
@@ -130,7 +130,7 @@
               />
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- Active Filters Display -->
