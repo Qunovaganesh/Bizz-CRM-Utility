@@ -782,20 +782,39 @@ const tableTitle = computed(() => {
   return `Associated ${selectedEntity.value === 'manufacturer' ? 'Distributors' : 'Manufacturers'} for ${selectedEntityItem.value.name}`
 })
 
-const tableColumns = computed(() => [
-  { key: 'serialNumber', label: 'Sl. No' },
-  { key: 'name', label: 'Name' },
-  { key: 'city', label: 'City' },
-  { key: 'district', label: 'District' },
-  { key: 'state', label: 'State' },
-  { key: 'category', label: 'Category' },
-  { key: 'subCategory', label: 'Sub Category' },
-  { key: 'status', label: 'Status' },
-  { key: 'daysSinceStatus', label: 'Days Since Status' },
-  { key: 'registrationDate', label: 'Registration Date' },
-  { key: 'action', label: 'Action' },
-  { key: 'view', label: 'View' }
-])
+const tableColumns = computed(() => {
+  // If an entity is selected, we are in the associative table context: hide category/subCategory columns
+  if (selectedEntityItem.value) {
+    return [
+      { key: 'serialNumber', label: 'Sl. No' },
+      { key: 'name', label: 'Name' },
+      { key: 'city', label: 'City' },
+      { key: 'district', label: 'District' },
+      { key: 'state', label: 'State' },
+      { key: 'status', label: 'Status' },
+      { key: 'daysSinceStatus', label: 'Days Since Status' },
+      { key: 'registrationDate', label: 'Registration Date' },
+      { key: 'action', label: 'Action' },
+      { key: 'view', label: 'View' }
+    ]
+  } else {
+    // Main entity table: show all columns
+    return [
+      { key: 'serialNumber', label: 'Sl. No' },
+      { key: 'name', label: 'Name' },
+      { key: 'city', label: 'City' },
+      { key: 'district', label: 'District' },
+      { key: 'state', label: 'State' },
+      { key: 'category', label: 'Category' },
+      { key: 'subCategory', label: 'Sub Category' },
+      { key: 'status', label: 'Status' },
+      { key: 'daysSinceStatus', label: 'Days Since Status' },
+      { key: 'registrationDate', label: 'Registration Date' },
+      { key: 'action', label: 'Action' },
+      { key: 'view', label: 'View' }
+    ]
+  }
+})
 
 // Filter availability computed properties
 const availableStates = computed(() => {
