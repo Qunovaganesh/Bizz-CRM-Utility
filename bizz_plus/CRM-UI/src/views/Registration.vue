@@ -48,12 +48,17 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Salutation</label>
-              <input 
-                type="text" 
-                v-model="manufacturerForm.salutation" 
-                placeholder="Enter salutations"
+              <select 
+                v-model="manufacturerForm.custom_salutations" 
                 class="form-input"
-              />
+              >
+                <option value="">Select</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Miss">Miss</option>
+                <option value="Dr.">Dr.</option>
+                <option value="Prof.">Prof.</option>
+              </select>
             </div>
             <div class="form-group">
               <label>Designation</label>
@@ -416,15 +421,21 @@
         <div class="section-card">
           <h3>Contact Information</h3>
           <div class="form-grid">
-            <div class="form-group">
-              <label>Salutation</label>
-              <input 
-                type="text" 
-                v-model="distributorForm.salutation" 
-                placeholder="Enter salutations"
-                class="form-input"
-              />
-            </div>
+           <div class="form-group">
+          <label>Salutation</label>
+          <select 
+            v-model="distributorForm.custom_salutations" 
+            class="form-input"
+          >
+            <option value="">Select</option>
+            <option value="Mr.">Mr.</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Miss">Miss</option>
+            <option value="Dr.">Dr.</option>
+            <option value="Prof.">Prof.</option>
+          </select>
+        </div>
+
             <div class="form-group">
               <label>Designation</label>
               <input 
@@ -923,7 +934,7 @@ const addressForm = reactive({
 
 // Manufacturer form
 const manufacturerForm = reactive({
-  salutation: '',
+  custom_salutations: '',
   designation: '',
   phone2: '',
   name: '',
@@ -955,7 +966,7 @@ const manufacturerForm = reactive({
 
 // Distributor/Super Stockist form
 const distributorForm = reactive({
-  salutation: '',
+  custom_salutations: '',
   designation: '',
   phone2: '',
   name: '',
@@ -963,7 +974,7 @@ const distributorForm = reactive({
   email: '',
   middleName: '',
   source: '',
-  leadOwner: 'ganesh.t@qunovatec.com',
+  leadOwner: '',
   lastName: '',
   status: '',
   type: '',
@@ -1246,7 +1257,7 @@ const submitForm = async () => {
     const leadData: LeadData = {
       leadCategory: leadCategory.value,
       contactInfo: {
-        salutation: leadCategory.value === 'manufacturer' ? manufacturerForm.salutation : distributorForm.salutation,
+        custom_salutations: leadCategory.value === 'manufacturer' ? manufacturerForm.custom_salutations : distributorForm.custom_salutations,
         name: leadCategory.value === 'manufacturer' ? manufacturerForm.name : distributorForm.name,
         designation: leadCategory.value === 'manufacturer' ? manufacturerForm.designation : distributorForm.designation,
         mobile: leadCategory.value === 'manufacturer' ? manufacturerForm.mobile : distributorForm.mobile,
@@ -1325,7 +1336,7 @@ const submitForm = async () => {
 
       // Contact Details
       custom_lead_category: leadCategory.value == 'manufacturer' ? 'Manufacturer Lead': 'SS / Distributor Lead',
-      salutation: leadData.contactInfo.salutation,
+      custom_salutations: leadData.contactInfo.custom_salutations,
       job_title: leadData.contactInfo.designation,
       phone: leadData.contactInfo.phone2,
       first_name: leadData.contactInfo.name,
@@ -1372,7 +1383,7 @@ const submitForm = async () => {
       source: distributorForm.source || '',
 
       // Company Profile
-      custom_super_stockiest_or_distributor: leadCategory.value === 'super-stockist' ? 'Super Stockiest' : leadCategory.value === 'distributor' ? 'Distributor' : '',
+      custom_super_stockiest_or_distributor: leadCategory.value === 'super-stockist' ? 'Super Stockist' : leadCategory.value === 'distributor' ? 'Distributor' : '',
       custom_staff_strength_copy: leadData.companyInfo.staffStrength,
       custom_distributor_company_name: leadData.companyInfo.companyName,
       custom_no_of_brands_dealing_with_currently: distributorForm.brandsCount,
@@ -1465,6 +1476,8 @@ const submitForm = async () => {
         resetForm()
         router.push('/dashboard')
       })
+      
+
       
       // Optionally update local state for immediate UI updates
       if (leadCategory.value === 'manufacturer') {

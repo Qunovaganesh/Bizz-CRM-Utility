@@ -9,7 +9,7 @@ export interface ApiResponse<T = any> {
 export interface LeadData {
   leadCategory: 'manufacturer' | 'super-stockist' | 'distributor';
   contactInfo: {
-    salutation?: string;
+    custom_salutations?: string;
     name: string;
     designation?: string;
     mobile?: string;

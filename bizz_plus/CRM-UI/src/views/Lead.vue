@@ -37,7 +37,7 @@
     </div>
 
     <div class="content-wrapper">
-      <div class="lead-content">
+      
         <div class="interactions-section">
           <div class="section-header">
             <h2>Past Interactions</h2>
@@ -107,7 +107,7 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
+            
           </div>
         </div>
 
@@ -1446,107 +1446,123 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  .lead-content {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  
-  .table-container {
-    max-height: 300px;
-    overflow-x: auto;
+  .floating-header,
+  .floating-back-button,
+  .floating-promote-button {
+    position: static !important;
     width: 100%;
+    margin-bottom: 12px;
+    box-shadow: none;
+    padding: 12px;
   }
-  
-  .table-wrapper {
-    max-height: 300px;
-    min-width: 600px;
-  }
-  
   .content-wrapper {
-    margin-top: 140px;
-    padding: 16px;
+    margin-top: 0;
+    padding: 12px;
   }
-  
-  .relationship-info {
+  .lead-content {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .interactions-section,
+  .notes-section,
+  .associated-section,
+  .potential-section {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
-    word-break: break-word;
-  }
-  
-  .floating-header, .floating-back-button, .floating-promote-button {
-    position: static;
-    width: 100%;
+    padding-bottom: 8px;
     margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
   }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
   .modern-table th,
   .modern-table td {
-    padding: 12px 16px;
+    padding: 8px 8px;
     font-size: 12px;
-    min-width: 100px;
+    min-width: 90px;
   }
-  
-  .interactions-section,
-  .notes-section {
-    padding: 20px;
+  .table-container {
+    max-height: 220px;
+    border-radius: 8px;
+  }
+  .table-wrapper {
+    min-width: 600px;
+    max-height: 220px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+  }
+  .btn-primary,
+  .btn-secondary {
+    min-width: 100px;
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+  .user-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  .modal-content {
+    padding: 8px;
+    border-radius: 10px;
+    max-width: 98vw;
+  }
+  .modal-header,
+  .modal-body {
+    padding: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .content-wrapper {
-    padding: 12px;
+    padding: 6px;
   }
-  
-  .table-container {
-    max-height: 250px;
+  .lead-content {
+    gap: 8px;
   }
-  
-  .table-wrapper {
-    max-height: 250px;
-  }
-  
   .interactions-section,
-  .notes-section {
-    padding: 16px;
-    border-radius: 12px;
+  .notes-section,
+  .associated-section,
+  .potential-section {
+    padding: 6px;
+    border-radius: 6px;
   }
-  
   .section-header h2 {
-    font-size: 18px;
+    font-size: 15px;
   }
-  
   .modern-table th,
   .modern-table td {
-    padding: 8px 12px;
-    font-size: 11px;
-    min-width: 80px;
+    padding: 6px 4px;
+    font-size: 10px;
+    min-width: 70px;
   }
-  
   .user-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
   }
-  
   .btn-primary,
   .btn-secondary {
-    padding: 14px 20px;
-    font-size: 15px;
-    min-height: 44px;
+    font-size: 12px;
+    padding: 8px 10px;
+    min-height: 36px;
+  }
+  .modal-content {
+    border-radius: 6px;
+    max-width: 100vw;
+  }
+  .modal-header,
+  .modal-body {
+    padding: 8px;
   }
 }
 </style>
