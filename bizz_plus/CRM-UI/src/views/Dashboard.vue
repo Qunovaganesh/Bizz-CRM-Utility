@@ -534,7 +534,7 @@ const fetchLeads = async () => {
   
   isLoadingLeads.value = true
   try {
-    let url = '/api/resource/Lead?fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]'
+    let url = '/api/resource/Lead?limit_page_length=1000&fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]'
     
     // Build filters based on selected states, districts, and categories
     const apiFilters: any = {}
@@ -604,7 +604,7 @@ const fetchInitialCounts = async () => {
   
   isLoadingLeads.value = true
   try {
-    const url = '/api/resource/Lead?fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]'
+    const url = '/api/resource/Lead?limit_page_length=1000&fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]'
     
     console.log('Fetching initial lead counts with URL:', url)
     
@@ -667,7 +667,7 @@ const fetchLeadMappingStats = async () => {
     }
     
     const parentLeadId = selectedEntityItem.value.id
-    const response = await fetch(`/api/resource/Lead%20Mapping?fields=["name","status","parent_lead"]&filters={"parent_lead":"${parentLeadId}"}&limit_page_length=500`)
+    const response = await fetch(`/api/resource/Lead%20Mapping?limit_page_length=1000&fields=["name","status","parent_lead"]&filters={"parent_lead":"${parentLeadId}"}`)
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
@@ -1370,7 +1370,7 @@ watch(() => filters.district, (newDistricts) => {
 // Function to fetch all Lead Mappings for a parent lead
 const fetchLeadMappings = async (parentLeadId: string) => {
   try {
-    const url = `/api/resource/Lead Mapping?filters={"parent_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
+    const url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"parent_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
     const response = await fetch(url)
     const data = await response.json()
     
@@ -1402,7 +1402,7 @@ const fetchAssociatedLeads = async () => {
     // Determine the opposite entity type
     const oppositeEntityType = selectedEntity.value === 'manufacturer' ? 'SS / Distributor Lead' : 'Manufacturer Lead'
     
-    let url = `/api/resource/Lead?fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]`
+    let url = `/api/resource/Lead?limit_page_length=1000&fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]`
     
     // Build filters for opposite entity type
     const apiFilters: any = {
