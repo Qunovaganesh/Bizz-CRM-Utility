@@ -627,6 +627,37 @@
                 class="form-input"
               />
             </div>
+            <div class="form-group">
+  <label>Minimum Investment Capacity (in ₹)</label>
+  <input 
+    type="number" 
+    v-model="distributorForm.investmentCapacityMin" 
+    placeholder="Enter minimum investment amount"
+    class="form-input"
+    min="0"
+  />
+</div>
+<div class="form-group">
+  <label>Maximum Investment Capacity (₹)</label>
+  <input 
+    type="number"
+    min="0"
+    v-model="distributorForm.investmentCapacityMax"
+    placeholder="Enter maximum investment amount"
+    class="form-input"
+  />
+</div>
+<div class="form-group">
+  <label>Credit Period Required (in days)</label>
+  <input 
+    type="number"
+    min="0"
+    v-model="distributorForm.creditPeriodRequired"
+    placeholder="e.g., 30"
+    class="form-input"
+  />
+</div>
+
           </div>
         </div>
 
@@ -770,8 +801,8 @@
               <label>Do you have your own sales force?</label>
               <select v-model="distributorForm.ownSalesForce" class="form-select">
                 <option value="">Select Yes or No</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
               </select>
             </div>
           </div>
@@ -1007,7 +1038,10 @@ const distributorForm = reactive({
   newBrandsInterest: '',
   needManufacturerDistricts: [] as string[],
   annualRevenue: '',
-  marginRange: ''
+  marginRange: '',
+  investmentCapacityMin: '',
+  investmentCapacityMax: '',
+  creditPeriodRequired: ''
 })
 
 // Computed properties for dependent dropdowns
@@ -1312,6 +1346,9 @@ const submitForm = async () => {
           distributorMargin: manufacturerForm.distributorMargin,
           logistics: manufacturerForm.logistics,
           marginRange: manufacturerForm.marginRange,
+          investmentCapacityMin: distributorForm.investmentCapacityMin,
+          investmentCapacityMax: distributorForm.investmentCapacityMax,
+          creditPeriodRequired: distributorForm.creditPeriodRequired,
           warehouseSpace: manufacturerForm.warehouseSpace,
           inspirational: manufacturerForm.inspirational,
         } : {
@@ -1382,6 +1419,11 @@ const submitForm = async () => {
       custom_warehouse_needs: leadCategory.value === 'manufacturer' ? manufacturerForm.warehouseSpace : '',
       custom_margin_for_the_distributor: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorMargin : '',
       custom_margin_range: leadCategory.value === 'manufacturer' ? manufacturerForm.marginRange : '',
+      custom_investment_capacity_min: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMin : '',
+      custom_maximum_investment_capacity: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMax : '',
+      custom_credit_period_required: leadCategory.value !== 'manufacturer' ? distributorForm.creditPeriodRequired : '',
+
+
       
       // =======
       // Distributor
