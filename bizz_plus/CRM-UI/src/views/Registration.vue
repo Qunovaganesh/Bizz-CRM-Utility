@@ -69,15 +69,7 @@
                 class="form-input"
               />
             </div>
-            <div class="form-group">
-              <label>Phone 2</label>
-              <input 
-                type="tel" 
-                v-model="manufacturerForm.phone2" 
-                placeholder="Enter phone number"
-                class="form-input"
-              />
-            </div>
+            
             <div class="form-group">
               <label>Name *</label>
               <input 
@@ -94,6 +86,15 @@
                 type="tel" 
                 v-model="manufacturerForm.mobile" 
                 placeholder="Enter mobile"
+                class="form-input"
+              />
+            </div>
+            <div class="form-group">
+              <label>PAN Number</label>
+              <input 
+                type="tel" 
+                v-model="manufacturerForm.phone2" 
+                placeholder="Enter PAN number"
                 class="form-input"
               />
             </div>
@@ -154,20 +155,20 @@
               ></textarea>
             </div>
             <div class="form-group">
-              <label>Brand Name 2</label>
+              <label>Website Link</label>
               <input 
                 type="text" 
                 v-model="manufacturerForm.brandName2" 
-                placeholder="Enter Brand Name"
+                placeholder="Enter Website Link"
                 class="form-input"
               />
             </div>
             <div class="form-group">
-              <label>Brand Name 3</label>
+              <label>GST</label>
               <input 
                 type="text" 
                 v-model="manufacturerForm.brandName3" 
-                placeholder="Enter Brand Name"
+                placeholder="Enter GST Number"
                 class="form-input"
               />
             </div>
@@ -333,10 +334,17 @@
               <label>No. of distributors needed</label>
               <select v-model="manufacturerForm.distributorsNeeded" class="form-select">
                 <option value="">Select</option>
-                <option value="1-5">1-5</option>
-                <option value="6-10">6-10</option>
-                <option value="11-20">11-20</option>
-                <option value="20+">20+</option>
+                <option value="1">1</option>
+                 <option value="2">2</option>
+                  <option value="3">3</option>
+                   <option value="4">4</option>
+                    <option value="5">5</option>
+                     <option value="6">6</option>
+                      <option value="7">7</option>
+                       <option value="8">8</option>
+                        <option value="9">9</option>
+                         <option value="10">10</option>
+
               </select>
             </div>
             <div class="form-group full-width">
@@ -386,9 +394,8 @@
               <label>Logistics</label>
               <select v-model="manufacturerForm.logistics" class="form-select">
                 <option value="">Select logistics</option>
-                <option value="self">Self Managed</option>
-                <option value="third-party">Third Party</option>
-                <option value="distributor">Distributor Managed</option>
+                <option value="Borne by us">Borne by us</option>
+                <option value="Borne by distributor">Borne by distributor</option>
               </select>
             </div>
             <div class="form-group">
@@ -435,7 +442,16 @@
             <option value="Prof.">Prof.</option>
           </select>
         </div>
-
+             <div class="form-group">
+              <label>Name *</label>
+              <input 
+                type="text" 
+                v-model="distributorForm.name" 
+                placeholder="Enter name"
+                class="form-input"
+                required
+              />
+            </div>
             <div class="form-group">
               <label>Designation</label>
               <input 
@@ -454,16 +470,7 @@
                 class="form-input"
               />
             </div>
-            <div class="form-group">
-              <label>Name *</label>
-              <input 
-                type="text" 
-                v-model="distributorForm.name" 
-                placeholder="Enter name"
-                class="form-input"
-                required
-              />
-            </div>
+            
             <div class="form-group">
               <label>Mobile No.</label>
               <input 
@@ -1359,12 +1366,15 @@ const submitForm = async () => {
       custom_states: leadData.address.state,
 
       // Presense
+      custom_no_of_current_distributors: leadCategory.value === 'manufacturer' ? manufacturerForm.currentDistributors : '',
+   
 
       // Financial Stance
       annual_revenue: leadCategory.value === 'manufacturer' ? manufacturerForm.annualRevenue : distributorForm.annualRevenue,
       custom_listed: leadCategory.value === 'manufacturer' ? manufacturerForm.listed : '',
 
       // Expansion Appetite
+       custom_no_of_distributors_needed: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorsNeeded : '',
 
       // Desired Distributor Profile
       custom_minimum_order_value: leadCategory.value === 'manufacturer' ? manufacturerForm.minimumOrderValue : '',
@@ -1382,12 +1392,13 @@ const submitForm = async () => {
       last_name: leadData.contactInfo.lastName || '',
       source: distributorForm.source || '',
 
-      // Company Profile
+      // Company Profile 
       custom_super_stockiest_or_distributor: leadCategory.value === 'super-stockist' ? 'Super Stockist' : leadCategory.value === 'distributor' ? 'Distributor' : '',
       custom_staff_strength_copy: leadData.companyInfo.staffStrength,
       custom_distributor_company_name: leadData.companyInfo.companyName,
       custom_no_of_brands_dealing_with_currently: distributorForm.brandsCount,
       website: leadData.companyInfo.website || '',
+      
       // ignoring manufacturerStates, category, district for distributor
 
       // Operational Information

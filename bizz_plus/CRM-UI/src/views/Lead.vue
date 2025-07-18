@@ -108,6 +108,52 @@
                 </tbody>
               </table>
             
+            </div>
+          </div>
+          <!-- Mobile Card View -->
+          <div v-if="isMobile && apiInteractions.length" class="mobile-cards">
+            <div v-for="(row, index) in apiInteractions" :key="row.id || index" class="mobile-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="serial-badge">{{ index + 1 }}</span>
+                  <h4>{{ row.owner }}</h4>
+                </div>
+                <!-- <span :class="getStatusClass(row.status)" class="status-badge">
+                  {{ row.status }}
+                </span> -->
+              </div>
+              
+              <div class="card-content">
+                <div class="card-row">
+                  <span class="label">Date:</span>
+                  <span class="value">{{ formatDate(row.creation) }}</span>
+                </div>
+                <div class="card-row">
+                  <span class="label">Time Elapsed:</span>
+                  <span class="value">{{ getTimeElapsed(row.creation) }}</span>
+                </div>
+                <div class="card-row">
+                  <span class="label">Mode:</span>
+                  <span :class="getModeClass(row.interaction_mode)" class="mode-badge">
+                    {{ row.interaction_mode }}
+                  </span>
+                </div>
+                <div class="card-row">
+                  <span class="label">Reminder:</span>
+                  <span class="value">{{ row.reminder_date ? 'Yes' : 'No' }}</span>
+                </div>
+                <div class="card-row">
+                  <span class="label">Reminder Date:</span>
+                  <span class="value">{{ row.reminder_date ? formatDate(row.reminder_date) : '—' }}</span>
+                </div>
+              </div>
+              
+              <div class="card-actions">
+                <button class="btn-action-small mobile-action-btn" @click="viewNotes(row)">
+                  View Notes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -184,7 +230,7 @@
             </div>
           </form>
         </div>
-      </div>
+      <!-- </div> -->
     </div>
 
     <!-- Notes Modal -->
@@ -224,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import type { Interaction } from '../types';
 
@@ -245,6 +291,10 @@ const currentLeadMapping = ref<any>(null); // Current lead mapping record
 
 const showNotesModal = ref(false);
 const selectedInteraction = ref<Interaction | null>(null);
+const isMobile = ref(false);
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768
+}
 
 const newInteraction = ref({
   interactedBy: 'Current User',
@@ -700,7 +750,12 @@ onMounted(async () => {
     console.error('Error fetching lead data:', error);
     // Keep default values if API calls fail
   }
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
 });
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile);
+})
 </script>
 
 <style scoped>
@@ -1444,6 +1499,106 @@ onMounted(async () => {
   border-radius: 8px;
   border: 1px solid #f2f2f7;
 }
+/* Mobile Cards */
+.mobile-cards {
+  display: none;
+  padding: 16px;
+  gap: 16px;
+  flex-direction: column;
+}
+
+.mobile-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.mobile-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.serial-badge {
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.card-title h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  word-break: break-word;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-row .label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.card-row .value {
+  font-size: 14px;
+  color: #374151;
+  text-align: right;
+  word-break: break-word;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.mobile-action-btn {
+  padding: 10px 20px;
+  font-size: 13px;
+  min-height: 40px;
+}
+
 
 @media (max-width: 768px) {
   .floating-header,
@@ -1523,6 +1678,37 @@ onMounted(async () => {
 }
 
 @media (max-width: 480px) {
+  .table-container {
+    display: none;
+  }
+  
+  .mobile-cards {
+    display: flex;
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .mobile-card {
+    padding: 12px;
+  }
+  .card-title h4 {
+    font-size: 14px;
+  }
+  
+  .card-row .label {
+    font-size: 11px;
+    min-width: 70px;
+  }
+  
+  .card-row .value {
+    font-size: 13px;
+  }
+  
+  .mobile-action-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+    min-height: 36px;
+  }
   .content-wrapper {
     padding: 6px;
   }
