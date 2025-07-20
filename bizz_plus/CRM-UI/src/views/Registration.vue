@@ -172,6 +172,50 @@
                 class="form-input"
               />
             </div>
+            <div class="form-group">
+  <label>Minimum Investment Capacity (₹)</label>
+  <input 
+    type="number" 
+    v-model="manufacturerForm.investmentCapacityMin" 
+    placeholder="Enter minimum investment amount"
+    class="form-input"
+    min="0"
+  />
+</div>
+
+<!-- Investment Capacity Max -->
+<div class="form-group">
+  <label>Maximum Investment Capacity (₹)</label>
+  <input 
+    type="number" 
+    v-model="manufacturerForm.investmentCapacityMax" 
+    placeholder="Enter maximum investment amount"
+    class="form-input"
+    min="0"
+  />
+</div>
+
+<!-- Credit Period Required -->
+<div class="form-group">
+  <label>Credit Period Required (days)</label>
+  <input 
+    type="number" 
+    v-model="manufacturerForm.creditPeriodRequired" 
+    placeholder="Enter credit period required"
+    class="form-input"
+    min="0"
+  />
+</div>
+            <div class="form-group">
+  <label>Sales Support Provided</label>
+  <select v-model="manufacturerForm.salesSupport" class="form-select">
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+    <option value="Partial">Partial</option>
+  </select>
+</div>
+
           </div>
         </div>
 
@@ -319,8 +363,8 @@
               <label>Listed?</label>
               <select v-model="manufacturerForm.listed" class="form-select">
                 <option value="">Select Yes or No</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
               </select>
             </div>
           </div>
@@ -656,6 +700,15 @@
     placeholder="e.g., 30"
     class="form-input"
   />
+</div>
+<div class="form-group">
+  <label>Sales Support Provided</label>
+  <select v-model="distributorForm.salesSupport" class="form-select">
+    <option value="">Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+    <option value="Partial">Partial</option>
+  </select>
 </div>
 
           </div>
@@ -999,7 +1052,11 @@ const manufacturerForm = reactive({
   distributorMargin: '',
   logistics: '',
   marginRange: '',
-  warehouseSpace: ''
+  warehouseSpace: '',
+  salesSupport: '', 
+  investmentCapacityMin: '',
+  investmentCapacityMax: '',
+  creditPeriodRequired: '',
 })
 
 // Distributor/Super Stockist form
@@ -1041,7 +1098,8 @@ const distributorForm = reactive({
   marginRange: '',
   investmentCapacityMin: '',
   investmentCapacityMax: '',
-  creditPeriodRequired: ''
+  creditPeriodRequired: '',
+  salesSupport :''
 })
 
 // Computed properties for dependent dropdowns
@@ -1351,6 +1409,7 @@ const submitForm = async () => {
           creditPeriodRequired: distributorForm.creditPeriodRequired,
           warehouseSpace: manufacturerForm.warehouseSpace,
           inspirational: manufacturerForm.inspirational,
+           salesSupport: manufacturerForm.salesSupport, 
         } : {
           // Distributor specific fields
           brandsCount: distributorForm.brandsCount,
@@ -1369,6 +1428,9 @@ const submitForm = async () => {
           needManufacturerStates: distributorForm.needManufacturerStates,
           needManufacturerDistricts: distributorForm.needManufacturerDistricts,
           newBrandsInterest: distributorForm.newBrandsInterest,
+           investmentCapacityMin: distributorForm.investmentCapacityMin, 
+        investmentCapacityMax: distributorForm.investmentCapacityMax,
+        creditPeriodRequired: distributorForm.creditPeriodRequired  
         }),
       },
     }
@@ -1419,9 +1481,18 @@ const submitForm = async () => {
       custom_warehouse_needs: leadCategory.value === 'manufacturer' ? manufacturerForm.warehouseSpace : '',
       custom_margin_for_the_distributor: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorMargin : '',
       custom_margin_range: leadCategory.value === 'manufacturer' ? manufacturerForm.marginRange : '',
-      custom_investment_capacity_min: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMin : '',
-      custom_maximum_investment_capacity: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMax : '',
-      custom_credit_period_required: leadCategory.value !== 'manufacturer' ? distributorForm.creditPeriodRequired : '',
+      // custom_investment_capacity_min: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMin : '',
+      // custom_maximum_investment_capacity: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMax : '',
+      // custom_credit_period_required: leadCategory.value !== 'manufacturer' ? distributorForm.creditPeriodRequired : '',
+      // custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : '',
+      custom_investment_capacity_min: leadCategory.value === 'manufacturer' ? manufacturerForm.investmentCapacityMin  : distributorForm.investmentCapacityMin,
+
+custom_maximum_investment_capacity: leadCategory.value === 'manufacturer' ? manufacturerForm.investmentCapacityMax : distributorForm.investmentCapacityMax,
+
+custom_credit_period_required: leadCategory.value === 'manufacturer' ? manufacturerForm.creditPeriodRequired : distributorForm.creditPeriodRequired,
+
+custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : distributorForm.salesSupport || '',
+
 
 
       

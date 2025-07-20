@@ -112,7 +112,7 @@
 
                 <!-- Payment Fields -->
                 <template v-else>
-                  <div class="form-group">
+                  <div class="form-group" >
                     <label>Payment Reference</label>
                     <input 
                       type="text" 
@@ -273,40 +273,71 @@
               </div>
             </div>
 
-            <div class="table-container">
-              <div class="table-wrapper">
-                <table class="modern-table">
-                  <thead>
-                    <tr>
-                      <th>Invoice No</th>
-                      <th>Amount</th>
-                      <th>Commission %</th>
-                      <th>Commission Amount</th>
-                      <th>Upload Date</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="invoice in filteredTaxInvoices" :key="invoice.name" class="table-row">
-                      <td class="invoice-number">{{ invoice.invoice_number }}</td>
-                      <td class="amount">₹{{ (invoice.amount || 0).toLocaleString() }}</td>
-                      <td class="commission-percent">{{ invoice.commission_percent }}%</td>
-                      <td class="commission">₹{{ (invoice.commission_amount || 0).toLocaleString() }}</td>
-                      <td class="date">{{ formatDate(invoice.creation) }}</td>
-                      <td>
-                        <span class="status-pending">Pending</span>
-                      </td>
-                      <td>
-                        <button class="btn-action-small" @click="viewInvoice(invoice)">
-                          👁️ View
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <!-- Desktop Table View -->
+<div v-if="!isMobile" class="table-container">
+  <div class="table-wrapper">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Invoice No</th>
+          <th>Amount</th>
+          <th>Commission %</th>
+          <th>Commission Amount</th>
+          <th>Upload Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="invoice in filteredTaxInvoices" :key="invoice.name" class="table-row">
+          <td class="invoice-number">{{ invoice.invoice_number }}</td>
+          <td class="amount">₹{{ (invoice.amount || 0).toLocaleString() }}</td>
+          <td class="commission-percent">{{ invoice.commission_percent }}%</td>
+          <td class="commission">₹{{ (invoice.commission_amount || 0).toLocaleString() }}</td>
+          <td class="date">{{ formatDate(invoice.creation) }}</td>
+          <td>
+            <span class="status-pending">Pending</span>
+          </td>
+          <td>
+            <button class="btn-action-small" @click="viewInvoice(invoice)">
+              👁️ View
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div v-if="isMobile">
+  <div
+    v-for="invoice in filteredTaxInvoices"
+    :key="invoice.name"
+    class="mobile-card"
+  >
+    <div class="card-header flex justify-between">
+      <div class="font-semibold text-base">
+        Invoice #: {{ invoice.invoice_number }}
+      </div>
+      <span class="status-pending text-sm">Pending</span>
+    </div>
+    <div class="card-content mt-2">
+      <div class="card-row"><strong>Amount:</strong> ₹{{ (invoice.amount || 0).toLocaleString() }}</div>
+      <div class="card-row"><strong>Commission %:</strong> {{ invoice.commission_percent }}%</div>
+      <div class="card-row"><strong>Commission Amt:</strong> ₹{{ (invoice.commission_amount || 0).toLocaleString() }}</div>
+      <div class="card-row"><strong>Date:</strong> {{ formatDate(invoice.creation) }}</div>
+    </div>
+    <div class="mobile-action-btn mt-3 text-right">
+      <button class="btn-action-small" @click="viewInvoice(invoice)">
+        👁️ View
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- No Invoices Message -->
+
+
 
             <div v-if="!filteredTaxInvoices.length" class="no-invoices">
               <div class="no-data-content">
@@ -348,45 +379,80 @@
                 </div>
               </div>
             </div>
+<!-- Payments Table View for Desktop -->
+<div v-if="!isMobile && activeHistoryTab === 'payments'" class="table-container">
+  <div class="table-wrapper">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Payment Reference</th>
+          <th>Amount</th>
+          <th>Commission %</th>
+          <th>Commission Amount</th>
+          <th>Method</th>
+          <th>Date</th>
+          <th>Remarks</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="payment in paymentHistory" :key="payment.name" class="table-row">
+          <td class="payment-reference">{{ payment.payment_reference_number }}</td>
+          <td class="amount">₹{{ (payment.amount || 0).toLocaleString() }}</td>
+          <td class="commission-percent">{{ payment.commission_percent }}%</td>
+          <td class="commission">₹{{ (payment.commission_amount || 0).toLocaleString() }}</td>
+          <td class="method">{{ payment.payment_method }}</td>
+          <td class="date">{{ formatDate(payment.payment_date) }}</td>
+          <td class="remarks">{{ payment.remarks || '-' }}</td>
+          <td>
+            <span class="status-completed">Completed</span>
+          </td>
+          <td>
+            <button class="btn-action-small" @click="viewInvoice(payment)">
+              👁️ View
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-            <div class="table-container">
-              <div class="table-wrapper">
-                <table class="modern-table">
-                  <thead>
-                    <tr>
-                      <th>Payment Reference</th>
-                      <th>Amount</th>
-                      <th>Commission %</th>
-                      <th>Commission Amount</th>
-                      <th>Method</th>
-                      <th>Date</th>
-                      <th>Remarks</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="payment in paymentHistory" :key="payment.name" class="table-row">
-                      <td class="payment-reference">{{ payment.payment_reference_number }}</td>
-                      <td class="amount">₹{{ (payment.amount || 0).toLocaleString() }}</td>
-                      <td class="commission-percent">{{ payment.commission_percent }}%</td>
-                      <td class="commission">₹{{ (payment.commission_amount || 0).toLocaleString() }}</td>
-                      <td class="method">{{ payment.payment_method }}</td>
-                      <td class="date">{{ formatDate(payment.payment_date) }}</td>
-                      <td class="remarks">{{ payment.remarks || '-' }}</td>
-                      <td>
-                        <span class="status-completed">Completed</span>
-                      </td>
-                      <td>
-                        <button class="btn-action-small" @click="viewInvoice(payment)">
-                          👁️ View
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+<!-- Payments Card View for Mobile -->
+<div v-if="activeHistoryTab === 'payments' && isMobile">
+      <div
+        v-for="payment in paymentHistory"
+        :key="payment.name"
+        class="mobile-card"
+      >
+        <div class="card-header flex justify-between">
+          <div class="font-semibold text-base">
+            Payment Ref: {{ payment.payment_reference_number || payment.name }}
+          </div>
+          <span
+            class="text-sm rounded-full px-2 py-1 font-semibold"
+            :class="payment.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'"
+          >
+            {{ payment.status || 'Pending' }}
+          </span>
+        </div>
+        <div class="card-content mt-2">
+          <div class="card-row"><strong>Amount:</strong> ₹{{ (payment.amount || 0).toLocaleString() }}</div>
+          <div class="card-row"><strong>Commission %:</strong> {{ payment.commission_percent }}%</div>
+          <div class="card-row"><strong>Commission Amt:</strong> ₹{{ (payment.commission_amount || 0).toLocaleString() }}</div>
+          <div class="card-row"><strong>Payment Method:</strong> {{ payment.payment_method || '-' }}</div>
+          <div class="card-row"><strong>Date:</strong> {{ formatDate(payment.payment_date) }}</div>
+          <div class="card-row"><strong>Remarks:</strong> {{ payment.remarks || '-' }}</div>
+        </div>
+        <div class="mobile-action-btn mt-3 text-right">
+          <button class="btn-action-small" @click="viewInvoice(payment)">👁️ View</button>
+        </div>
+      </div>
+    </div>
+
+
+
 
             <div v-if="!paymentHistory.length" class="no-invoices">
               <div class="no-data-content">
@@ -448,6 +514,17 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+
+const isMobile = ref(false);
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function handleResize() {
+  if (resizeTimeout) clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    isMobile.value = window.innerWidth <= 768;
+  }, 150);
+}
+
 
 // State Management
 const uploadType = ref<'taxinvoice' | 'payment'>('taxinvoice');
@@ -1103,6 +1180,8 @@ const getStatusBadgeClass = (status: string) => {
 let handleKeyPress: (event: KeyboardEvent) => void;
 
 onMounted(async () => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
   console.log('Customer component mounted for ID:', props.id, 'ParentID:', props.parentId);
   
   try {
@@ -1212,6 +1291,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+   if (resizeTimeout) clearTimeout(resizeTimeout);
+   window.removeEventListener('resize', handleResize);
   if (handleKeyPress) {
     document.removeEventListener('keydown', handleKeyPress);
   }
@@ -1349,14 +1430,146 @@ onUnmounted(() => {
 }
 
 .invoice-section,
-.invoice-list {
-  background: white;
-  border: 1px solid #d2d2d7;
+.invoice-list,
+.mobile-card,
+.customer-actions,
+.action-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e5;
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  min-width: 0;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
+.invoice-section:hover,
+.invoice-list:hover,
+.mobile-card:hover,
+.customer-actions:hover,
+.action-card:hover {
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+}
+.mobile-card {
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+/* Card header */
+.card-header {
+  font-weight: 700;
+  font-size: 16px;
+  color: #111;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Card content rows */
+.card-content .card-row {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Action buttons inside cards */
+.mobile-action-btn {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.btn-action-small {
+  background: #1c1c1e;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(28,28,30,0.25);
+  transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  min-height: 32px;
+}
+
+.btn-action-small:hover {
+  background: #000;
+  box-shadow: 0 6px 16px rgba(28,28,30,0.35);
+  transform: translateY(-2px);
+}
+
+/* Summary cards */
+.summary-card {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+/* Summary card text */
+.summary-content h4 {
+  font-weight: 700;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.summary-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1c1c1e;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .invoice-section,
+  .invoice-list,
+  .customer-actions,
+  .mobile-card {
+    padding: 20px;
+  }
+
+  .card-header {
+    font-size: 15px;
+  }
+
+  .btn-action-small {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .invoice-section,
+  .invoice-list,
+  .customer-actions,
+  .mobile-card {
+    padding: 16px;
+  }
+
+  .card-header {
+    font-size: 14px;
+  }
+
+  .btn-action-small {
+    padding: 12px 18px;
+    font-size: 15px;
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
 
 .section-header {
   display: flex;
@@ -1617,6 +1830,212 @@ onUnmounted(() => {
   box-shadow: 0 2px 6px rgba(28, 28, 30, 0.3);
 }
 
+
+
+.table-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto; /* allow horizontal scroll if needed */
+  border-radius: 12px;
+  border: 1px solid #f2f2f7;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+/* Table wrapper styling */
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Use fixed table layout to control widths */
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 14px;
+  table-layout: fixed; /* fixes column widths */
+  word-wrap: break-word; /* wrap long words */
+}
+
+.modern-table th {
+  white-space: normal;        /* allow wrapping */
+  word-break: break-word;     /* break long words */
+  font-weight: 700;
+  font-size: 12px;            /* smaller font for neatness */
+  color: #374151;
+  background-color: #f9fafb;
+  padding: 10px 12px;
+  line-height: 1.3;           /* tighter line spacing */
+  text-align: left;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+
+/* For table body cells, keep truncation */
+.modern-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 10px;
+}
+
+
+
+.table-row:hover {
+  background-color: #f9fafb;
+}
+
+.status-completed {
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+/* Small action button */
+.btn-action-small {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.btn-action-small:hover {
+  background-color: #c7d2fe;
+}
+
+/* MOBILE CARD STYLES */
+.mobile-card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-content {
+  margin-top: 12px;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.card-row strong {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.mobile-action-btn button {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.mobile-action-btn button:hover {
+  background-color: #c7d2fe;
+}
+
+
+.invoice-form-card {
+  width: 100%;                    /* fill available width */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* On mobile, hide table and show cards */
+@media (max-width: 768px) {
+  .table-wrapper {
+    display: none; /* hide table on small screens */
+  }
+  .mobile-card {
+    display: block; /* show cards on small screens */
+  }
+}
+
+
+.status-pending {
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.status-completed {
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Mobile Card Styles */
+.mobile-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.card-content .card-row {
+  margin: 6px 0;
+}
+
+.mobile-action-btn {
+  text-align: right;
+  margin-top: 12px;
+}
+
+/* Button Styles */
+.btn-action-small {
+  padding: 6px 12px;
+  background-color: #f3f4f6;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-action-small:hover {
+  background-color: #e5e7eb;
+}
+
+
 .filter-controls {
   display: flex;
   align-items: center;
@@ -1667,38 +2086,6 @@ onUnmounted(() => {
   overflow: hidden;
   border-radius: 12px;
   border: 1px solid #f2f2f7;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.modern-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-}
-
-.modern-table th {
-  background: #fafafa;
-  font-weight: 600;
-  color: #1d1d1f;
-  text-align: left;
-  padding: 10px 14px;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid #f2f2f7;
-  white-space: nowrap;
-}
-
-.modern-table td {
-  padding: 10px 14px;
-  border-bottom: 1px solid #f8f8f8;
-  color: #1d1d1f;
-  font-size: 14px;
-  vertical-align: middle;
 }
 
 .table-row:hover {
@@ -2191,4 +2578,10 @@ onUnmounted(() => {
     margin-bottom: 8px;
   }
 }
+@media (min-width: 769px) {
+  .mobile-card {
+    display: none !important;
+  }
+}
+
 </style>
