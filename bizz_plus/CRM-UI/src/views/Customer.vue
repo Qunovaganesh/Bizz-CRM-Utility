@@ -198,9 +198,11 @@
                       type="file" 
                       @change="handleFileUpload"
                       accept=".pdf,.jpg,.png"
+                      
                       required
                       class="file-input-hidden"
                       id="document-upload"
+                      
                     >
                     <label for="document-upload" class="file-upload-label">
                       <div class="upload-icon">📎</div>
@@ -210,6 +212,9 @@
                       </div>
                     </label>
                   </div>
+                 <div v-if="selectedFile" class="uploaded-file-name mt-2 text-green-600">
+    ✅ Uploaded File: <strong>{{ selectedFile.name }}</strong>
+  </div>
                 </div>
               </div>
 
@@ -512,6 +517,12 @@ const props = defineProps<{
   id: string;
   parentId?: string;
 }>();
+
+
+// Reactive variable to hold uploaded file name
+
+
+
 
 const router = useRouter();
 
@@ -860,6 +871,7 @@ const handleFileUpload = (event: Event) => {
   }
 };
 
+
 // Document Upload Functions
 const uploadDocument = async () => {
   if (!selectedFile.value) {
@@ -1113,16 +1125,37 @@ const validateCustomer = () => {
   console.log('Customer validated - showing Finalize Customer button');
 };
 
+function formatDateTime(date: any) {
+  const pad = (n: any) => n < 10 ? '0' + n : n;
+
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // months are 0-indexed
+  const year = date.getFullYear();
+
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 const finalizeCustomer = async () => {
   try {
     console.log('Finalizing customer status...');
+
+    const res = await fetch('/api/method/frappe.auth.get_logged_user')
+    const data = await res.json();
+    
+    const formatted = formatDateTime(new Date());
     
     // Update Lead Mapping status to "Customer"
     if (currentLeadMapping.value?.name) {
       const response = await makeApiCall(`/api/resource/Lead Mapping/${currentLeadMapping.value.name}`, {
         method: 'PUT',
         body: JSON.stringify({
-          status: 'Customer'
+          status: 'Customer',
+          customer_owner: data.message,
+          customer_date: formatted
         })
       });
       
@@ -1377,8 +1410,9 @@ onUnmounted(() => {
 }
 
 .distributor {
-  background: #fef3c7;
-  color: #92400e;
+background-color: #f4e3d7;      /* Light tan background */
+  color: #3e2723;                 /* Deep espresso brown text */
+  border: 1px solid #5d4037;
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 600;
@@ -1547,6 +1581,8 @@ onUnmounted(() => {
   .btn-action-small {
     padding: 10px 16px;
     font-size: 14px;
+    background-color: #000;
+    color: #fff;
   }
 }
 
@@ -1611,7 +1647,7 @@ onUnmounted(() => {
   color: #1d1d1f;
   font-size: 16px;
   font-weight: 600;
-  margin: 0;
+  margin: 10px;
 }
 
 .type-toggle {
@@ -1829,21 +1865,81 @@ onUnmounted(() => {
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(28, 28, 30, 0.3);
 }
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1rem;
+  flex-wrap: wrap; /* allows wrapping on small screens */
+}
 
+.form-actions button {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  min-width: 120px;
+}
+
+/* Mobile-specific */
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch; /* buttons take full width */
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
 
 
 .table-container {
   width: 100%;
-  max-width: 100%;
-  overflow-x: auto; /* allow horizontal scroll if needed */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 12px;
   border: 1px solid #f2f2f7;
-  box-sizing: border-box;
   margin-bottom: 1rem;
 }
 
+/* Table Styling */
+.modern-table {
+  width: 100%;
+  min-width: 700px;         /* Force scroll if screen is too small */
+  border-collapse: collapse;
+  font-size: 13px;
+  background: white;
+  table-layout: auto;   
+  margin-left: -10px;    /* Allow dynamic column widths */
+}
+
+/* Table Header */
+.modern-table th {
+  white-space: normal;      /* Allow wrapping */
+  overflow: visible;        /* Show full content */
+  font-weight: 700;
+  font-size: 12px;
+  color: #374151;
+  background-color: #f9fafb;
+  padding: 10px 12px;
+  line-height: 1.4;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Table Body Cells */
+.modern-table td {
+  white-space: nowrap;         /* Keep on one line */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+
 /* Table wrapper styling */
-.table-wrapper {
+/* .table-wrapper {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
@@ -1851,40 +1947,13 @@ onUnmounted(() => {
   border: 1px solid #e5e7eb;
   box-sizing: border-box;
   overflow: visible;
-}
-
-/* Use fixed table layout to control widths */
-.modern-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  font-size: 14px;
-  table-layout: fixed; /* fixes column widths */
-  word-wrap: break-word; /* wrap long words */
-}
-
-.modern-table th {
-  white-space: normal;        /* allow wrapping */
-  word-break: break-word;     /* break long words */
-  font-weight: 700;
-  font-size: 12px;            /* smaller font for neatness */
-  color: #374151;
-  background-color: #f9fafb;
-  padding: 10px 12px;
-  line-height: 1.3;           /* tighter line spacing */
-  text-align: left;
-  vertical-align: middle;
-  letter-spacing: 0.02em;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-
-/* For table body cells, keep truncation */
-.modern-table td {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 8px 10px;
+} */
+.table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  padding-bottom: 8px; /* space below table for scrollbar */
+  -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid #ccc; /* optional bottom border */
 }
 
 
@@ -1904,8 +1973,8 @@ onUnmounted(() => {
 
 /* Small action button */
 .btn-action-small {
-  background-color: #e0e7ff;
-  color: #3730a3;
+  background-color: black;
+  color: white;
   font-size: 12px;
   font-weight: 500;
   padding: 4px 10px;
@@ -2023,7 +2092,8 @@ onUnmounted(() => {
 /* Button Styles */
 .btn-action-small {
   padding: 6px 12px;
-  background-color: #f3f4f6;
+  background-color: black;
+  color: white;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 13px;
@@ -2447,6 +2517,7 @@ onUnmounted(() => {
   .customer-content {
     grid-template-columns: 1fr;
     gap: 24px;
+    margin-top: 130px;
   }
   
   .table-container {
@@ -2577,6 +2648,7 @@ onUnmounted(() => {
     font-size: 24px;
     margin-bottom: 8px;
   }
+  
 }
 @media (min-width: 769px) {
   .mobile-card {

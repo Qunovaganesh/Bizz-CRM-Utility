@@ -2062,6 +2062,7 @@ watch(selectedEntityItem, (newItem, oldItem) => {
     text-align: left;
   }
   
+  
   .header-actions {
     position: static;
     margin-top: 16px;

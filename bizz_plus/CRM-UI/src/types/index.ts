@@ -36,6 +36,7 @@ export interface Interaction {
   hasReminder: boolean;
   reminderDate?: string;
   attachments?: string[];
+  assignedTo?: string;
 }
 
 export interface Agreement {

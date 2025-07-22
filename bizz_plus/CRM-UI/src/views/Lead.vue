@@ -30,11 +30,7 @@
     </div>
 
     <!-- Floating Promote to Prospect Button (shown when there's at least one interaction) -->
-    <div class="floating-promote-button" v-if="apiInteractions.length > 0">
-      <button class="btn-floating-promote" @click="navigateToProspect">
-        Promote to Prospect →
-      </button>
-    </div>
+   
 
     <div class="content-wrapper">
       
@@ -52,10 +48,10 @@
                 <thead>
                   <tr>
                     <th>Interacted By</th>
+                    <th>Assigned To</th>
                     <th>Date</th>
                     <th>Time Elapsed</th>
                     <th>Mode</th>
-                    <th>Reminder</th>
                     <th>Reminder Date</th>
                     <th>Actions</th>
                   </tr>
@@ -74,8 +70,14 @@
                   <tr v-else v-for="interaction in apiInteractions" :key="interaction.name" class="table-row">
                     <td>
                       <div class="user-cell">
-                        <div class="user-avatar">{{ (interaction.owner || 'U').charAt(0) }}</div>
-                        <span class="user-name">{{ interaction.owner || 'Unknown' }}</span>
+                        <div class="user-avatar">{{ (interaction.lead_owner_name || 'U').charAt(0) }}</div>
+                        <span class="user-name">{{ interaction.lead_owner_name || 'Unknown' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="user-cell">
+                        <div class="user-avatar">{{ (interaction.assigned_to_name || 'U').charAt(0) }}</div>
+                        <span class="user-name">{{ interaction.assigned_to_name || 'Unknown' }}</span>
                       </div>
                     </td>
                     <td>
@@ -89,11 +91,11 @@
                         {{ interaction.interaction_mode }}
                       </span>
                     </td>
-                    <td>
+                    <!-- <td>
                       <span :class="getReminderClass(!!interaction.reminder_date)" class="reminder-badge">
                         {{ interaction.reminder_date ? 'Yes' : 'No' }}
                       </span>
-                    </td>
+                    </td> -->
                     <td>
                       <span class="reminder-date-cell">
                         {{ interaction.reminder_date ? formatDate(interaction.reminder_date) : '—' }}
@@ -116,7 +118,7 @@
               <div class="card-header">
                 <div class="card-title">
                   <span class="serial-badge">{{ index + 1 }}</span>
-                  <h4>{{ row.owner }}</h4>
+                  <h4>{{ row.lead_owner_name ? row.assigned_to_name : 'Unknown' }}</h4>
                 </div>
                 <!-- <span :class="getStatusClass(row.status)" class="status-badge">
                   {{ row.status }}
@@ -124,6 +126,10 @@
               </div>
               
               <div class="card-content">
+                <div class="card-row">
+                  <span class="label">Assigned To:</span>
+                  <span class="value">{{ row.assigned_to_name ? row.assigned_to_name : 'Unknown' }}</span>
+                </div>
                 <div class="card-row">
                   <span class="label">Date:</span>
                   <span class="value">{{ formatDate(row.creation) }}</span>
@@ -175,15 +181,15 @@
                 </select>
               </div>
 
-              <div class="form-group full-width">
-                <label>Interaction Notes</label>
-                <textarea 
-                  v-model="newInteraction.notes" 
-                  rows="4" 
-                  placeholder="Enter detailed interaction notes..."
+              <div class="form-group">
+                <label>Reminder Date <span style="color: red;">*</span></label>
+                <input 
+                  type="date" 
+                  v-model="newInteraction.reminderDate"
+                  :min="today"
+                  class="modern-input"
                   required
-                  class="modern-textarea"
-                ></textarea>
+                >
               </div>
 
               <div class="form-group">
@@ -198,6 +204,39 @@
               </div>
 
               <div class="form-group">
+                <label>Follow Up <span style="color: red;">*</span></label>
+                <select 
+                  v-model="newInteraction.assignedTo"
+                  class="modern-input"
+                  required
+                >
+                  <option value="" disabled>Select a user</option>
+                  <option 
+                    v-for="user in userOptions" 
+                    :key="user.name" 
+                    :value="user.name"
+                  >
+                    {{ user.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Interaction Notes</label>
+                <textarea 
+                  v-model="newInteraction.notes" 
+                  rows="4" 
+                  placeholder="Enter detailed interaction notes..."
+                  required
+                  class="modern-textarea"
+                ></textarea>
+              </div>
+
+              <!-- <div class="form-group">
+
+              </div> -->
+
+              <!-- <div class="form-group ">
                 <label class="checkbox-label">
                   <input 
                     type="checkbox" 
@@ -207,17 +246,7 @@
                   <span class="checkbox-custom"></span>
                   Add Reminder
                 </label>
-              </div>
-
-              <div class="form-group" v-if="newInteraction.hasReminder">
-                <label>Reminder Date</label>
-                <input 
-                  type="date" 
-                  v-model="newInteraction.reminderDate"
-                  :min="today"
-                  class="modern-input"
-                >
-              </div>
+              </div> -->
             </div>
 
             <div class="form-actions">
@@ -232,7 +261,11 @@
         </div>
       <!-- </div> -->
     </div>
-
+ <div class="floating-promote-button" v-if="apiInteractions.length > 0">
+      <button class="btn-floating-promote" @click="navigateToProspect">
+        Promote to Prospect →
+      </button>
+    </div>
     <!-- Notes Modal -->
     <div v-if="showNotesModal" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
@@ -249,6 +282,10 @@
             <div class="detail-row">
               <span class="detail-label">By:</span>
               <span class="detail-value">{{ selectedInteraction?.interactedBy }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Assigned To:</span>
+              <span class="detail-value">{{ selectedInteraction?.assignedTo }}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Mode:</span>
@@ -295,6 +332,7 @@ const isMobile = ref(false);
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 768
 }
+const userOptions = ref<{ name: string }[]>([]);
 
 const newInteraction = ref({
   interactedBy: 'Current User',
@@ -303,7 +341,8 @@ const newInteraction = ref({
   notes: '',
   hasReminder: false,
   reminderDate: '',
-  attachments: [] as string[]
+  attachments: [] as string[],
+  assignedTo: ''
 });
 
 const manufacturerData = computed(() => {
@@ -430,7 +469,7 @@ const fetchInteractions = async () => {
   
   try {
     // Build the API URL with filters
-    let url = '/api/resource/Lead Interaction?fields=["name","interaction_mode","interaction_notes","reminder_date","parent_lead","mapped_lead","creation","owner"]';
+    let url = '/api/resource/Lead Interaction?fields=["name","interaction_mode","interaction_notes","reminder_date","parent_lead","mapped_lead","creation","owner", "assigned_to_name", "lead_owner_name"]';
     
     // Add filters based on current lead IDs
     const filters: any = {};
@@ -500,14 +539,35 @@ const fetchLeadMapping = async () => {
   }
 };
 
+function formatDateTime(date: any) {
+  const pad = (n: any) => n < 10 ? '0' + n : n;
+
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // months are 0-indexed
+  const year = date.getFullYear();
+
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 // Function to update or create Lead Mapping
 const updateLeadMapping = async (status: string) => {
+  const res = await fetch('/api/method/frappe.auth.get_logged_user')
+  const data = await res.json();
+  
+  const formatted = formatDateTime(new Date());
+
   try {
     const mappingData = {
       parent_lead: props.parentId || null,
       mapped_lead: props.id,
       status: status,
-      last_status_change: new Date().toISOString().split('T')[0]
+      last_status_change: new Date().toISOString().split('T')[0],
+      lead_owner: data.message,
+      lead_date: formatted
     };
     
     let response;
@@ -578,9 +638,9 @@ const getModeClass = (mode: string) => {
   return mode === 'Phone' ? 'mode-phone' : 'mode-face';
 };
 
-const getReminderClass = (hasReminder: boolean) => {
-  return hasReminder ? 'reminder-yes' : 'reminder-no';
-};
+// const getReminderClass = (hasReminder: boolean) => {
+//   return hasReminder ? 'reminder-yes' : 'reminder-no';
+// };
 
 const getStatusBadgeClass = (status: string) => {
   const baseClass = 'status-badge';
@@ -603,14 +663,15 @@ const getStatusBadgeClass = (status: string) => {
 const viewNotes = (interaction: any) => {
   selectedInteraction.value = {
     id: interaction.name,
-    interactedBy: interaction.owner || 'Unknown',
+    interactedBy: interaction.lead_owner_name || 'Unknown',
     dateInteracted: interaction.creation,
     mode: interaction.interaction_mode,
     notes: interaction.interaction_notes || '',
     hasReminder: !!interaction.reminder_date,
     reminderDate: interaction.reminder_date || '',
     timeElapsed: getTimeElapsed(interaction.creation),
-    attachments: []
+    attachments: [],
+    assignedTo: interaction.assigned_to_name || 'Unknown'
   };
   showNotesModal.value = true;
 };
@@ -634,14 +695,19 @@ const submitNotes = async () => {
   }
 
   isSubmittingInteraction.value = true;
+
+  const res = await fetch('/api/method/frappe.auth.get_logged_user')
+  const data = await res.json();
   
   try {
     const interactionData = {
       interaction_mode: newInteraction.value.mode,
       interaction_notes: newInteraction.value.notes,
-      reminder_date: newInteraction.value.hasReminder ? newInteraction.value.reminderDate : null,
+      reminder_date: newInteraction.value.reminderDate,
       parent_lead: props.parentId || null,
-      mapped_lead: props.id
+      mapped_lead: props.id,
+      lead_owner: data.message,
+      assigned_to: newInteraction.value.assignedTo
     };
 
     console.log('Submitting interaction:', interactionData);
@@ -698,7 +764,8 @@ const resetForm = () => {
     notes: '',
     hasReminder: false,
     reminderDate: '',
-    attachments: []
+    attachments: [],
+    assignedTo: ''
   };
 };
 
@@ -715,6 +782,14 @@ const navigateToProspect = () => {
 
 onMounted(async () => {
   console.log('Loading lead data for ID:', props.id, 'ParentID:', props.parentId);
+
+  try {
+    const res = await fetch('/api/method/bizz_plus.api.api.get_users')
+    const data = await res.json()
+    userOptions.value = data.message
+  } catch (err) {
+    console.error("Failed to fetch users", err)
+  }
   
   try {
     // Fetch the associated entity (clicked from table)
@@ -765,6 +840,7 @@ onUnmounted(() => {
   background: #f5f5f7;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin-bottom: 50px;
 }
 
 .floating-header {
@@ -791,6 +867,7 @@ onUnmounted(() => {
   z-index: 1000;
 }
 
+
 .btn-floating-back {
   background: #1c1c1e;
   color: white;
@@ -798,7 +875,7 @@ onUnmounted(() => {
   padding: 12px 20px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   box-shadow: 0 4px 20px rgba(28, 28, 30, 0.3);
   transition: all 0.3s ease;
@@ -821,19 +898,22 @@ onUnmounted(() => {
   background: #020006;
   color: white;
   border: none;
-  padding: 12px 20px;
+  max-height: 50px;;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px black;
   transition: all 0.3s ease;
+ 
+    padding: 10px 16px;
+  
 }
 
 .btn-floating-promote:hover {
-  background: #0056CC;
+  background: black;
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(0, 122, 255, 0.4);
+
 }
 
 .relationship-header h1 {
@@ -862,8 +942,9 @@ onUnmounted(() => {
 }
 
 .distributor {
-  background: #fef3c7;
-  color: #92400e;
+background-color: #f4e3d7;      /* Light tan background */
+  color: #3e2723;                 /* Deep espresso brown text */
+  border: 1px solid #5d4037;
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 600;
@@ -1020,6 +1101,7 @@ onUnmounted(() => {
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-top: 10px;
 }
 
 .section-header {
@@ -1602,13 +1684,43 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .floating-header,
-  .floating-back-button,
+  
   .floating-promote-button {
-    position: static !important;
-    width: 100%;
-    margin-bottom: 12px;
-    box-shadow: none;
-    padding: 12px;
+  position: static !important; /* Ensure it's not floating */
+  width: 100%;
+  margin: 12px 0;
+  padding: 0 8px;
+}
+.lead-page{
+  
+    padding: 16px;
+  
+}
+
+/* Promote button styling */
+.btn-floating-promote {
+  width: 100%;
+ 
+  padding: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 10px;
+    background: black;
+  color: white;
+ 
+  text-align: center;
+  transition: background 0.2s ease;
+  margin-bottom: auto;
+}
+
+.btn-floating-promote:hover {
+  background-color: #111827;
+}
+
+   .floating-back-button {
+    top: 10px;
+    right: 15px;
+    font-size: 12px;
   }
   .content-wrapper {
     margin-top: 0;
@@ -1624,6 +1736,7 @@ onUnmounted(() => {
   .potential-section {
     padding: 12px;
     border-radius: 10px;
+    margin-top: 25px;
   }
   .section-header {
     flex-direction: column;
@@ -1631,6 +1744,13 @@ onUnmounted(() => {
     gap: 8px;
     padding-bottom: 8px;
     margin-bottom: 12px;
+  
+  }
+   .relationship-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    word-break: break-word;
   }
   .modern-table th,
   .modern-table td {
@@ -1675,11 +1795,19 @@ onUnmounted(() => {
   .modal-body {
     padding: 12px;
   }
+   .relationship-header h1 {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
 }
 
 @media (max-width: 480px) {
   .table-container {
     display: none;
+  }
+   .floating-back-button {
+    top: 10px;
+    right: 10px;
   }
   
   .mobile-cards {
@@ -1705,9 +1833,12 @@ onUnmounted(() => {
   }
   
   .mobile-action-btn {
-    padding: 8px 16px;
-    font-size: 12px;
+    /* padding: 8px 16px;
+    font-size: 12px; */
     min-height: 36px;
+       min-width: 100px;
+    font-size: 13px;
+    padding: 10px 16px;
   }
   .content-wrapper {
     padding: 6px;

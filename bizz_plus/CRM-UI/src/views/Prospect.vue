@@ -628,6 +628,20 @@ const handleFileUpload = (event: Event) => {
   }
 };
 
+function formatDateTime(date: any) {
+  const pad = (n: any) => n < 10 ? '0' + n : n;
+
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1); // months are 0-indexed
+  const year = date.getFullYear();
+
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  const seconds = pad(date.getSeconds());
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 const submitUpload = async () => {
   if (selectedFile.value) {
     try {
@@ -635,6 +649,11 @@ const submitUpload = async () => {
         console.error('Error: No Lead Mapping found to upload signed agreement');
         return;
       }
+
+      const res = await fetch('/api/method/frappe.auth.get_logged_user')
+      const data = await res.json();
+      
+      const formatted = formatDateTime(new Date());
 
       // Create form data for file upload
       const formData = new FormData();
@@ -657,7 +676,9 @@ const submitUpload = async () => {
         // Update the Lead Mapping with both file and status in one API call
         const updateData = {
           signed_agreement: uploadData.message.file_url,
-          status: 'Prospect'
+          status: 'Prospect',
+          prospect_owner: data.message,
+          prospect_date: formatted
         };
 
         const updateResponse = await fetch(`/api/resource/Lead Mapping/${currentLeadMapping.value.name}`, {
@@ -911,7 +932,7 @@ onMounted(async () => {
 .prospect-page {
   max-width: 1200px;
   margin: 0 auto;
-  background: #f5f5f7;
+ 
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -929,7 +950,7 @@ onMounted(async () => {
 }
 
 .content-wrapper {
-  margin-top: 140px;
+  margin-top: 200px;
   padding: 24px;
 }
 
@@ -985,8 +1006,9 @@ onMounted(async () => {
 }
 
 .distributor {
-  background: #fef3c7;
-  color: #92400e;
+background-color: #f4e3d7;      /* Light tan background */
+  color: #3e2723;                 /* Deep espresso brown text */
+  border: 1px solid #5d4037;
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 600;
@@ -1641,7 +1663,7 @@ onMounted(async () => {
   }
   
   .content-wrapper {
-    margin-top: 160px;
+    margin-top: 60px;
     padding: 16px;
   }
   
@@ -1661,7 +1683,7 @@ onMounted(async () => {
     gap: 8px;
   }
 
-  .floating-header, .floating-back-button {
+  .floating-header {
     position: static;
     width: 100%;
     margin-bottom: 12px;
@@ -1670,7 +1692,11 @@ onMounted(async () => {
     align-items: stretch;
     gap: 8px;
   }
-  
+  .floating-back-button {
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+  }
   .modal-content {
     width: 95%;
   }

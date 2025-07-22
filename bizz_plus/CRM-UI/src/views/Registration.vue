@@ -443,14 +443,23 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Margin Range</label>
+              <label> Minimum Margin Range(%)</label>
               <input 
                 type="text" 
                 v-model="manufacturerForm.marginRange" 
-                placeholder="Enter margin range __% to __%"
+                placeholder="Enter  Minimum margin "
                 class="form-input"
               />
             </div>
+            <div class="form-group">
+  <label>Maximum Margin Range (%)</label>
+  <input 
+    type="number"
+    v-model="manufacturerForm.maxMarginRange"
+    placeholder="Enter maximum margin"
+    class="form-input"
+  />
+</div>
             <div class="form-group full-width">
               <label>Warehouse space needs</label>
               <input 
@@ -570,7 +579,7 @@
                 class="form-input"
               />
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label>Status *</label>
               <select v-model="distributorForm.status" class="form-select" required>
                 <option value="">Select Status</option>
@@ -578,7 +587,7 @@
                 <option value="prospect">Prospect</option>
                 <option value="customer">Customer</option>
               </select>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -635,6 +644,15 @@
                 class="form-input"
               />
             </div>
+           <div class="form-group">
+  <label>GST</label>
+  <input 
+    type="text" 
+    v-model="distributorForm.gstNumber" 
+    placeholder="Enter GST Number"
+    class="form-input"
+  />
+</div>
             <div class="form-group">
               <label>Manufacturer's States</label>
               <input 
@@ -788,6 +806,7 @@
             <div class="form-group">
               <label>Willingness to bear logistics</label>
               <select v-model="distributorForm.logisticsWillingness" class="form-select" placeholder="Willingness to bear logistics?">
+                 <option value="">Select Yes or No</option>
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
               </select>
@@ -919,7 +938,7 @@
               />
             </div>
             <div class="form-group">
-              <label>Margin % range from current brands</label>
+              <label> Minimum Margin % range from current brands</label>
               <input 
                 type="text" 
                 v-model="distributorForm.marginRange" 
@@ -927,6 +946,15 @@
                 class="form-input"
               />
             </div>
+            <div class="form-group">
+  <label>Maximum Margin % from Current Brands</label>
+  <input 
+    type="number" 
+    v-model="distributorForm.maxMarginRange" 
+    placeholder="Enter maximum margin %" 
+    class="form-input"
+  />
+</div>
           </div>
         </div>
 
@@ -941,7 +969,7 @@
           Reset Form
         </button>
         <button type="submit" class="btn-primary" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Saving...' : 'Save Lead' }}
+          {{ isSubmitting ? 'Saving...' : 'Register' }}
         </button>
       </div>
 
@@ -1052,6 +1080,7 @@ const manufacturerForm = reactive({
   distributorMargin: '',
   logistics: '',
   marginRange: '',
+   maxMarginRange: '',
   warehouseSpace: '',
   salesSupport: '', 
   investmentCapacityMin: '',
@@ -1071,7 +1100,8 @@ const distributorForm = reactive({
   source: '',
   leadOwner: '',
   lastName: '',
-  status: '',
+  // status: '',
+ gstNumber:'',
   type: '',
   staffStrength: '',
   companyName: '',
@@ -1096,6 +1126,7 @@ const distributorForm = reactive({
   needManufacturerDistricts: [] as string[],
   annualRevenue: '',
   marginRange: '',
+  maxMarginRange: '',
   investmentCapacityMin: '',
   investmentCapacityMax: '',
   creditPeriodRequired: '',
@@ -1320,9 +1351,7 @@ const validateForm = (): { isValid: boolean; errors: string[] } => {
     if (!distributorForm.companyName.trim()) {
       errors.push('Company name is required')
     }
-    if (!distributorForm.status) {
-      errors.push('Status is required')
-    }
+  
     if (!distributorForm.type) {
       errors.push('Distributor type is required')
     }
@@ -1373,7 +1402,7 @@ const submitForm = async () => {
         ...(leadCategory.value !== 'manufacturer' && {
           website: distributorForm.website,
           type: distributorForm.type,
-          status: distributorForm.status,
+          // status: distributorForm.status,
           source: distributorForm.source,
           leadOwner: distributorForm.leadOwner,
         }),
@@ -1388,6 +1417,9 @@ const submitForm = async () => {
       businessInfo: {
         categories: leadCategory.value === 'manufacturer' ? manufacturerForm.categories : distributorForm.categories,
         subCategories: leadCategory.value === 'manufacturer' ? manufacturerForm.subCategories : distributorForm.subCategories,
+        
+
+        
         ...(leadCategory.value === 'manufacturer' ? {
           // Manufacturer specific fields
           brandNames: [manufacturerForm.brandName1, manufacturerForm.brandName2, manufacturerForm.brandName3].filter(Boolean),
@@ -1404,12 +1436,18 @@ const submitForm = async () => {
           distributorMargin: manufacturerForm.distributorMargin,
           logistics: manufacturerForm.logistics,
           marginRange: manufacturerForm.marginRange,
+          maxMarginRange: manufacturerForm.maxMarginRange,
           investmentCapacityMin: distributorForm.investmentCapacityMin,
           investmentCapacityMax: distributorForm.investmentCapacityMax,
           creditPeriodRequired: distributorForm.creditPeriodRequired,
           warehouseSpace: manufacturerForm.warehouseSpace,
           inspirational: manufacturerForm.inspirational,
            salesSupport: manufacturerForm.salesSupport, 
+           maxMarginCurrentBrands: distributorForm.maxMarginRange || '',
+           minMarginRange: distributorForm.marginRange || '',
+           
+           
+            
         } : {
           // Distributor specific fields
           brandsCount: distributorForm.brandsCount,
@@ -1481,6 +1519,7 @@ const submitForm = async () => {
       custom_warehouse_needs: leadCategory.value === 'manufacturer' ? manufacturerForm.warehouseSpace : '',
       custom_margin_for_the_distributor: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorMargin : '',
       custom_margin_range: leadCategory.value === 'manufacturer' ? manufacturerForm.marginRange : '',
+     custom_max_margin_range_: leadCategory.value === 'manufacturer' ? manufacturerForm.maxMarginRange : '',
       // custom_investment_capacity_min: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMin : '',
       // custom_maximum_investment_capacity: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMax : '',
       // custom_credit_period_required: leadCategory.value !== 'manufacturer' ? distributorForm.creditPeriodRequired : '',
@@ -1511,6 +1550,7 @@ custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufactu
       custom_distributor_company_name: leadData.companyInfo.companyName,
       custom_no_of_brands_dealing_with_currently: distributorForm.brandsCount,
       website: leadData.companyInfo.website || '',
+       custom_gst: distributorForm.gstNumber || '',
       
       // ignoring manufacturerStates, category, district for distributor
 
@@ -1524,6 +1564,18 @@ custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufactu
       custom_no_of_warehouses_you_have: leadData.businessInfo.warehouseCount || '',
       custom_total_space_in_sq_ft: leadData.businessInfo.totalSpace || '',
       custom_count_of_field_sales_force: leadData.businessInfo.salesForceCount || '',
+      //Expansion Appetite
+      // custom_maximum_margin__from_current_brands:
+      custom_maximum_margin__from_current_brands: leadCategory.value === 'distributor'
+  ? distributorForm.maxMarginRange || ''
+  : '',
+      custom_margin__range_from_current_brands: leadCategory.value === 'distributor'
+  ? distributorForm.marginRange || ''
+  : '',
+custom_distributor_annual_revenue: leadCategory.value === 'distributor'
+    ? distributorForm.annualRevenue || ''
+    : '',
+  
     }
 
     // Add categories as child doctype entries

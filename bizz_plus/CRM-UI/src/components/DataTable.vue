@@ -171,6 +171,7 @@ const getColumnClass = (key: string) => {
   const classes = [`col-${key}`]
   
   if (key === 'serialNumber') classes.push('col-narrow')
+  if (key === 'name') classes.push('col-name')
   if (key === 'action') classes.push('col-action')
   if (key === 'status') classes.push('col-status')
   if (key === 'name' && isMobile.value) classes.push('col-name-mobile')
@@ -271,7 +272,7 @@ onUnmounted(() => {
 
 .table th,
 .table td {
-  padding: 16px 20px;
+  padding: 12px 16px;
   text-align: left;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -289,12 +290,35 @@ onUnmounted(() => {
   z-index: 10;
 }
 
+.table th.col-narrow {
+  z-index: 15;
+}
+
+.table th.col-name {
+  z-index: 14;
+}
+
 .table td {
   color: #4b5563;
   font-size: 14px;
 }
 
+.table td.col-narrow {
+  background: white;
+  z-index: 5;
+}
+
+.table td.col-name {
+  background: white;
+  z-index: 4;
+}
+
 .table-row:hover {
+  background: #f9fafb;
+}
+
+.table-row:hover .col-narrow,
+.table-row:hover .col-name {
   background: #f9fafb;
 }
 
@@ -305,8 +329,22 @@ onUnmounted(() => {
 }
 
 .col-narrow {
-  width: 60px;
+  width: 92px;
   text-align: center;
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+.col-name {
+  min-width: 200px;
+  position: sticky;
+  left: 92px;
+  background: white;
+  z-index: 4;
+  box-sizing: border-box;
 }
 
 .col-action {
