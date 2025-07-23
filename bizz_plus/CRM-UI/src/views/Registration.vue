@@ -829,7 +829,7 @@
               <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
-              <option value="more">More than 5</option>
+              <option value="More than 5">More than 5</option>
               </select>
             </div>
             <div class="form-group">

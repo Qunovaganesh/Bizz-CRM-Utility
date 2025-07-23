@@ -932,7 +932,7 @@ onMounted(async () => {
 .prospect-page {
   max-width: 1200px;
   margin: 0 auto;
- 
+ background-color: white;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -947,6 +947,9 @@ onMounted(async () => {
   padding: 20px;
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+ 
+ 
 }
 
 .content-wrapper {
@@ -1663,7 +1666,7 @@ background-color: #f4e3d7;      /* Light tan background */
   }
   
   .content-wrapper {
-    margin-top: 60px;
+    margin-top: 38px;
     padding: 16px;
   }
   
@@ -1684,13 +1687,15 @@ background-color: #f4e3d7;      /* Light tan background */
   }
 
   .floating-header {
-    position: static;
-    width: 100%;
-    margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+     position: static;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 1px solid #d2d2d7;
+  padding: 20px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   }
   .floating-back-button {
     top: 10px;

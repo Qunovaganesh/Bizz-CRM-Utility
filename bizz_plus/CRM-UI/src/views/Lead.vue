@@ -163,109 +163,105 @@
           </div>
         </div>
 
-        <div class="notes-section">
-          <div class="section-header">
+  <div class="notes-section">
+          <!-- <div class="section-header">
             <h2>Add New Interaction</h2>
             <div class="section-icon">💬</div>
-          </div>
+          </div> -->
           
-          <form @submit.prevent="submitNotes" class="modern-form">
+
             
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Interaction Mode</label>
-                <select v-model="newInteraction.mode" required class="modern-select">
-                  <option value="">Select Mode</option>
-                  <option value="Phone">📞 Phone</option>
-                  <option value="Face to Face">🤝 Face to Face</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label>Reminder Date <span style="color: red;">*</span></label>
-                <input 
-                  type="date" 
-                  v-model="newInteraction.reminderDate"
-                  :min="today"
-                  class="modern-input"
-                  required
-                >
-              </div>
-
-              <div class="form-group">
-                <label>Attachments</label>
-                <input 
-                  type="file" 
-                  multiple 
-                  @change="handleFileUpload"
-                  accept=".pdf,.doc,.docx,.jpg,.png"
-                  class="modern-file-input"
-                >
-              </div>
-
-              <div class="form-group">
-                <label>Follow Up <span style="color: red;">*</span></label>
-                <select 
-                  v-model="newInteraction.assignedTo"
-                  class="modern-input"
-                  required
-                >
-                  <option value="" disabled>Select a user</option>
-                  <option 
-                    v-for="user in userOptions" 
-                    :key="user.name" 
-                    :value="user.name"
-                  >
-                    {{ user.name }}
-                  </option>
-                </select>
-              </div>
-
-              <div class="form-group full-width">
-                <label>Interaction Notes</label>
-                <textarea 
-                  v-model="newInteraction.notes" 
-                  rows="4" 
-                  placeholder="Enter detailed interaction notes..."
-                  required
-                  class="modern-textarea"
-                ></textarea>
-              </div>
-
-              <!-- <div class="form-group">
-
-              </div> -->
-
-              <!-- <div class="form-group ">
-                <label class="checkbox-label">
-                  <input 
-                    type="checkbox" 
-                    v-model="newInteraction.hasReminder"
-                    class="modern-checkbox"
-                  >
-                  <span class="checkbox-custom"></span>
-                  Add Reminder
-                </label>
-              </div> -->
-            </div>
-
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" @click="resetForm" :disabled="isSubmittingInteraction">
-                Reset
-              </button>
-              <button type="submit" class="btn-primary" :disabled="isSubmittingInteraction">
-                {{ isSubmittingInteraction ? 'Saving...' : 'Save Interaction' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      <!-- </div> -->
+            <div class="interaction-wrapper"> <!-- New wrapper div -->
+ 
+    <div class="section-header">
+      <h2>Add New Interaction</h2>
+      <div class="section-icon">💬</div>
     </div>
+    
+    <form @submit.prevent="submitNotes" class="modern-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Interaction Mode</label>
+          <select v-model="newInteraction.mode" required class="modern-select">
+            <option value="">Select Mode</option>
+            <option value="Phone">📞 Phone</option>
+            <option value="Face to Face">🤝 Face to Face</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Reminder Date <span style="color: red;">*</span></label>
+          <input 
+            type="date" 
+            v-model="newInteraction.reminderDate"
+            :min="today"
+            class="modern-input"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Attachments</label>
+          <input 
+            type="file" 
+            multiple 
+            @change="handleFileUpload"
+            accept=".pdf,.doc,.docx,.jpg,.png"
+            class="modern-file-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Follow Up <span style="color: red;">*</span></label>
+          <select 
+            v-model="newInteraction.assignedTo"
+            class="modern-input"
+            required
+          >
+            <option value="" disabled>Select a user</option>
+            <option 
+              v-for="user in userOptions" 
+              :key="user.name" 
+              :value="user.name"
+            >
+              {{ user.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Interaction Notes</label>
+          <textarea 
+            v-model="newInteraction.notes" 
+            rows="4" 
+            placeholder="Enter detailed interaction notes..."
+            required
+            class="modern-textarea"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" @click="resetForm" :disabled="isSubmittingInteraction">
+          Reset
+        </button>
+        <button type="submit" class="btn-primary" :disabled="isSubmittingInteraction">
+          {{ isSubmittingInteraction ? 'Saving...' : 'Save Interaction' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
  <div class="floating-promote-button" v-if="apiInteractions.length > 0">
       <button class="btn-floating-promote" @click="navigateToProspect">
         Promote to Prospect →
       </button>
     </div>
+           
+        </div>
+      <!-- </div> -->
+    </div>
+
     <!-- Notes Modal -->
     <div v-if="showNotesModal" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
@@ -303,7 +299,7 @@
         </div>
       </div>
     </div>
-  </div>
+  
 </template>
 
 <script setup lang="ts">
@@ -841,6 +837,7 @@ onUnmounted(() => {
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin-bottom: 50px;
+  padding: 10px;
 }
 
 .floating-header {
@@ -852,7 +849,10 @@ onUnmounted(() => {
   border-bottom: 1px solid #d2d2d7;
   padding: 20px;
   z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+ 
+ 
 }
 
 .content-wrapper {
@@ -875,7 +875,7 @@ onUnmounted(() => {
   padding: 12px 20px;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 600;
   box-shadow: 0 4px 20px rgba(28, 28, 30, 0.3);
   transition: all 0.3s ease;
@@ -895,15 +895,16 @@ onUnmounted(() => {
 }
 
 .btn-floating-promote {
-  background: #020006;
+  background: black;
   color: white;
   border: none;
   max-height: 50px;;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 500;
-  box-shadow: 0 4px 20px black;
+
+ 
   transition: all 0.3s ease;
  
     padding: 10px 16px;
@@ -1449,6 +1450,7 @@ background-color: #f4e3d7;      /* Light tan background */
   gap: 12px;
   justify-content: flex-end;
   padding-top: 20px;
+  padding: 10px;
   border-top: 1px solid #f2f2f7;
 }
 
@@ -1683,39 +1685,67 @@ background-color: #f4e3d7;      /* Light tan background */
 
 
 @media (max-width: 768px) {
-  .floating-header,
-  
-  .floating-promote-button {
-  position: static !important; /* Ensure it's not floating */
+  .floating-header
+   {
+  /* position: static !important; 
   width: 100%;
   margin: 12px 0;
-  padding: 0 8px;
+  padding: 0 8px; */
+     position: static;
+    width: 100%;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+
+    
 }
-.lead-page{
+.floating-promote-button {
   
-    padding: 16px;
+     position: static;
+    width: 100%;
+    margin-bottom: 12px;
+   
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   
+    border-radius: 5px;
+    
+    border: 1px solid #e5e7eb;
+    margin-top: 12px;
+    transition: box-shadow 0.2s ease;
+      padding: 10px 16px !important;
+  font-size: 13px !important;
+  min-height: 25px !important;
+    
+      
+}
+
+.form-group{
+  padding: 10px;
 }
 
 /* Promote button styling */
+
+    
 .btn-floating-promote {
-  width: 100%;
- 
-  padding: 14px;
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 10px;
-    background: black;
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+  min-height: 36px !important;
+  border-radius: 12px;
+  font-weight: 600;
+  background: #1c1c1e;
   color: white;
- 
-  text-align: center;
-  transition: background 0.2s ease;
-  margin-bottom: auto;
+  width: 100%;
+   border: 1px solid #d2d2d7;
 }
 
-.btn-floating-promote:hover {
-  background-color: #111827;
-}
+
+
 
    .floating-back-button {
     top: 10px;
@@ -1809,7 +1839,20 @@ background-color: #f4e3d7;      /* Light tan background */
     top: 10px;
     right: 10px;
   }
-  
+  .btn-floating-promote {
+  font-size: 13px !important;
+  padding: 8px 10px !important;
+  min-height: 36px !important;
+  border-radius: 12px;
+  font-weight: 600;
+  background: #1c1c1e;
+  color: white;
+  width: 100%;
+}
+.floating-promote-button{
+  border-radius: 10px;
+   border: 1px solid #d2d2d7;
+}
   .mobile-cards {
     display: flex;
     padding: 12px;
@@ -1869,7 +1912,7 @@ background-color: #f4e3d7;      /* Light tan background */
   }
   .btn-primary,
   .btn-secondary {
-    font-size: 12px;
+    font-size: 13px;
     padding: 8px 10px;
     min-height: 36px;
   }

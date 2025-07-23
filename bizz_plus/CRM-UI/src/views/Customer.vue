@@ -212,9 +212,14 @@
                       </div>
                     </label>
                   </div>
-                 <div v-if="selectedFile" class="uploaded-file-name mt-2 text-green-600">
+                 <!-- <div v-if="selectedFile" class="uploaded-file-name mt-2 text-green-600">
     ✅ Uploaded File: <strong>{{ selectedFile.name }}</strong>
-  </div>
+  </div> -->
+   <div v-if="selectedFile" class="selected-file">
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <button @click="selectedFile = null" class="btn-remove-file">×</button>
+            </div>
+  
                 </div>
               </div>
 
@@ -1363,6 +1368,19 @@ onUnmounted(() => {
   top: 20px;
   right: 20px;
   z-index: 1000;
+}
+.selected-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f5f7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d2d2d7;
+}
+.file-name {
+  color: #1d1d1f;
+  font-weight: 500;
 }
 
 .btn-floating-back {

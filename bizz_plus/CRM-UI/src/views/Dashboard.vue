@@ -232,6 +232,113 @@
         </div>
       </div>
 
+      <!-- filters & Payment Cards -->
+
+      <div v-if="selectedEntityItem" class="selected-entity-section">
+        <div class="selected-entity-header">
+          <div class="entity-info-card">
+
+            <!-- Vertical Toggle Buttons -->
+            <div class="vertical-entity-selection">
+              <div class="vertical-toggle-group">
+                <button 
+                  class="vertical-toggle-btn"
+                  :class="{ active: selectedToggle === 'commission' }"
+                  @click="onToggleChange('commission')"
+                >
+                  <span>Commission</span>
+                </button>
+
+                <button 
+                  class="vertical-toggle-btn"
+                  :class="{ active: selectedToggle === 'payments' }"
+                  @click="onToggleChange('payments')"
+                >
+                  <span>Payments</span>
+                </button>
+
+                <button 
+                  class="vertical-toggle-btn"
+                  :class="{ active: selectedToggle === 'invoice' }"
+                  @click="onToggleChange('invoice')"
+                >
+                  <span>Invoice</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="dropdown-wrapper">
+              <label class="label">Timeline</label>
+              <div class="dropdown" @click="toggleDropdown">
+                <span class="placeholder">{{ selected || 'Select timeline...' }}</span>
+                <span class="arrow">▾</span>
+              </div>
+
+              <div v-if="isOpen" class="dropdown-panel">
+                <input
+                  type="text"
+                  v-model="search"
+                  class="search-box"
+                  placeholder="Search options..."
+                />
+                <ul class="options">
+                  <li
+                    v-for="item in filteredOptions"
+                    :key="item"
+                    class="option"
+                    @click="selectOption(item)"
+                  >
+                    {{ item }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Mapping Stats -->
+            <div class="mapping-stats-cards-timeline">
+              
+              <div class="stats-card total">
+                <div class="stats-content">
+                  <div class="stats-number">{{ leadMapping?.total ? formatRupees(leadMapping?.total) : 0 }}</div>
+                  <div class="stats-label">Total</div>
+                </div>
+              </div>
+
+              <div class="stats-card total">
+                <div class="stats-content">
+                  <div class="stats-number">{{ leadMapping?.count ? leadMapping?.count : 0 }}</div>
+                  <div class="stats-label">Count</div>
+                </div>
+              </div>
+
+              <div class="stats-card total">
+                <div class="stats-content">
+                  <div class="stats-number">{{ leadMapping?.avg ? formatRupees(leadMapping?.avg) : 0 }}</div>
+                  <div class="stats-label">Average</div>
+                </div>
+              </div>
+
+              <div class="stats-card total">
+                <div class="stats-content">
+                  <div class="stats-number">{{ leadMapping?.last_date ? formatDate(leadMapping?.last_date) : '' }}</div>
+                  <div class="stats-label">Last Date</div>
+                </div>
+              </div>
+
+              <div class="stats-card total">
+                <div class="stats-content">
+                  <div class="stats-number">{{ leadMapping?.time_elapsed ? leadMapping?.time_elapsed : '' }}</div>
+                  <div class="stats-label">Time Elapsed</div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+        
+
       <!-- Associated Entity Filters -->
       <div class="associated-filters">
         <div class="filters-header">
@@ -405,6 +512,62 @@ import { filterOptions } from '../data/mockData'
 // Local state
 const selectedEntityItem = ref<Manufacturer | Distributor | null>(null)
 
+const selectedToggle = ref('commission')
+
+const timeFilters = [
+  'Today',
+  'Yesterday',
+  'Last 7 Days',
+  'Last 14 Days',
+  'This Month',
+  'Last Month',
+  'Last 3 Months',
+  'This Year'
+]
+
+const selected = ref('Today')
+const isOpen = ref(false)
+const search = ref('')
+
+const filteredOptions = computed(() =>
+  timeFilters.filter(option =>
+    option.toLowerCase().includes(search.value.toLowerCase())
+  )
+)
+
+function toggleDropdown() {
+  isOpen.value = !isOpen.value
+}
+
+function selectOption(option: string) {
+  selected.value = option
+  isOpen.value = false
+  search.value = ''
+
+  fetchDetails();
+}
+
+const formatDate = (dateString: any) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const formatRupees = (value: any) => {
+  const num = Number(value);
+
+  if (isNaN(num)) return value;
+
+  if (num >= 1e7) return `₹${(num / 1e7).toFixed(2)}Cr`;
+  if (num >= 1e5) return `₹${(num / 1e5).toFixed(2)}L`;
+  if (num >= 1e3) return `₹${(num / 1e3).toFixed(2)}K`;
+
+  return `₹${num}`;
+}
+
+
 // API data state
 const statesData = ref<string[]>([])
 const districtsData = ref<string[]>([])
@@ -427,6 +590,33 @@ const dynamicDistributorCount = ref(0)
 // Lead Mapping Statistics
 const leadMappingsData = ref<any[]>([])
 const isLoadingMappingStats = ref(false)
+const leadMapping = ref<any>(null);
+
+const onToggleChange = async (type: any) => {
+  selectedToggle.value = type
+
+  fetchDetails();
+}
+
+const fetchDetails= async () => {
+  const data = {
+    toggle: selectedToggle.value,
+    timeline: selected.value,
+    lead: selectedEntityItem.value?.id,
+    lead_type: selectedEntity.value,
+  }
+
+  let response = await fetch('/api/method/bizz_plus.api.api.get_lead_details', {
+    method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+  })
+
+  const result = await response.json();
+  leadMapping.value = result.message;
+}
 
 // API functions
 const fetchStates = async () => {
@@ -1319,6 +1509,8 @@ onMounted(() => {
   
   // Fetch initial lead counts from API
   fetchInitialCounts()
+
+  fetchDetails();
   
   // Don't fetch mapping stats on mount since no entity is selected
   // Stats will be fetched when entity is selected
@@ -1395,6 +1587,9 @@ const fetchLeadMappings = async (parentLeadId: string) => {
 
 // New API function to fetch associated leads (distributors for manufacturer and vice versa)
 const fetchAssociatedLeads = async () => {
+
+  fetchDetails();
+
   if (isLoadingAssociatedLeads.value || !selectedEntityItem.value) return
   
   isLoadingAssociatedLeads.value = true
@@ -1486,6 +1681,132 @@ watch(selectedEntityItem, (newItem, oldItem) => {
 </script>
 
 <style scoped>
+
+dropdown-wrapper {
+  width: 280px;
+  position: relative;
+  font-family: Inter, sans-serif;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: #1c1c1e;
+}
+
+.dropdown {
+  background: #fff;
+  border: 1px solid #dcdce0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.dropdown:hover {
+  border-color: #bdbdc1;
+}
+
+.placeholder {
+  color: #6c6c6f;
+}
+
+.arrow {
+  font-size: 14px;
+}
+
+.dropdown-panel {
+  background: #fff;
+  border: 1px solid #dcdce0;
+  border-radius: 8px;
+  margin-top: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-box {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 1px solid #dcdce0;
+  outline: none;
+  font-size: 14px;
+}
+
+.options {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.option:hover {
+  background: #1c1c1e;
+  color: white;
+}
+
+
+.vertical-entity-selection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vertical-toggle-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 220px; /* Adjust width as needed */
+}
+
+.vertical-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.vertical-toggle-btn:hover {
+  background-color: #eee;
+}
+
+.vertical-toggle-btn.active {
+  background-color: #1c1c1e;
+  color: #fff;
+  border-color: #1c1c1e;
+}
+
+.vertical-icon {
+  margin-right: 8px;
+}
+
+.vertical-count {
+  font-weight: bold;
+}
+
+
 .dashboard {
   padding: 24px;
   max-width: 1400px;
@@ -1879,6 +2200,21 @@ watch(selectedEntityItem, (newItem, oldItem) => {
   gap: 12px;
   margin-left: auto;
   margin-right: 16px;
+}
+
+.mapping-stats-cards-timeline {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+@media (max-width: 768px) {
+  .mapping-stats-cards-timeline {
+    grid-template-columns: repeat(2, 1fr);
+    margin: 0 8px;
+  }
 }
 
 .stats-card {
