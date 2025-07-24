@@ -826,6 +826,11 @@ const fetchLeadMapping = async () => {
     if (props.parentId) {
       filters.parent_lead = props.parentId;
     }
+
+    if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+      filters.parent_lead = props.id;
+      filters.mapped_lead = props.parentId;
+    }
     
     if (Object.keys(filters).length > 0) {
       // First get the Lead Mapping to find the ID

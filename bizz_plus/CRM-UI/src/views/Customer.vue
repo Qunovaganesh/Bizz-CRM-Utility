@@ -108,6 +108,15 @@
                       class="modern-input readonly"
                     >
                   </div>
+
+                  <div class="form-group">
+                    <label>Invoice Date</label>
+                    <input 
+                      type="date" 
+                      v-model="newDocument.invoice_date" 
+                      class="modern-input"
+                    >
+                  </div>
                 </template>
 
                 <!-- Payment Fields -->
@@ -575,6 +584,7 @@ const newDocument = ref<any>({
   amount: 0,
   commission_percent: 0,
   commission_amount: 0,
+  invoice_date: new Date().toISOString().split('T')[0],
   
   // Payment specific fields
   payment_reference_number: '',
@@ -938,6 +948,7 @@ const uploadDocument = async () => {
       newDocumentEntry.amount = newDocument.value.amount;
       newDocumentEntry.commission_percent = newDocument.value.commission_percent || 0;
       newDocumentEntry.commission_amount = newDocument.value.commission_amount || 0;
+      newDocumentEntry.invoice_date = newDocument.value.invoice_date || new Date().toISOString().split('T')[0];
       newDocumentEntry.remarks = newDocument.value.remarks || '';
     } else {
       newDocumentEntry.payment_reference_number = newDocument.value.payment_reference_number;
@@ -1015,6 +1026,7 @@ const resetForm = () => {
     parent: currentLeadMapping.value?.name || null,
     parenttype: 'Lead Mapping',
     invoice_number: '',
+    invoice_date: new Date().toISOString().split('T')[0],
     amount: 0,
     commission_percent: 0,
     commission_amount: 0,
@@ -1046,6 +1058,11 @@ const fetchLeadMapping = async () => {
     
     if (props.parentId) {
       filters.parent_lead = props.parentId;
+    }
+
+    if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+      filters.parent_lead = props.id;
+      filters.mapped_lead = props.parentId;
     }
     
     if (Object.keys(filters).length > 0) {
@@ -1339,7 +1356,7 @@ onUnmounted(() => {
 
 <style scoped>
 .customer-page {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   background: #f5f5f7;
   min-height: 100vh;
@@ -2174,6 +2191,7 @@ background-color: #f4e3d7;      /* Light tan background */
   overflow: hidden;
   border-radius: 12px;
   border: 1px solid #f2f2f7;
+  width: 100%;
 }
 
 .table-row:hover {
@@ -2470,6 +2488,7 @@ background-color: #f4e3d7;      /* Light tan background */
 
 .history-content {
   min-height: 400px;
+  
 }
 
 .status-completed {

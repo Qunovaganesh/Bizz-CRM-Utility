@@ -857,7 +857,12 @@ const fetchLeadMappingStats = async () => {
     }
     
     const parentLeadId = selectedEntityItem.value.id
-    const response = await fetch(`/api/resource/Lead%20Mapping?limit_page_length=1000&fields=["name","status","parent_lead"]&filters={"parent_lead":"${parentLeadId}"}`)
+    let response;
+    if (selectedEntity.value == "manufacturer") {
+      response = await fetch(`/api/resource/Lead%20Mapping?limit_page_length=1000&fields=["name","status","parent_lead"]&filters={"parent_lead":"${parentLeadId}"}`)
+    } else {
+      response = await fetch(`/api/resource/Lead%20Mapping?limit_page_length=1000&fields=["name","status","parent_lead"]&filters={"mapped_lead":"${parentLeadId}"}`)
+    }
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
@@ -1562,7 +1567,14 @@ watch(() => filters.district, (newDistricts) => {
 // Function to fetch all Lead Mappings for a parent lead
 const fetchLeadMappings = async (parentLeadId: string) => {
   try {
-    const url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"parent_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
+
+    let url;
+    if (selectedEntity.value == "manufacturer") {
+      url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"parent_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
+    } else {
+      url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"mapped_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
+    }
+
     const response = await fetch(url)
     const data = await response.json()
     
@@ -1572,8 +1584,10 @@ const fetchLeadMappings = async (parentLeadId: string) => {
       // Create a mapping object: { mappedLeadId: status }
       const mappingStatus: Record<string, string> = {}
       data.data.forEach((mapping: any) => {
-        if (mapping.mapped_lead) {
+        if (mapping.mapped_lead && selectedEntity.value == "manufacturer") {
           mappingStatus[mapping.mapped_lead] = mapping.status
+        } else {
+          mappingStatus[mapping.parent_lead] = mapping.status
         }
       })
       return mappingStatus

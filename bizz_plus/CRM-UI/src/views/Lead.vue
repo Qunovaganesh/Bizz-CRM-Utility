@@ -336,7 +336,7 @@ const newInteraction = ref({
   mode: '' as 'Phone' | 'Face to Face' | '',
   notes: '',
   hasReminder: false,
-  reminderDate: '',
+  reminderDate: new Date().toISOString().split('T')[0],
   attachments: [] as string[],
   assignedTo: ''
 });
@@ -477,6 +477,11 @@ const fetchInteractions = async () => {
     if (props.parentId) {
       filters.parent_lead = props.parentId;
     }
+
+    if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+      filters.parent_lead = props.id;
+      filters.mapped_lead = props.parentId;
+    }
     
     if (Object.keys(filters).length > 0) {
       url += `&filters=${encodeURIComponent(JSON.stringify(filters))}`;
@@ -517,6 +522,11 @@ const fetchLeadMapping = async () => {
     if (props.parentId) {
       filters.parent_lead = props.parentId;
     }
+
+    if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+      filters.parent_lead = props.id;
+      filters.mapped_lead = props.parentId;
+    }
     
     if (Object.keys(filters).length > 0) {
       const url = `/api/resource/Lead Mapping?fields=["name","parent_lead","mapped_lead","status","last_status_change"]&filters=${encodeURIComponent(JSON.stringify(filters))}`;
@@ -556,10 +566,18 @@ const updateLeadMapping = async (status: string) => {
   
   const formatted = formatDateTime(new Date());
 
+  let parent: any = props.parentId;
+  let mapped: any = props.id;
+
+  if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+    parent = props.id;
+    mapped = props.parentId;
+  }
+
   try {
     const mappingData = {
-      parent_lead: props.parentId || null,
-      mapped_lead: props.id,
+      parent_lead: parent,
+      mapped_lead: mapped,
       status: status,
       last_status_change: new Date().toISOString().split('T')[0],
       lead_owner: data.message,
@@ -567,26 +585,14 @@ const updateLeadMapping = async (status: string) => {
     };
     
     let response;
-    
-    if (currentLeadMapping.value) {
-      // Update existing mapping
-      response = await fetch(`/api/resource/Lead Mapping/${currentLeadMapping.value.name}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(mappingData)
-      });
-    } else {
-      // Create new mapping
-      response = await fetch('/api/resource/Lead Mapping', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(mappingData)
-      });
-    }
+
+    response = await fetch(`/api/resource/Lead Mapping/${currentLeadMapping.value.name}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(mappingData)
+    });
     
     if (response.ok) {
       const result = await response.json();
@@ -694,14 +700,22 @@ const submitNotes = async () => {
 
   const res = await fetch('/api/method/frappe.auth.get_logged_user')
   const data = await res.json();
+
+  let parent: any = props.parentId;
+  let mapped: any = props.id;
+
+  if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+    parent = props.id;
+    mapped = props.parentId;
+  }
   
   try {
     const interactionData = {
       interaction_mode: newInteraction.value.mode,
       interaction_notes: newInteraction.value.notes,
       reminder_date: newInteraction.value.reminderDate,
-      parent_lead: props.parentId || null,
-      mapped_lead: props.id,
+      parent_lead: parent,
+      mapped_lead: mapped,
       lead_owner: data.message,
       assigned_to: newInteraction.value.assignedTo
     };
@@ -836,8 +850,8 @@ onUnmounted(() => {
   background: #f5f5f7;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  margin-bottom: 50px;
-  padding: 10px;
+  margin-bottom: 10px;
+  padding: 24px;
 }
 
 .floating-header {
@@ -1115,10 +1129,14 @@ background-color: #f4e3d7;      /* Light tan background */
 }
 
 .section-header h2 {
-  color: #1d1d1f;
+  /* color: #1d1d1f;
   font-size: 20px;
   font-weight: 600;
-  margin: 0;
+  margin: 0; */
+   margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d1d1f;
 }
 
 .section-icon {
@@ -1729,6 +1747,10 @@ background-color: #f4e3d7;      /* Light tan background */
   padding: 10px;
 }
 
+.lead-page{
+   padding: 10px;
+  
+}
 /* Promote button styling */
 
     
@@ -1769,14 +1791,29 @@ background-color: #f4e3d7;      /* Light tan background */
     margin-top: 25px;
   }
   .section-header {
-    flex-direction: column;
+    /* flex-direction: column;
     align-items: flex-start;
     gap: 8px;
     padding-bottom: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 12px; */
   
+      /* flex-direction: column;
+    gap: 12px;
+    align-items: flex-start; */
+      display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d2d2d7;
   }
-   .relationship-info {
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin: 0;
+  }
+  .relationship-info {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
@@ -1858,6 +1895,11 @@ background-color: #f4e3d7;      /* Light tan background */
     padding: 12px;
     gap: 12px;
   }
+  .lead-page{
+   
+    padding: 5px;
+  
+  }
   
   .mobile-card {
     padding: 12px;
@@ -1897,8 +1939,9 @@ background-color: #f4e3d7;      /* Light tan background */
     border-radius: 6px;
   }
   .section-header h2 {
-    font-size: 15px;
+    font-size: 18px;
   }
+   
   .modern-table th,
   .modern-table td {
     padding: 6px 4px;

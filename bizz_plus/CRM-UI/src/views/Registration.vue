@@ -303,14 +303,15 @@
               <label>Exporting?</label>
               <select v-model="manufacturerForm.exporting" class="form-select">
                 <option value="">Select Yes or No</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
               </select>
             </div>
             <div class="form-group">
               <label>Catalogue</label>
               <input 
                 type="file" 
+
                 @change="handleFileUpload"
                 class="form-file"
                 accept=".pdf,.doc,.docx"
@@ -1482,7 +1483,7 @@ const submitForm = async () => {
       custom_lead_category: leadCategory.value == 'manufacturer' ? 'Manufacturer Lead': 'SS / Distributor Lead',
       custom_salutations: leadData.contactInfo.custom_salutations,
       job_title: leadData.contactInfo.designation,
-      phone: leadData.contactInfo.phone2,
+      custom_pan_number: leadData.contactInfo.phone2,
       first_name: leadData.contactInfo.name,
       mobile_no: leadData.contactInfo.mobile,
       email_id: leadData.contactInfo.email,
@@ -1504,6 +1505,8 @@ const submitForm = async () => {
 
       // Presense
       custom_no_of_current_distributors: leadCategory.value === 'manufacturer' ? manufacturerForm.currentDistributors : '',
+      custom_exporting: leadCategory.value === 'manufacturer' ? manufacturerForm.exporting : '',
+      
    
 
       // Financial Stance
@@ -1531,6 +1534,7 @@ custom_maximum_investment_capacity: leadCategory.value === 'manufacturer' ? manu
 custom_credit_period_required: leadCategory.value === 'manufacturer' ? manufacturerForm.creditPeriodRequired : distributorForm.creditPeriodRequired,
 
 custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : distributorForm.salesSupport || '',
+custom_mfg_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : '',
 
 
 
