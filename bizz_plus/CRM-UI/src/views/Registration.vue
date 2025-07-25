@@ -1,8 +1,8 @@
 <template>
   <div class="registration-page">
     <div class="page-header">
-      <h1>New Lead Registration</h1>
-      <p>Register a new lead in the system</p>
+      <h1>{{ props.lead ? "Update Lead" : "New Lead Registration" }}</h1>
+      <p>{{ props.lead ? "Update the lead in the system" : "Register a new lead in the system" }}</p>
     </div>
 
     <!-- Lead Category Toggle -->
@@ -472,8 +472,37 @@
             </div>
           </div>
         </div>
+ 
+            <div class="section-card">
+
+  <div class="form-grid two-cols">
+    <!-- Status Dropdown -->
+    <div class="form-group" v-if="leadCategory === 'manufacturer'">
+      <label>Status *</label>
+      <select v-model="manufacturerForm.status" class="form-select" required>
+        <option value="">Select Status</option>
+        <option value="Open">Open</option>
+        <option value="Replied">Replied</option>
+        <option value="Opportunity">Opportunity</option>
+        <option value="Verified">Verified</option>
+      </select>
+    </div>
+
+    <!-- File Upload -->
+    <div class="form-group">
+      <label>Upload Agreement</label>
+      <input 
+        type="file"
+        class="form-file"
+        accept=".pdf,.doc,.docx"
+        @change="handleAgreementUpload"
+      />
+    </div>
+  </div>
+</div>
 
       </div>
+      
 
       <!-- Super Stockist / Distributor Form -->
       <div v-else class="form-section distributor-form">
@@ -958,8 +987,40 @@
 </div>
           </div>
         </div>
+        <div class="section-card">
+
+  <div class="form-grid two-cols">
+    
+    <!-- Status Dropdown -->
+    <div class="form-group">
+      <label>Status *</label>
+       <select v-model="distributorForm.status" class="form-select" required>
+        <option value="">Select Status</option>
+        <option value="Open">Open</option>
+        <option value="Replied">Replied</option>
+        <option value="Opportunity">Opportunity</option>
+        <option value="Verified">Verified</option>
+      </select>
+    </div>
+
+    <!-- Agreement Upload -->
+    <div class="form-group" v-if="distributorForm.status == 'Verified'">
+      <label>Agreement *</label>
+      <input 
+        type="file"
+        class="form-file"
+        accept=".pdf,.doc,.docx"
+        @change="handleDistributorAgreementUpload"
+        required
+      />
+    </div>
+
+  </div>
+</div>
 
       </div>
+      
+
 
       <!-- Form Actions -->
       <div class="form-actions">
@@ -970,7 +1031,7 @@
           Reset Form
         </button>
         <button type="submit" class="btn-primary" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Saving...' : 'Register' }}
+          {{ props.lead ? "Update" : "Register" }}
         </button>
       </div>
 
@@ -1018,6 +1079,10 @@ const leadCategory = ref<'manufacturer' | 'super-stockist' | 'distributor'>('man
 const isSubmitting = ref(false)
 const isLoadingLocation = ref(false)
 const isLocationAutoFilled = ref(false)
+
+const props = defineProps<{
+  lead: string;
+}>();
 
 // Categories state
 const categories = ref<string[]>([])
@@ -1087,6 +1152,8 @@ const manufacturerForm = reactive({
   investmentCapacityMin: '',
   investmentCapacityMax: '',
   creditPeriodRequired: '',
+   agreement: null as File | null,
+   status: '',
 })
 
 // Distributor/Super Stockist form
@@ -1102,6 +1169,8 @@ const distributorForm = reactive({
   leadOwner: '',
   lastName: '',
   // status: '',
+   status: '', // ✅ New field
+  agreement: null as File | null,
  gstNumber:'',
   type: '',
   staffStrength: '',
@@ -1133,6 +1202,26 @@ const distributorForm = reactive({
   creditPeriodRequired: '',
   salesSupport :''
 })
+const handleAgreementUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] || null
+
+  if (file) {
+    manufacturerForm.agreement = file  // ✅ Only set for manufacturer
+    console.log('Manufacturer Agreement selected:', file.name)
+  }
+}
+const handleDistributorAgreementUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] || null
+
+  if (file) {
+    distributorForm.agreement = file
+    console.log('Distributor Agreement selected:', file.name)
+  }
+}
+
+
 
 // Computed properties for dependent dropdowns
 const availableManufacturerSubCategories = computed(() => {
@@ -1372,346 +1461,556 @@ const validateForm = (): { isValid: boolean; errors: string[] } => {
 
 // Submit form
 const submitForm = async () => {
-  isSubmitting.value = true
-  
-  try {
-    // Validate required fields
-    const { isValid, errors } = validateForm()
-    if (!isValid) {
-      showError(`Please fix the following errors:\n\n${errors.map(err => `• ${err}`).join('\n')}`, 'Validation Error')
-      return
-    }
+  let mappingData = {};
+  if (props.lead) {
+    if (leadCategory.value == "distributor") {
+      mappingData = {
+        salutation: distributorForm.custom_salutations,
+        job_title: distributorForm.designation,
+        phone: distributorForm.phone2,
+        custom_distributor_company_name: distributorForm.name,
+        mobile_no: distributorForm.mobile,
+        email_id: distributorForm.email,
+        middle_name: distributorForm.middleName,
+        source: distributorForm.source,
+        lead_owner: distributorForm.leadOwner,
+        last_name: distributorForm.lastName,
+        custom_new_status: distributorForm.status,
+        custom_gst: distributorForm.gstNumber,
+        custom_super_stockiest_or_distributor: distributorForm.type == "distributor" ? "Distributor" : "Super Stockist",
+        custom_staff_strength_copy: distributorForm.staffStrength,
+        website: distributorForm.website,
+        custom_no_of_brands_dealing_with_currently: distributorForm.brandsCount,
+        custom_manufacturer_states: distributorForm.manufacturerStates,
+        custom_which_accounting_system_you_are_using: distributorForm.accountingSystem,
+        custom_ready_to_bear_logistics: distributorForm.logisticsWillingness,
+        custom_which_app_you_are_using_for_sfa: distributorForm.sfaApp,
+        custom_no_of_warehouses_you_have: distributorForm.warehouseCount,
+        custom_which_app_you_are_using_for_dms: distributorForm.dmsApp,
+        custom_total_space_in_sq_ft: distributorForm.totalSpace,
+        custom_which_warehouse_management_system_you_are_using_: distributorForm.warehouseManagementSystem,
+        custom_count_of_field_sales_force: distributorForm.salesForceCount,
+        custom_do_you_have_your_own_sales_force: distributorForm.ownSalesForce,
+        custom_interested_in_dealing_in_how_many_new_brands: distributorForm.newBrandsInterest,
+        custom_distributor_annual_revenue: distributorForm.annualRevenue,
+        custom_margin__range_from_current_brands: distributorForm.marginRange,
+        custom_maximum_margin__from_current_brands: distributorForm.maxMarginRange,
+        custom_investment_capacity_min: distributorForm.investmentCapacityMin,
+        custom_maximum_investment_capacity: distributorForm.investmentCapacityMax,
+        custom_credit_period_required: distributorForm.creditPeriodRequired,
+        custom_sales_support_provided: distributorForm.salesSupport,
 
-    // Prepare lead data for API
-    const leadData: LeadData = {
-      leadCategory: leadCategory.value,
-      contactInfo: {
-        custom_salutations: leadCategory.value === 'manufacturer' ? manufacturerForm.custom_salutations : distributorForm.custom_salutations,
-        name: leadCategory.value === 'manufacturer' ? manufacturerForm.name : distributorForm.name,
-        designation: leadCategory.value === 'manufacturer' ? manufacturerForm.designation : distributorForm.designation,
-        mobile: leadCategory.value === 'manufacturer' ? manufacturerForm.mobile : distributorForm.mobile,
-        email: leadCategory.value === 'manufacturer' ? manufacturerForm.email : distributorForm.email,
-        phone2: leadCategory.value === 'manufacturer' ? manufacturerForm.phone2 : distributorForm.phone2,
-        ...(leadCategory.value !== 'manufacturer' && {
-          middleName: distributorForm.middleName,
-          lastName: distributorForm.lastName,
-        }),
-      },
-      companyInfo: {
-        companyName: leadCategory.value === 'manufacturer' ? manufacturerForm.companyName : distributorForm.companyName,
-        staffStrength: leadCategory.value === 'manufacturer' ? manufacturerForm.staffStrength : distributorForm.staffStrength,
-        ...(leadCategory.value !== 'manufacturer' && {
-          website: distributorForm.website,
-          type: distributorForm.type,
-          // status: distributorForm.status,
-          source: distributorForm.source,
-          leadOwner: distributorForm.leadOwner,
-        }),
-      },
-      address: {
-        streetAddress: addressForm.streetAddress,
-        pincode: addressForm.pincode,
-        city: addressForm.city,
-        district: addressForm.district,
-        state: addressForm.state,
-      },
-      businessInfo: {
-        categories: leadCategory.value === 'manufacturer' ? manufacturerForm.categories : distributorForm.categories,
-        subCategories: leadCategory.value === 'manufacturer' ? manufacturerForm.subCategories : distributorForm.subCategories,
-        
-
-        
-        ...(leadCategory.value === 'manufacturer' ? {
-          // Manufacturer specific fields
-          brandNames: [manufacturerForm.brandName1, manufacturerForm.brandName2, manufacturerForm.brandName3].filter(Boolean),
-          exporting: manufacturerForm.exporting,
-          currentDistributors: manufacturerForm.currentDistributors,
-          presenceStates: manufacturerForm.presenceStates,
-          presenceDistricts: manufacturerForm.presenceDistricts,
-          annualRevenue: manufacturerForm.annualRevenue,
-          listed: manufacturerForm.listed,
-          distributorsNeeded: manufacturerForm.distributorsNeeded,
-          distributorNeededStates: manufacturerForm.distributorNeededStates,
-          distributorNeededDistricts: manufacturerForm.distributorNeededDistricts,
-          minimumOrderValue: manufacturerForm.minimumOrderValue,
-          distributorMargin: manufacturerForm.distributorMargin,
-          logistics: manufacturerForm.logistics,
-          marginRange: manufacturerForm.marginRange,
-          maxMarginRange: manufacturerForm.maxMarginRange,
-          investmentCapacityMin: distributorForm.investmentCapacityMin,
-          investmentCapacityMax: distributorForm.investmentCapacityMax,
-          creditPeriodRequired: distributorForm.creditPeriodRequired,
-          warehouseSpace: manufacturerForm.warehouseSpace,
-          inspirational: manufacturerForm.inspirational,
-           salesSupport: manufacturerForm.salesSupport, 
-           maxMarginCurrentBrands: distributorForm.maxMarginRange || '',
-           minMarginRange: distributorForm.marginRange || '',
-           
-           
-            
-        } : {
-          // Distributor specific fields
-          brandsCount: distributorForm.brandsCount,
-          manufacturerStates: distributorForm.manufacturerStates,
-          manufacturerDistricts: distributorForm.manufacturerDistricts,
-          accountingSystem: distributorForm.accountingSystem,
-          logisticsWillingness: distributorForm.logisticsWillingness,
-          sfaApp: distributorForm.sfaApp,
-          warehouseCount: distributorForm.warehouseCount,
-          dmsApp: distributorForm.dmsApp,
-          totalSpace: distributorForm.totalSpace,
-          warehouseManagementSystem: distributorForm.warehouseManagementSystem,
-          salesForceCount: distributorForm.salesForceCount,
-          ownSalesForce: distributorForm.ownSalesForce,
-          categoriesInterested: distributorForm.categoriesInterested,
-          needManufacturerStates: distributorForm.needManufacturerStates,
-          needManufacturerDistricts: distributorForm.needManufacturerDistricts,
-          newBrandsInterest: distributorForm.newBrandsInterest,
-           investmentCapacityMin: distributorForm.investmentCapacityMin, 
-        investmentCapacityMax: distributorForm.investmentCapacityMax,
-        creditPeriodRequired: distributorForm.creditPeriodRequired  
-        }),
-      },
-    }
-
-    const erpLeadObj: any = {
-      // =======
-      // Manufacturer
-      // =======
-
-      // Contact Details
-      custom_lead_category: leadCategory.value == 'manufacturer' ? 'Manufacturer Lead': 'SS / Distributor Lead',
-      custom_salutations: leadData.contactInfo.custom_salutations,
-      job_title: leadData.contactInfo.designation,
-      custom_pan_number: leadData.contactInfo.phone2,
-      first_name: leadData.contactInfo.name,
-      mobile_no: leadData.contactInfo.mobile,
-      email_id: leadData.contactInfo.email,
-
-      // Company profile
-      company_name: leadData.companyInfo.companyName,
-      no_of_employees: leadData.companyInfo.staffStrength,
-      custom_brand_name: leadCategory.value === 'manufacturer' ? manufacturerForm.companyName : distributorForm.companyName,
-      custom_brand_name_2: leadCategory.value === 'manufacturer' ? manufacturerForm.brandName2 : '',
-      custom_brand_name_3: leadCategory.value === 'manufacturer' ? manufacturerForm.brandName3 : '',
-      custom_inspirational: leadCategory.value === 'manufacturer' ? manufacturerForm.inspirational : '',
-
-      // Address
-      custom_address: leadData.address.streetAddress,
-      custom_pincode: leadData.address.pincode,
-      city: leadData.address.city,
-      custom_districts: leadData.address.district,
-      custom_states: leadData.address.state,
-
-      // Presense
-      custom_no_of_current_distributors: leadCategory.value === 'manufacturer' ? manufacturerForm.currentDistributors : '',
-      custom_exporting: leadCategory.value === 'manufacturer' ? manufacturerForm.exporting : '',
-      
-   
-
-      // Financial Stance
-      annual_revenue: leadCategory.value === 'manufacturer' ? manufacturerForm.annualRevenue : distributorForm.annualRevenue,
-      custom_listed: leadCategory.value === 'manufacturer' ? manufacturerForm.listed : '',
-
-      // Expansion Appetite
-       custom_no_of_distributors_needed: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorsNeeded : '',
-
-      // Desired Distributor Profile
-      custom_minimum_order_value: leadCategory.value === 'manufacturer' ? manufacturerForm.minimumOrderValue : '',
-      custom_logistics: leadCategory.value === 'manufacturer' ? manufacturerForm.logistics : '',
-      custom_warehouse_needs: leadCategory.value === 'manufacturer' ? manufacturerForm.warehouseSpace : '',
-      custom_margin_for_the_distributor: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorMargin : '',
-      custom_margin_range: leadCategory.value === 'manufacturer' ? manufacturerForm.marginRange : '',
-     custom_max_margin_range_: leadCategory.value === 'manufacturer' ? manufacturerForm.maxMarginRange : '',
-      // custom_investment_capacity_min: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMin : '',
-      // custom_maximum_investment_capacity: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMax : '',
-      // custom_credit_period_required: leadCategory.value !== 'manufacturer' ? distributorForm.creditPeriodRequired : '',
-      // custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : '',
-      custom_investment_capacity_min: leadCategory.value === 'manufacturer' ? manufacturerForm.investmentCapacityMin  : distributorForm.investmentCapacityMin,
-
-custom_maximum_investment_capacity: leadCategory.value === 'manufacturer' ? manufacturerForm.investmentCapacityMax : distributorForm.investmentCapacityMax,
-
-custom_credit_period_required: leadCategory.value === 'manufacturer' ? manufacturerForm.creditPeriodRequired : distributorForm.creditPeriodRequired,
-
-custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : distributorForm.salesSupport || '',
-custom_mfg_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : '',
-
-
-
-      
-      // =======
-      // Distributor
-      // =======
-
-      // Contact Info
-      middle_name: leadData.contactInfo.middleName || '',
-      last_name: leadData.contactInfo.lastName || '',
-      source: distributorForm.source || '',
-
-      // Company Profile 
-      custom_super_stockiest_or_distributor: leadCategory.value === 'super-stockist' ? 'Super Stockist' : leadCategory.value === 'distributor' ? 'Distributor' : '',
-      custom_staff_strength_copy: leadData.companyInfo.staffStrength,
-      custom_distributor_company_name: leadData.companyInfo.companyName,
-      custom_no_of_brands_dealing_with_currently: distributorForm.brandsCount,
-      website: leadData.companyInfo.website || '',
-       custom_gst: distributorForm.gstNumber || '',
-      
-      // ignoring manufacturerStates, category, district for distributor
-
-      // Operational Information
-      custom_which_accounting_system_you_are_using: leadData.businessInfo.accountingSystem || '',
-      custom_which_app_you_are_using_for_sfa: leadData.businessInfo.sfaApp || '',
-      custom_which_app_you_are_using_for_dms: leadData.businessInfo.dmsApp || '',
-      custom_which_warehouse_management_system_you_are_using_: leadData.businessInfo.warehouseManagementSystem || '',
-      custom_do_you_have_your_own_sales_force: leadData.businessInfo.ownSalesForce || '',
-      custom_ready_to_bear_logistics: leadData.businessInfo.logisticsWillingness || '',
-      custom_no_of_warehouses_you_have: leadData.businessInfo.warehouseCount || '',
-      custom_total_space_in_sq_ft: leadData.businessInfo.totalSpace || '',
-      custom_count_of_field_sales_force: leadData.businessInfo.salesForceCount || '',
-      //Expansion Appetite
-      // custom_maximum_margin__from_current_brands:
-      custom_maximum_margin__from_current_brands: leadCategory.value === 'distributor'
-  ? distributorForm.maxMarginRange || ''
-  : '',
-      custom_margin__range_from_current_brands: leadCategory.value === 'distributor'
-  ? distributorForm.marginRange || ''
-  : '',
-custom_distributor_annual_revenue: leadCategory.value === 'distributor'
-    ? distributorForm.annualRevenue || ''
-    : '',
-  
-    }
-
-    // Add categories as child doctype entries
-    const selectedCategories = leadCategory.value === 'manufacturer' ? manufacturerForm.categories : distributorForm.categories;
-    if (selectedCategories && selectedCategories.length > 0) {
-      erpLeadObj.custom_category_presence = selectedCategories.map((category, index) => ({
-        docstatus: 0,
-        doctype: "Lead Category Presence",
-        // owner: "Administrator",
-        // parent: "", // Will be set to the Lead name after creation
-        parentfield: "custom_category_presence",
-        parenttype: "Lead",
-        idx: index + 1,
-        category: category,
-        __islocal: 1,
-        __unsaved: 1,
-        __unedited: false
-      }));
-    }
-
-    console.log('Submitting lead data:', leadData)
-    // Send ERP Lead Object to Frappe backend
-    try {
-      const response = await fetch('/api/resource/Lead', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Frappe-CSRF-Token': (window as any).frappe?.csrf_token || ''
-      },
-      body: JSON.stringify(erpLeadObj)
-      })
-      const data = await response.json()
-      console.info('ERP Lead API response:', data)
-      
-      // Check for successful response
-      if (data && data.data && !data.exc) {
-        router.push('/dashboard')
-        return
+        // Address Form
+        custom_dist_address: addressForm.streetAddress,
+        custom_dist_pincode: addressForm.pincode,
+        custom_dist_city: addressForm.city,
+        custom_dist_district0: addressForm.district,
+        custom_dist_state: addressForm.state,
       }
-      
-      // Handle specific errors
-      if (response.status === 417 && data.exc_type === 'UniqueValidationError') {
-        // Check if it's a duplicate title/name error
-        if (data.exception && data.exception.includes("Duplicate entry") && data.exception.includes("for key 'title'")) {
-          showError('Name or Company Name already exists', 'Duplicate Entry')
-          return
-        }
-      }
-      
-      // Handle other errors
-      if (data.exc || data.exception) {
-        const errorMessage = data._server_messages ? 
-          JSON.parse(data._server_messages)[0]?.message || 'An error occurred' : 
-          'An error occurred while saving the lead'
-        showError(errorMessage, 'Save Error')
-        return
-      }
-      
-    } catch (err) {
-      console.error('Error posting ERP Lead:', err)
-      showError('Network error occurred. Please check your connection and try again.', 'Network Error')
-      return
-    }
-
-    return
-    // Make API call to save lead
-    const response = await apiService.saveLead(leadData)
-
-    if (response.success) {
-      // Success - show success message and redirect
-      showSuccess(`${leadCategory.value === 'manufacturer' ? 'Manufacturer' : 'Distributor'} lead saved successfully!`, 'Success')
-      .then(() => {
-        // Reset form and redirect after user clicks OK
-        resetForm()
-        router.push('/dashboard')
-      })
-      
-
-      
-      // Optionally update local state for immediate UI updates
-      if (leadCategory.value === 'manufacturer') {
-        const newManufacturer = {
-          id: response.data?.id || `M${Date.now()}`,
-          name: manufacturerForm.companyName || manufacturerForm.name,
-          city: addressForm.city,
-          district: addressForm.district,
-          state: addressForm.state,
-          category: manufacturerForm.categories[0] || 'General',
-          subCategory: manufacturerForm.subCategories[0] || 'General',
-          status: 'Registration' as const,
-          registrationDate: new Date().toISOString(),
-          daysSinceStatus: 0,
-        }
-        manufacturers.value.push(newManufacturer)
-      } else {
-        const newDistributor = {
-          id: response.data?.id || `D${Date.now()}`,
-          name: distributorForm.companyName || distributorForm.name,
-          city: addressForm.city,
-          district: addressForm.district,
-          state: addressForm.state,
-          category: distributorForm.categories[0] || 'General',
-          subCategory: distributorForm.subCategories[0] || 'General',
-          status: 'Registration' as const,
-          registrationDate: new Date().toISOString(),
-          daysSinceStatus: 0,
-        }
-        distributors.value.push(newDistributor)
-      }
-      
-      // Reset form and redirect
-      resetForm()
-      router.push('/dashboard')
-      
     } else {
-      // Error - show error message
-      const errorMessage = response.message || 'Failed to save lead'
-      const errors = response.errors?.join(', ') || ''
-      showError(`Error: ${errorMessage}${errors ? `\nDetails: ${errors}` : ''}`)
-      console.error('API Error:', response)
+      mappingData = {
+        salutation: manufacturerForm.custom_salutations,
+        job_title: manufacturerForm.designation,
+        phone: manufacturerForm.phone2,
+        company_name: manufacturerForm.name,
+        mobile_no: manufacturerForm.mobile,
+        email_id: manufacturerForm.email,
+        no_of_employees: manufacturerForm.staffStrength,
+        custom_brand_name: manufacturerForm.brandName1,
+        custom_inspirational: manufacturerForm.inspirational,
+        custom_brand_name_2: manufacturerForm.brandName2,
+        custom_brand_name_3: manufacturerForm.brandName3,
+        custom_exporting: manufacturerForm.exporting,
+        custom_no_of_current_distributors: manufacturerForm.currentDistributors,
+        annual_revenue: manufacturerForm.annualRevenue,
+        custom_listed: manufacturerForm.listed,
+        custom_no_of_distributors_needed: manufacturerForm.distributorsNeeded,
+        custom_minimum_order_value: manufacturerForm.minimumOrderValue,
+        custom_margin_for_the_distributor: manufacturerForm.distributorMargin,
+        custom_logistics: manufacturerForm.logistics,
+        custom_margin_range: manufacturerForm.marginRange,
+        custom_max_margin_range_: manufacturerForm.maxMarginRange,
+        custom_warehouse_needs: manufacturerForm.warehouseSpace,
+        custom_sales_support_provided: manufacturerForm.salesSupport,
+        custom_investment_capacity_min: manufacturerForm.investmentCapacityMin,
+        custom_maximum_investment_capacity: manufacturerForm.investmentCapacityMax,
+        custom_credit_period_required: manufacturerForm.creditPeriodRequired,
+        custom_new_status: distributorForm.status,
+
+        // Address fields
+        custom_address: addressForm.streetAddress,
+        custom_pincode: addressForm.pincode,
+        city: addressForm.city,
+        custom_districts: addressForm.district,
+        custom_states: addressForm.state,
+      }
     }
     
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    showError('Network error occurred. Please check your connection and try again.')
-  } finally {
-    isSubmitting.value = false
+    let response = await fetch(`/api/resource/Lead/${props.lead}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mappingData)
+    });
+    
+    if (response.ok) {
+      router.push('/dashboard');
+    }
+
+  } else {
+    isSubmitting.value = true
+  
+    try {
+      // Validate required fields
+      const { isValid, errors } = validateForm()
+      if (!isValid) {
+        showError(`Please fix the following errors:\n\n${errors.map(err => `• ${err}`).join('\n')}`, 'Validation Error')
+        return
+      }
+
+      // Prepare lead data for API
+      const leadData: LeadData = {
+        leadCategory: leadCategory.value,
+        contactInfo: {
+          custom_salutations: leadCategory.value === 'manufacturer' ? manufacturerForm.custom_salutations : distributorForm.custom_salutations,
+          name: leadCategory.value === 'manufacturer' ? manufacturerForm.name : distributorForm.name,
+          designation: leadCategory.value === 'manufacturer' ? manufacturerForm.designation : distributorForm.designation,
+          mobile: leadCategory.value === 'manufacturer' ? manufacturerForm.mobile : distributorForm.mobile,
+          email: leadCategory.value === 'manufacturer' ? manufacturerForm.email : distributorForm.email,
+          phone2: leadCategory.value === 'manufacturer' ? manufacturerForm.phone2 : distributorForm.phone2,
+          ...(leadCategory.value !== 'manufacturer' && {
+            middleName: distributorForm.middleName,
+            lastName: distributorForm.lastName,
+          }),
+        },
+        companyInfo: {
+          companyName: leadCategory.value === 'manufacturer' ? manufacturerForm.companyName : distributorForm.companyName,
+          staffStrength: leadCategory.value === 'manufacturer' ? manufacturerForm.staffStrength : distributorForm.staffStrength,
+          ...(leadCategory.value !== 'manufacturer' && {
+            website: distributorForm.website,
+            type: distributorForm.type,
+            // status: distributorForm.status,
+            source: distributorForm.source,
+            leadOwner: distributorForm.leadOwner,
+          }),
+        },
+        address: {
+          streetAddress: addressForm.streetAddress,
+          pincode: addressForm.pincode,
+          city: addressForm.city,
+          district: addressForm.district,
+          state: addressForm.state,
+        },
+        businessInfo: {
+          categories: leadCategory.value === 'manufacturer' ? manufacturerForm.categories : distributorForm.categories,
+          subCategories: leadCategory.value === 'manufacturer' ? manufacturerForm.subCategories : distributorForm.subCategories,
+          
+
+          
+          ...(leadCategory.value === 'manufacturer' ? {
+            // Manufacturer specific fields
+            brandNames: [manufacturerForm.brandName1, manufacturerForm.brandName2, manufacturerForm.brandName3].filter(Boolean),
+            exporting: manufacturerForm.exporting,
+            currentDistributors: manufacturerForm.currentDistributors,
+            presenceStates: manufacturerForm.presenceStates,
+            presenceDistricts: manufacturerForm.presenceDistricts,
+            annualRevenue: manufacturerForm.annualRevenue,
+            listed: manufacturerForm.listed,
+            distributorsNeeded: manufacturerForm.distributorsNeeded,
+            distributorNeededStates: manufacturerForm.distributorNeededStates,
+            distributorNeededDistricts: manufacturerForm.distributorNeededDistricts,
+            minimumOrderValue: manufacturerForm.minimumOrderValue,
+            distributorMargin: manufacturerForm.distributorMargin,
+            logistics: manufacturerForm.logistics,
+            marginRange: manufacturerForm.marginRange,
+            maxMarginRange: manufacturerForm.maxMarginRange,
+            investmentCapacityMin: distributorForm.investmentCapacityMin,
+            investmentCapacityMax: distributorForm.investmentCapacityMax,
+            creditPeriodRequired: distributorForm.creditPeriodRequired,
+            warehouseSpace: manufacturerForm.warehouseSpace,
+            inspirational: manufacturerForm.inspirational,
+            salesSupport: manufacturerForm.salesSupport, 
+            status: manufacturerForm.status,
+            distStatus:distributorForm.status,
+            
+            maxMarginCurrentBrands: distributorForm.maxMarginRange || '',
+            minMarginRange: distributorForm.marginRange || '',
+            
+            
+              
+          } : {
+            // Distributor specific fields
+            brandsCount: distributorForm.brandsCount,
+            manufacturerStates: distributorForm.manufacturerStates,
+            manufacturerDistricts: distributorForm.manufacturerDistricts,
+            accountingSystem: distributorForm.accountingSystem,
+            logisticsWillingness: distributorForm.logisticsWillingness,
+            sfaApp: distributorForm.sfaApp,
+            warehouseCount: distributorForm.warehouseCount,
+            dmsApp: distributorForm.dmsApp,
+            totalSpace: distributorForm.totalSpace,
+            warehouseManagementSystem: distributorForm.warehouseManagementSystem,
+            salesForceCount: distributorForm.salesForceCount,
+            ownSalesForce: distributorForm.ownSalesForce,
+            categoriesInterested: distributorForm.categoriesInterested,
+            needManufacturerStates: distributorForm.needManufacturerStates,
+            needManufacturerDistricts: distributorForm.needManufacturerDistricts,
+            newBrandsInterest: distributorForm.newBrandsInterest,
+            investmentCapacityMin: distributorForm.investmentCapacityMin, 
+          investmentCapacityMax: distributorForm.investmentCapacityMax,
+          creditPeriodRequired: distributorForm.creditPeriodRequired  
+          }),
+        },
+      }
+
+      const erpLeadObj: any = {
+        // =======
+        // Manufacturer
+        // =======
+
+        // Contact Details
+        custom_lead_category: leadCategory.value == 'manufacturer' ? 'Manufacturer Lead': 'SS / Distributor Lead',
+        custom_salutations: leadData.contactInfo.custom_salutations,
+        job_title: leadData.contactInfo.designation,
+        custom_pan_number: leadData.contactInfo.phone2,
+        first_name: leadData.contactInfo.name,
+        mobile_no: leadData.contactInfo.mobile,
+        email_id: leadData.contactInfo.email,
+
+        // Company profile
+        company_name: leadData.companyInfo.companyName,
+        no_of_employees: leadData.companyInfo.staffStrength,
+        custom_brand_name: leadCategory.value === 'manufacturer' ? manufacturerForm.companyName : distributorForm.companyName,
+        custom_brand_name_2: leadCategory.value === 'manufacturer' ? manufacturerForm.brandName2 : '',
+        custom_brand_name_3: leadCategory.value === 'manufacturer' ? manufacturerForm.brandName3 : '',
+        custom_inspirational: leadCategory.value === 'manufacturer' ? manufacturerForm.inspirational : '',
+
+        // Address
+        custom_address: leadData.address.streetAddress,
+        custom_pincode: leadData.address.pincode,
+        city: leadData.address.city,
+        custom_districts: leadData.address.district,
+        custom_states: leadData.address.state,
+
+        // Presense
+        custom_no_of_current_distributors: leadCategory.value === 'manufacturer' ? manufacturerForm.currentDistributors : '',
+        custom_exporting: leadCategory.value === 'manufacturer' ? manufacturerForm.exporting : '',
+        
+    
+
+        // Financial Stance
+        annual_revenue: leadCategory.value === 'manufacturer' ? manufacturerForm.annualRevenue : distributorForm.annualRevenue,
+        custom_listed: leadCategory.value === 'manufacturer' ? manufacturerForm.listed : '',
+
+        // Expansion Appetite
+        custom_no_of_distributors_needed: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorsNeeded : '',
+
+        // Desired Distributor Profile
+        custom_minimum_order_value: leadCategory.value === 'manufacturer' ? manufacturerForm.minimumOrderValue : '',
+        custom_logistics: leadCategory.value === 'manufacturer' ? manufacturerForm.logistics : '',
+        custom_warehouse_needs: leadCategory.value === 'manufacturer' ? manufacturerForm.warehouseSpace : '',
+        custom_margin_for_the_distributor: leadCategory.value === 'manufacturer' ? manufacturerForm.distributorMargin : '',
+        custom_margin_range: leadCategory.value === 'manufacturer' ? manufacturerForm.marginRange : '',
+      custom_max_margin_range_: leadCategory.value === 'manufacturer' ? manufacturerForm.maxMarginRange : '',
+        // custom_investment_capacity_min: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMin : '',
+        // custom_maximum_investment_capacity: leadCategory.value !== 'manufacturer' ? distributorForm.investmentCapacityMax : '',
+        // custom_credit_period_required: leadCategory.value !== 'manufacturer' ? distributorForm.creditPeriodRequired : '',
+        // custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : '',
+        custom_investment_capacity_min: leadCategory.value === 'manufacturer' ? manufacturerForm.investmentCapacityMin  : distributorForm.investmentCapacityMin,
+
+  custom_maximum_investment_capacity: leadCategory.value === 'manufacturer' ? manufacturerForm.investmentCapacityMax : distributorForm.investmentCapacityMax,
+
+  custom_credit_period_required: leadCategory.value === 'manufacturer' ? manufacturerForm.creditPeriodRequired : distributorForm.creditPeriodRequired,
+
+  custom_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : distributorForm.salesSupport || '',
+  custom_mfg_sales_support_provided: leadCategory.value === 'manufacturer' ? manufacturerForm.salesSupport : '',
+  custom_manufacurer_status: leadCategory.value === 'manufacturer' ? manufacturerForm.status : '',
+  custom_distributor_status: leadCategory.value === 'distributor' ? distributorForm.status : '',
+
+
+
+
+
+
+
+        
+        // =======
+        // Distributor
+        // =======
+
+        // Contact Info
+        middle_name: leadData.contactInfo.middleName || '',
+        last_name: leadData.contactInfo.lastName || '',
+        source: distributorForm.source || '',
+
+        // Company Profile 
+        custom_super_stockiest_or_distributor: leadCategory.value === 'super-stockist' ? 'Super Stockist' : leadCategory.value === 'distributor' ? 'Distributor' : '',
+        custom_staff_strength_copy: leadData.companyInfo.staffStrength,
+        custom_distributor_company_name: leadData.companyInfo.companyName,
+        custom_no_of_brands_dealing_with_currently: distributorForm.brandsCount,
+        website: leadData.companyInfo.website || '',
+        custom_gst: distributorForm.gstNumber || '',
+        
+        // ignoring manufacturerStates, category, district for distributor
+
+        // Operational Information
+        custom_which_accounting_system_you_are_using: leadData.businessInfo.accountingSystem || '',
+        custom_which_app_you_are_using_for_sfa: leadData.businessInfo.sfaApp || '',
+        custom_which_app_you_are_using_for_dms: leadData.businessInfo.dmsApp || '',
+        custom_which_warehouse_management_system_you_are_using_: leadData.businessInfo.warehouseManagementSystem || '',
+        custom_do_you_have_your_own_sales_force: leadData.businessInfo.ownSalesForce || '',
+        custom_ready_to_bear_logistics: leadData.businessInfo.logisticsWillingness || '',
+        custom_no_of_warehouses_you_have: leadData.businessInfo.warehouseCount || '',
+        custom_total_space_in_sq_ft: leadData.businessInfo.totalSpace || '',
+        custom_count_of_field_sales_force: leadData.businessInfo.salesForceCount || '',
+        //Expansion Appetite
+        // custom_maximum_margin__from_current_brands:
+        custom_maximum_margin__from_current_brands: leadCategory.value === 'distributor'
+    ? distributorForm.maxMarginRange || ''
+    : '',
+        custom_margin__range_from_current_brands: leadCategory.value === 'distributor'
+    ? distributorForm.marginRange || ''
+    : '',
+  custom_distributor_annual_revenue: leadCategory.value === 'distributor'
+      ? distributorForm.annualRevenue || ''
+      : '',
+    
+      }
+
+      // Add categories as child doctype entries
+      const selectedCategories = leadCategory.value === 'manufacturer' ? manufacturerForm.categories : distributorForm.categories;
+      if (selectedCategories && selectedCategories.length > 0) {
+        erpLeadObj.custom_category_presence = selectedCategories.map((category, index) => ({
+          docstatus: 0,
+          doctype: "Lead Category Presence",
+          // owner: "Administrator",
+          // parent: "", // Will be set to the Lead name after creation
+          parentfield: "custom_category_presence",
+          parenttype: "Lead",
+          idx: index + 1,
+          category: category,
+          __islocal: 1,
+          __unsaved: 1,
+          __unedited: false
+        }));
+      }
+
+      console.log('Submitting lead data:', leadData)
+      // Send ERP Lead Object to Frappe backend
+      try {
+        const response = await fetch('/api/resource/Lead', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Frappe-CSRF-Token': (window as any).frappe?.csrf_token || ''
+        },
+        body: JSON.stringify(erpLeadObj)
+        })
+        const data = await response.json()
+        console.info('ERP Lead API response:', data)
+        
+        // Check for successful response
+        if (data && data.data && !data.exc) {
+          router.push('/dashboard')
+          return
+        }
+        
+        // Handle specific errors
+        if (response.status === 417 && data.exc_type === 'UniqueValidationError') {
+          // Check if it's a duplicate title/name error
+          if (data.exception && data.exception.includes("Duplicate entry") && data.exception.includes("for key 'title'")) {
+            showError('Name or Company Name already exists', 'Duplicate Entry')
+            return
+          }
+        }
+        
+        // Handle other errors
+        if (data.exc || data.exception) {
+          const errorMessage = data._server_messages ? 
+            JSON.parse(data._server_messages)[0]?.message || 'An error occurred' : 
+            'An error occurred while saving the lead'
+          showError(errorMessage, 'Save Error')
+          return
+        }
+        
+      } catch (err) {
+        console.error('Error posting ERP Lead:', err)
+        showError('Network error occurred. Please check your connection and try again.', 'Network Error')
+        return
+      }
+
+      return
+      // Make API call to save lead
+      const response = await apiService.saveLead(leadData)
+
+      if (response.success) {
+        // Success - show success message and redirect
+        showSuccess(`${leadCategory.value === 'manufacturer' ? 'Manufacturer' : 'Distributor'} lead saved successfully!`, 'Success')
+        .then(() => {
+          // Reset form and redirect after user clicks OK
+          resetForm()
+          router.push('/dashboard')
+        })
+        
+
+        
+        // Optionally update local state for immediate UI updates
+        if (leadCategory.value === 'manufacturer') {
+          const newManufacturer = {
+            id: response.data?.id || `M${Date.now()}`,
+            name: manufacturerForm.companyName || manufacturerForm.name,
+            city: addressForm.city,
+            district: addressForm.district,
+            state: addressForm.state,
+            category: manufacturerForm.categories[0] || 'General',
+            subCategory: manufacturerForm.subCategories[0] || 'General',
+            status: 'Registration' as const,
+            registrationDate: new Date().toISOString(),
+            daysSinceStatus: 0,
+          }
+          manufacturers.value.push(newManufacturer)
+        } else {
+          const newDistributor = {
+            id: response.data?.id || `D${Date.now()}`,
+            name: distributorForm.companyName || distributorForm.name,
+            city: addressForm.city,
+            district: addressForm.district,
+            state: addressForm.state,
+            category: distributorForm.categories[0] || 'General',
+            subCategory: distributorForm.subCategories[0] || 'General',
+            status: 'Registration' as const,
+            registrationDate: new Date().toISOString(),
+            daysSinceStatus: 0,
+          }
+          distributors.value.push(newDistributor)
+        }
+        
+        // Reset form and redirect
+        resetForm()
+        router.push('/dashboard')
+        
+      } else {
+        // Error - show error message
+        const errorMessage = response.message || 'Failed to save lead'
+        const errors = response.errors?.join(', ') || ''
+        showError(`Error: ${errorMessage}${errors ? `\nDetails: ${errors}` : ''}`)
+        console.error('API Error:', response)
+      }
+      
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      showError('Network error occurred. Please check your connection and try again.')
+    } finally {
+      isSubmitting.value = false
+    }
   }
 }
 
 // Fetch categories on component mount
-onMounted(() => {
+onMounted(async () => {
+
+  if (props.lead) {
+    try {
+      const response = await fetch(`/api/resource/Lead/${props.lead}?fields=["*"]`);
+      const data = await response.json();
+      
+      if (data.data.custom_lead_category == "SS / Distributor Lead") {
+        leadCategory.value = "distributor";
+        distributorForm.custom_salutations = data.data.salutation;
+        distributorForm.designation = data.data.job_title;
+        distributorForm.phone2 = data.data.phone;
+        distributorForm.name = data.data.custom_distributor_company_name;
+        distributorForm.mobile = data.data.mobile_no;
+        distributorForm.email = data.data.email_id;
+        distributorForm.middleName = data.data.middle_name;
+        distributorForm.source = data.data.source;
+        distributorForm.leadOwner = data.data.lead_owner;
+        distributorForm.lastName = data.data.last_name;
+        distributorForm.status = data.data.custom_new_status;
+        distributorForm.gstNumber = data.data.custom_gst;
+        distributorForm.type = data.data.custom_super_stockiest_or_distributor == "Distributor" ? "distributor" : "super-stockist" ;
+        distributorForm.staffStrength = data.data.custom_staff_strength_copy;
+        distributorForm.companyName = data.data.custom_distributor_company_name;
+        distributorForm.brandsCount = data.data.custom_no_of_brands_dealing_with_currently;
+        distributorForm.website = data.data.website;
+        distributorForm.manufacturerStates = data.data.custom_manufacturer_states;
+        // distributorForm.categories = [] as string[];
+        // distributorForm.subCategories = [] as string[];
+        // distributorForm.manufacturerDistricts = '';
+        distributorForm.accountingSystem = data.data.custom_which_accounting_system_you_are_using;
+        distributorForm.logisticsWillingness = data.data.custom_ready_to_bear_logistics;
+        distributorForm.sfaApp = data.data.custom_which_app_you_are_using_for_sfa;
+        distributorForm.warehouseCount = data.data.custom_no_of_warehouses_you_have;
+        distributorForm.dmsApp = data.data.custom_which_app_you_are_using_for_dms;
+        distributorForm.totalSpace = data.data.custom_total_space_in_sq_ft;
+        distributorForm.warehouseManagementSystem = data.data.custom_which_warehouse_management_system_you_are_using_;
+        distributorForm.salesForceCount = data.data.custom_count_of_field_sales_force;
+        distributorForm.ownSalesForce = data.data.custom_do_you_have_your_own_sales_force;
+        // distributorForm.categoriesInterested = [] as string[];
+        // distributorForm.needManufacturerStates = [] as string[];
+        distributorForm.newBrandsInterest = data.data.custom_interested_in_dealing_in_how_many_new_brands;
+        // distributorForm.needManufacturerDistricts = [] as string[];
+        distributorForm.annualRevenue = data.data.custom_distributor_annual_revenue;
+        distributorForm.marginRange = data.data.custom_margin__range_from_current_brands;
+        distributorForm.maxMarginRange = data.data.custom_maximum_margin__from_current_brands;
+        distributorForm.investmentCapacityMin = data.data.custom_investment_capacity_min;
+        distributorForm.investmentCapacityMax = data.data.custom_maximum_investment_capacity;
+        distributorForm.creditPeriodRequired = data.data.custom_credit_period_required;
+        distributorForm.salesSupport = data.data.custom_sales_support_provided;
+        addressForm.streetAddress = data.data.custom_dist_address;
+        addressForm.pincode = data.data.custom_dist_pincode;
+        addressForm.city = data.data.custom_dist_city;
+        addressForm.district = data.data.custom_dist_district0;
+        addressForm.state = data.data.custom_dist_state;
+      } else {
+        leadCategory.value = "manufacturer";
+        manufacturerForm.custom_salutations = data.data.salutation;
+        manufacturerForm.designation = data.data.job_title;
+        manufacturerForm.phone2 = data.data.phone;
+        manufacturerForm.name = data.data.company_name;
+        manufacturerForm.mobile = data.data.mobile_no;
+        manufacturerForm.email = data.data.email_id;
+        manufacturerForm.companyName = data.data.company_name;
+        manufacturerForm.staffStrength = data.data.no_of_employees;
+        manufacturerForm.brandName1 = data.data.custom_brand_name;
+        manufacturerForm.inspirational = data.data.custom_inspirational;
+        manufacturerForm.brandName2 = data.data.custom_brand_name_2;
+        manufacturerForm.brandName3 = data.data.custom_brand_name_3;
+        // manufacturerForm.categories = [] as string[];
+        // manufacturerForm.subCategories = [] as string[];
+        manufacturerForm.exporting = data.data.custom_exporting;
+        manufacturerForm.currentDistributors = data.data.custom_no_of_current_distributors;
+        // manufacturerForm.presenceStates = [] as string[];
+        // manufacturerForm.presenceDistricts = [] as string[];
+        manufacturerForm.annualRevenue = data.data.annual_revenue;
+        manufacturerForm.listed = data.data.custom_listed;
+        manufacturerForm.distributorsNeeded = data.data.custom_no_of_distributors_needed;
+        // manufacturerForm.distributorNeededDistricts = [] as string[];
+        // manufacturerForm.distributorNeededStates = [] as string[];
+        manufacturerForm.minimumOrderValue = data.data.custom_minimum_order_value;
+        manufacturerForm.distributorMargin = data.data.custom_margin_for_the_distributor;
+        manufacturerForm.logistics = data.data.custom_logistics;
+        manufacturerForm.marginRange = data.data.custom_margin_range;
+        manufacturerForm.maxMarginRange = data.data.custom_max_margin_range_;
+        manufacturerForm.warehouseSpace = data.data.custom_warehouse_needs;
+        manufacturerForm.salesSupport = data.data.custom_sales_support_provided;
+        manufacturerForm.investmentCapacityMin = data.data.custom_investment_capacity_min;
+        manufacturerForm.investmentCapacityMax = data.data.custom_maximum_investment_capacity;
+        manufacturerForm.creditPeriodRequired = data.data.custom_credit_period_required;
+        // manufacturerForm.agreement = null as File | null;
+        distributorForm.status = data.data.custom_new_status;
+        addressForm.streetAddress = data.data.custom_address;
+        addressForm.pincode = data.data.custom_pincode;
+        addressForm.city = data.data.city;
+        addressForm.district = data.data.custom_districts;
+        addressForm.state = data.data.custom_states;
+      }
+    } catch {
+      console.log("Error while fetching lead")
+    }
+  }
+
   fetchCategories()
 })
 </script>

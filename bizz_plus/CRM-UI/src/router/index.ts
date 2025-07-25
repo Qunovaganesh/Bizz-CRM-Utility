@@ -8,11 +8,12 @@ import Registration from '../views/Registration.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/:lead?',
     name: 'Registration',
     component: Registration,
+    props: true,
     meta: {
-      title: 'New Lead Registration'
+      title: 'Lead'
     }
   },
   {

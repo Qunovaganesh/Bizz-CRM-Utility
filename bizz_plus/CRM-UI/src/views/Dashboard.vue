@@ -184,6 +184,7 @@
           </div>
           <div class="entity-details">
             <h3>{{ selectedEntityItem?.name || 'Unknown' }}</h3>
+            <p class="entity-edit" @click="editEntity">✏️ Edit</p>
             <p class="entity-location">📍 {{ selectedEntityItem?.district || 'Unknown' }}, {{ selectedEntityItem?.state || 'Unknown' }}</p>
             <p class="entity-category">📦 {{ selectedEntityItem?.category || 'Unknown' }}</p>
             <span :class="getStatusBadgeClass(selectedEntityItem?.status || 'unknown')">
@@ -239,7 +240,7 @@
           <div class="entity-info-card">
 
             <!-- Vertical Toggle Buttons -->
-            <div class="vertical-entity-selection">
+            <!-- <div class="vertical-entity-selection">
               <div class="vertical-toggle-group">
                 <button 
                   class="vertical-toggle-btn"
@@ -265,7 +266,22 @@
                   <span>Invoice</span>
                 </button>
               </div>
-            </div>
+            </div> -->
+<!-- <div class="financial-dropdown-wrapper">
+  <label class="label">Financial</label>
+  <div class="dropdown" @click="toggleFinancialDropdown">
+    <span class="placeholder">{{ selectedToggleLabel }}</span>
+    <span class="arrow">▾</span>
+  </div>
+
+  <div v-if="isFinancialOpen" class="dropdown-panel">
+    <ul class="options">
+      <li class="option" @click="onToggleChange('commission')">Commission</li>
+      <li class="option" @click="onToggleChange('payments')">Payments</li>
+      <li class="option" @click="onToggleChange('invoice')">Invoice</li>
+    </ul>
+  </div>
+</div>
 
             <div class="dropdown-wrapper">
               <label class="label">Timeline</label>
@@ -292,14 +308,89 @@
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> -->
+            <!-- Financial Dropdown -->
+<div class="dropdown-wrapper improved-dropdown" ref="financialDropdownRef">
+  <label class="dropdown-label">Financial</label>
+  <div
+    class="dropdown-trigger"
+    @click="toggleFinancialDropdown"
+    :class="{ open: isFinancialOpen }"
+  >
+    <span class="selected-text">{{ selectedToggleLabel }}</span>
+    <svg
+      class="dropdown-arrow"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M1.646 5.646a.5.5 0 0 1 .708 0L8 11.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+      />
+    </svg>
+  </div>
+  <div v-if="isFinancialOpen" class="dropdown-menu glass-panel">
+    <ul class="dropdown-list">
+      <li class="dropdown-item" @click="onToggleChange('commission'); isFinancialOpen = false">Commission</li>
+      <li class="dropdown-item" @click="onToggleChange('payments'); isFinancialOpen = false">Payments</li>
+      <li class="dropdown-item" @click="onToggleChange('invoice'); isFinancialOpen = false">Invoice</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Timeline Dropdown -->
+<div class="dropdown-wrapper improved-dropdown" ref="timelineDropdownRef">
+  <label class="dropdown-label">Timeline</label>
+  <div
+    class="dropdown-trigger"
+    @click="toggleDropdown"
+    :class="{ open: isOpen }"
+  >
+    <span class="selected-text">{{ selected || 'Select timeline...' }}</span>
+    <svg
+      class="dropdown-arrow"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M1.646 5.646a.5.5 0 0 1 .708 0L8 11.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+      />
+    </svg>
+  </div>
+  <div v-if="isOpen" class="dropdown-menu glass-panel">
+    <input
+      type="text"
+      v-model="search"
+      class="dropdown-search"
+      placeholder="Search timeline..."
+    />
+    <ul class="dropdown-list">
+      <li
+        class="dropdown-item"
+        v-for="item in filteredOptions"
+        :key="item"
+        @click="selectOption(item)"
+      >
+        {{ item }}
+      </li>
+    </ul>
+  </div>
+</div>
+
 
             <!-- Mapping Stats -->
             <div class="mapping-stats-cards-timeline">
               
               <div class="stats-card total">
                 <div class="stats-content">
-                  <div class="stats-number">{{ leadMapping?.total ? formatRupees(leadMapping?.total) : 0 }}</div>
+                  <div class="stats-number">{{ leadMapping?.total ? formatRupees(leadMapping?.total) : '₹0.000' }}</div>
                   <div class="stats-label">Total</div>
                 </div>
               </div>
@@ -313,7 +404,9 @@
 
               <div class="stats-card total">
                 <div class="stats-content">
-                  <div class="stats-number">{{ leadMapping?.avg ? formatRupees(leadMapping?.avg) : 0 }}</div>
+     <div class="stats-number">
+      {{ leadMapping?.avg ? formatRupees(leadMapping.avg) : '₹0.00' }}
+    </div>
                   <div class="stats-label">Average</div>
                 </div>
               </div>
@@ -483,6 +576,7 @@ import DataTable from '../components/DataTable.vue'
 import ModernMultiSelect from '../components/ModernMultiSelect.vue'
 import { useBusinessLogic } from '../composables/useBusinessLogic'
 import type { Manufacturer, Distributor } from '../types'
+import { onBeforeUnmount } from 'vue'
 
 const router = useRouter()
 const {
@@ -539,6 +633,35 @@ function toggleDropdown() {
   isOpen.value = !isOpen.value
 }
 
+const editEntity = () => {
+  router.push({ 
+    name: 'Registration',
+    params: { 
+        lead: selectedEntityItem.value?.id
+      }
+  })
+}
+
+// Refs for the wrappers (used to detect outside clicks)
+const financialDropdownRef = ref<HTMLElement | null>(null)
+const timelineDropdownRef = ref<HTMLElement | null>(null)
+
+// Close dropdowns on outside click
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement
+
+  if (
+    financialDropdownRef.value &&
+    !financialDropdownRef.value.contains(target)
+  ) {
+    isFinancialOpen.value = false
+  }
+
+  if (timelineDropdownRef.value && !timelineDropdownRef.value.contains(target)) {
+    isOpen.value = false
+  }
+}
+
 function selectOption(option: string) {
   selected.value = option
   isOpen.value = false
@@ -554,8 +677,7 @@ const formatDate = (dateString: any) => {
     day: 'numeric'
   });
 };
-
-const formatRupees = (value: any) => {
+const formatRupees = (value: any): string => {
   const num = Number(value);
 
   if (isNaN(num)) return value;
@@ -564,8 +686,10 @@ const formatRupees = (value: any) => {
   if (num >= 1e5) return `₹${(num / 1e5).toFixed(2)}L`;
   if (num >= 1e3) return `₹${(num / 1e3).toFixed(2)}K`;
 
-  return `₹${num}`;
+  // For small values, show full up to 3 decimals
+  return `₹${num.toFixed(2)}`;
 }
+
 
 
 // API data state
@@ -592,6 +716,28 @@ const leadMappingsData = ref<any[]>([])
 const isLoadingMappingStats = ref(false)
 const leadMapping = ref<any>(null);
 
+
+// Dropdown open state
+const isFinancialOpen = ref(false)
+
+const toggleFinancialDropdown = () => {
+  isFinancialOpen.value = !isFinancialOpen.value
+}
+
+// Display label for selected financial type
+const selectedToggleLabel = computed(() => {
+  switch (selectedToggle.value) {
+    case 'commission':
+      return 'Commission'
+    case 'payments':
+      return 'Payments'
+    case 'invoice':
+      return 'Invoice'
+    default:
+      return 'Select financial type...'
+  }
+})
+
 const onToggleChange = async (type: any) => {
   selectedToggle.value = type
 
@@ -605,6 +751,7 @@ const fetchDetails= async () => {
     lead: selectedEntityItem.value?.id,
     lead_type: selectedEntity.value,
   }
+  
 
   let response = await fetch('/api/method/bizz_plus.api.api.get_lead_details', {
     method: 'POST',
@@ -1512,6 +1659,7 @@ onMounted(() => {
   dynamicManufacturerCount.value = manufacturers.value.length
   dynamicDistributorCount.value = distributors.value.length
   
+   document.addEventListener('click', handleClickOutside)
   // Fetch initial lead counts from API
   fetchInitialCounts()
 
@@ -1598,86 +1746,93 @@ const fetchLeadMappings = async (parentLeadId: string) => {
     return {}
   }
 }
-
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 // New API function to fetch associated leads (distributors for manufacturer and vice versa)
 const fetchAssociatedLeads = async () => {
 
   fetchDetails();
 
-  if (isLoadingAssociatedLeads.value || !selectedEntityItem.value) return
+  const response = await fetch(`/api/resource/Lead/${selectedEntityItem.value?.id}?fields=["*"]`);
+  const data = await response.json();
+  if (data.data.custom_new_status == "Verified") {
+    if (isLoadingAssociatedLeads.value || !selectedEntityItem.value) return
   
-  isLoadingAssociatedLeads.value = true
-  try {
-    // Determine the opposite entity type
-    const oppositeEntityType = selectedEntity.value === 'manufacturer' ? 'SS / Distributor Lead' : 'Manufacturer Lead'
-    
-    let url = `/api/resource/Lead?limit_page_length=1000&fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]`
-    
-    // Build filters for opposite entity type
-    const apiFilters: any = {
-      custom_lead_category: oppositeEntityType
-    }
-    
-    // Apply associated filters if any
-    if (associatedFilters.state?.length > 0) {
-      apiFilters.custom_states = ["in", associatedFilters.state]
-    }
-    
-    if (associatedFilters.district?.length > 0) {
-      apiFilters.custom_districts = ["in", associatedFilters.district]
-    }
-    
-    if (associatedFilters.category?.length > 0) {
-      apiFilters.custom_categories = ["in", associatedFilters.category]
-    }
-    
-    // if (associatedFilters.status?.length > 0) {
-    //   apiFilters.custom_new_status = ["in", associatedFilters.status]
-    // }
-    
-    // Add filters to URL
-    url += `&filters=${encodeURIComponent(JSON.stringify(apiFilters))}`
-    
-    console.log('Fetching associated leads with URL:', url)
-    
-    const response = await fetch(url)
-    const data = await response.json()
-    
-    console.log('Associated leads API response:', data)
-    
-    if (data && data.data) {
-      // Fetch all Lead Mappings for the selected parent lead (only once!)
-      const leadMappings = await fetchLeadMappings(selectedEntityItem.value?.id || '')
+    isLoadingAssociatedLeads.value = true
+    try {
+      // Determine the opposite entity type
+      const oppositeEntityType = selectedEntity.value === 'manufacturer' ? 'SS / Distributor Lead' : 'Manufacturer Lead'
       
-      // Apply mapping status to each lead
-      var leadsWithMappingStatus = data.data.map((lead: any) => {
-        // Check if this lead has a mapping status
-        const mappingStatus = leadMappings[lead.name] // lead.name is the lead ID
-        
-        return {
-          ...lead,
-          // If mapping exists, use mapping status, otherwise use "Registration"
-          finalStatus: mappingStatus || 'Registration'
-        }
-      })
+      let url = `/api/resource/Lead?limit_page_length=1000&fields=["name","custom_lead_category","company_name","custom_new_status","custom_states","custom_districts","custom_categories"]`
       
-      console.log('Leads with mapping status:', leadsWithMappingStatus)
-      console.log('associatedFilters.status', associatedFilters.status)
-
-      var selectedStatus = JSON.parse(JSON.stringify(associatedFilters.status))
-      if (selectedStatus.length > 0) {
-        leadsWithMappingStatus = leadsWithMappingStatus.filter((lead: any) => 
-          selectedStatus.includes(lead.finalStatus)
-        )
+      // Build filters for opposite entity type
+      const apiFilters: any = {
+        custom_lead_category: oppositeEntityType,
+        custom_new_status: "Verified"
       }
       
-      associatedLeadsData.value = leadsWithMappingStatus
+      // Apply associated filters if any
+      if (associatedFilters.state?.length > 0) {
+        apiFilters.custom_states = ["in", associatedFilters.state]
+      }
+      
+      if (associatedFilters.district?.length > 0) {
+        apiFilters.custom_districts = ["in", associatedFilters.district]
+      }
+      
+      if (associatedFilters.category?.length > 0) {
+        apiFilters.custom_categories = ["in", associatedFilters.category]
+      }
+      
+      // if (associatedFilters.status?.length > 0) {
+      //   apiFilters.custom_new_status = ["in", associatedFilters.status]
+      // }
+      
+      // Add filters to URL
+      url += `&filters=${encodeURIComponent(JSON.stringify(apiFilters))}`
+      
+      console.log('Fetching associated leads with URL:', url)
+      
+      const response = await fetch(url)
+      const data = await response.json()
+      
+      console.log('Associated leads API response:', data)
+      
+      if (data && data.data) {
+        // Fetch all Lead Mappings for the selected parent lead (only once!)
+        const leadMappings = await fetchLeadMappings(selectedEntityItem.value?.id || '')
+        
+        // Apply mapping status to each lead
+        var leadsWithMappingStatus = data.data.map((lead: any) => {
+          // Check if this lead has a mapping status
+          const mappingStatus = leadMappings[lead.name] // lead.name is the lead ID
+          
+          return {
+            ...lead,
+            // If mapping exists, use mapping status, otherwise use "Registration"
+            finalStatus: mappingStatus || 'Registration'
+          }
+        })
+        
+        console.log('Leads with mapping status:', leadsWithMappingStatus)
+        console.log('associatedFilters.status', associatedFilters.status)
+
+        var selectedStatus = JSON.parse(JSON.stringify(associatedFilters.status))
+        if (selectedStatus.length > 0) {
+          leadsWithMappingStatus = leadsWithMappingStatus.filter((lead: any) => 
+            selectedStatus.includes(lead.finalStatus)
+          )
+        }
+        
+        associatedLeadsData.value = leadsWithMappingStatus
+      }
+    } catch (error) {
+      console.error('Error fetching associated leads:', error)
+      associatedLeadsData.value = []
+    } finally {
+      isLoadingAssociatedLeads.value = false
     }
-  } catch (error) {
-    console.error('Error fetching associated leads:', error)
-    associatedLeadsData.value = []
-  } finally {
-    isLoadingAssociatedLeads.value = false
   }
 }
 
@@ -1695,12 +1850,120 @@ watch(selectedEntityItem, (newItem, oldItem) => {
 </script>
 
 <style scoped>
-
-dropdown-wrapper {
-  width: 280px;
+.dropdown-wrapper {
   position: relative;
-  font-family: Inter, sans-serif;
+  width: 100%;
+  max-width: 240px;
+  margin-bottom: 20px;
+  font-family: 'Inter', sans-serif;
 }
+
+.dropdown-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151; /* gray-700 */
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db; /* gray-300 */
+  background-color: #ffffffcc;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 14px;
+  color: #4b5563; /* gray-600 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.dropdown-trigger:hover {
+  border-color: #9ca3af; /* gray-400 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+}
+
+.dropdown-trigger.open {
+  border-color: #6366f1; /* indigo-500 */
+}
+
+.dropdown-arrow {
+  color: #9ca3af;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-trigger.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.selected-text {
+  color: #4b5563;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-search {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  background-color: transparent;
+}
+
+.dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+
 
 .label {
   font-size: 14px;
@@ -2217,11 +2480,43 @@ dropdown-wrapper {
 }
 
 .mapping-stats-cards-timeline {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  margin-left: auto;
-  margin-right: 16px;
+  margin-top: 16px;
+}
+
+.stats-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: fit-content;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.stats-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-number {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+.stats-label {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
 }
 
 @media (max-width: 768px) {
@@ -2323,6 +2618,16 @@ dropdown-wrapper {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.entity-edit {
+  color: #86868b;
+  font-size: 14px;
+  margin: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .status-badge {
