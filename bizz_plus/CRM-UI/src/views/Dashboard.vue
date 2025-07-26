@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="page-header">
-      <h1>Manufacturer-Distributor Management</h1>
+      <h1>Manufacturer-Distributor Managementt</h1>
       <p>Manage your business relationships and workflow processes</p>
       <div class="header-actions">
         <button class="btn-add-new" @click="$router.push('/')">
@@ -190,6 +190,9 @@
             <span :class="getStatusBadgeClass(selectedEntityItem?.status || 'unknown')">
               {{ selectedEntityItem?.status || 'Unknown' }}
             </span>
+            <button class="btn-primary" @click="handleNavigation">
+              Interact
+            </button>
           </div>
           
           <!-- Lead Mapping Statistics Cards -->
@@ -608,6 +611,8 @@ const selectedEntityItem = ref<Manufacturer | Distributor | null>(null)
 
 const selectedToggle = ref('commission')
 
+const lastDate: Record<string, string> = {}
+
 const timeFilters = [
   'Today',
   'Yesterday',
@@ -631,6 +636,18 @@ const filteredOptions = computed(() =>
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value
+}
+
+const handleNavigation = () => {
+  router.push({ 
+    name: 'Interaction', 
+    params: { 
+      id: selectedEntityItem.value?.id,
+      name: selectedEntityItem.value?.name,
+      category: selectedEntity.value,
+      status: selectedEntityItem.value?.status
+    }
+  });
 }
 
 const editEntity = () => {
@@ -1088,9 +1105,9 @@ const filteredPairedList = computed(() => {
       state: lead.custom_states || 'Unknown',
       category: lead.custom_categories || (selectedEntity.value === 'manufacturer' ? 'Distributor' : 'Manufacturer'),
       subCategory: 'Unknown',
-      status: lead.finalStatus || 'Registration', // Use finalStatus from Lead Mapping or default to Registration
-      registrationDate: new Date().toISOString().split('T')[0],
-      daysSinceStatus: 0
+      status: lead.finalStatus, // Use finalStatus from Lead Mapping or default to Registration
+      registrationDate: lastDate[lead.name],
+      daysSinceStatus: parseInt(getTimeElapsed(lastDate[lead.name]))
     }))
   }
   
@@ -1119,6 +1136,17 @@ const filteredPairedList = computed(() => {
   })
 })
 
+function getTimeElapsed(datetime: string | Date): string {
+  const now = new Date();
+  const past = new Date(datetime);
+  
+  // Convert to milliseconds, then subtract and divide to get seconds
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+  const diffInDays = Math.floor(diffInSeconds / 86400);
+
+  return `${diffInDays} day${diffInDays !== 1 ? 's' : ''}`;
+}
+
 const tableTitle = computed(() => {
   if (!selectedEntityItem.value) return ''
   return `Associated ${selectedEntity.value === 'manufacturer' ? 'Distributors' : 'Manufacturers'} for ${selectedEntityItem.value.name}`
@@ -1135,7 +1163,7 @@ const tableColumns = computed(() => {
       { key: 'state', label: 'State' },
       { key: 'status', label: 'Status' },
       { key: 'daysSinceStatus', label: 'Days Since Status' },
-      { key: 'registrationDate', label: 'Registration Date' },
+      { key: 'registrationDate', label: 'Verified Date' },
       { key: 'action', label: 'Action' },
       { key: 'view', label: 'View' }
     ]
@@ -1151,7 +1179,7 @@ const tableColumns = computed(() => {
       { key: 'subCategory', label: 'Sub Category' },
       { key: 'status', label: 'Status' },
       { key: 'daysSinceStatus', label: 'Days Since Status' },
-      { key: 'registrationDate', label: 'Registration Date' },
+      { key: 'registrationDate', label: 'Verified Date' },
       { key: 'action', label: 'Action' },
       { key: 'view', label: 'View' }
     ]
@@ -1561,7 +1589,7 @@ const handleViewClick = (row: Manufacturer | Distributor) => {
 
 const getRouteNameFromStatus = (status: string) => {
   switch (status) {
-    case 'Registration': return 'Lead' // Process registration as lead
+    case 'Verified': return 'Lead' // Process registration as lead
     case 'Lead': return 'Lead'
     case 'Prospect': return 'Prospect'
     case 'Customer': return 'Customer'
@@ -1573,7 +1601,10 @@ const getRouteNameFromStatus = (status: string) => {
 const getStatusBadgeClass = (status: string) => {
   const base = 'status-badge'
   return `${base} ${{
-    Registration: 'status-registration',
+    Verified: 'status-registration',
+    Open: 'status-registration',
+    Replied: 'status-registration',
+    Opportunity: 'status-registration',
     Lead: 'status-lead',
     Prospect: 'status-prospect',
     Customer: 'status-customer',
@@ -1718,9 +1749,9 @@ const fetchLeadMappings = async (parentLeadId: string) => {
 
     let url;
     if (selectedEntity.value == "manufacturer") {
-      url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"parent_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
+      url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"parent_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead", "last_status_change"]`
     } else {
-      url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"mapped_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead"]`
+      url = `/api/resource/Lead Mapping?limit_page_length=1000&filters={"mapped_lead":"${parentLeadId}"}&fields=["name","status","mapped_lead","parent_lead", "last_status_change"]`
     }
 
     const response = await fetch(url)
@@ -1734,8 +1765,10 @@ const fetchLeadMappings = async (parentLeadId: string) => {
       data.data.forEach((mapping: any) => {
         if (mapping.mapped_lead && selectedEntity.value == "manufacturer") {
           mappingStatus[mapping.mapped_lead] = mapping.status
+          lastDate[mapping.mapped_lead] = mapping.last_status_change
         } else {
           mappingStatus[mapping.parent_lead] = mapping.status
+          lastDate[mapping.parent_lead] = mapping.last_status_change
         }
       })
       return mappingStatus
@@ -1811,7 +1844,7 @@ const fetchAssociatedLeads = async () => {
           return {
             ...lead,
             // If mapping exists, use mapping status, otherwise use "Registration"
-            finalStatus: mappingStatus || 'Registration'
+            finalStatus: mappingStatus || 'Verified'
           }
         })
         
@@ -1855,7 +1888,26 @@ watch(selectedEntityItem, (newItem, oldItem) => {
   width: 100%;
   max-width: 240px;
   margin-bottom: 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.btn-primary {
+  background: #1c1c1e;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 80px;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background: #000000;
+  transform: translateY(-1px);
 }
 
 .dropdown-label {
@@ -1888,7 +1940,7 @@ watch(selectedEntityItem, (newItem, oldItem) => {
 }
 
 .dropdown-trigger.open {
-  border-color: #6366f1; /* indigo-500 */
+  border-color: black; /* indigo-500 */
 }
 
 .dropdown-arrow {
@@ -2469,6 +2521,42 @@ watch(selectedEntityItem, (newItem, oldItem) => {
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid #d2d2d7;
+}
+@media (max-width: 600px) {
+  .selection-card {
+    padding: 16px;
+  }
+
+  .selection-card h3 {
+    font-size: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .selection-icon {
+    display: inline-block;
+    font-size: 18px;
+  }
+
+  .modern-select {
+    font-size: 15px;
+    padding: 12px 14px;
+    background-position: right 10px center;
+  }
+
+  .selection-stats {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .stat-item {
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .entity-selection {
+    padding: 0 12px;
+  }
 }
 
 .mapping-stats-cards {

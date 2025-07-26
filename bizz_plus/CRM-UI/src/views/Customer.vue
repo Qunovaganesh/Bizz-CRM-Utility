@@ -1223,7 +1223,7 @@ const navigateToProspect = () => {
 const getStatusBadgeClass = (status: string) => {
   const base = 'status-badge';
   return `${base} ${{
-    Registration: 'status-registration',
+    Verified: 'status-registration',
     Lead: 'status-lead',
     Prospect: 'status-prospect',
     Customer: 'status-customer',

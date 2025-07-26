@@ -118,7 +118,7 @@
               <div class="card-header">
                 <div class="card-title">
                   <span class="serial-badge">{{ index + 1 }}</span>
-                  <h4>{{ row.lead_owner_name ? row.assigned_to_name : 'Unknown' }}</h4>
+                  <h4>{{ row.lead_owner_name ? row.lead_owner_name : 'Unknown' }}</h4>
                 </div>
                 <!-- <span :class="getStatusClass(row.status)" class="status-badge">
                   {{ row.status }}
@@ -150,7 +150,7 @@
                 </div>
                 <div class="card-row">
                   <span class="label">Reminder Date:</span>
-                  <span class="value">{{ row.reminder_date ? formatDate(row.reminder_date) : '—' }}</span>
+                  <span class="value">{{ formatDate(row.reminder_date) }}</span>
                 </div>
               </div>
               
@@ -314,7 +314,7 @@ const props = defineProps<{
   parentId?: string;
 }>();
 
-const leadStatus = ref('Registration'); // Default to 'Registration', will be updated based on interactions
+const leadStatus = ref('Verified'); // Default to 'Registration', will be updated based on interactions
 const selectedEntityData = ref<any>(null); // Main selected entity from Dashboard
 const associatedEntityData = ref<any>(null); // Associated entity clicked from table
 const apiInteractions = ref<any[]>([]); // API interactions data
@@ -647,7 +647,7 @@ const getModeClass = (mode: string) => {
 const getStatusBadgeClass = (status: string) => {
   const baseClass = 'status-badge';
   switch (status) {
-    case 'Registration':
+    case 'Verified':
       return `${baseClass} status-registration`;
     case 'Lead':
       return `${baseClass} status-lead`;

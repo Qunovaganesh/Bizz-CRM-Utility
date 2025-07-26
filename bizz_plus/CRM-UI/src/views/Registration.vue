@@ -488,7 +488,7 @@
       </select>
     </div>
 
-    <!-- File Upload -->
+    <!-- File Upload
     <div class="form-group">
       <label>Upload Agreement</label>
       <input 
@@ -497,6 +497,26 @@
         accept=".pdf,.doc,.docx"
         @change="handleAgreementUpload"
       />
+    </div> -->
+      <div class="form-group" v-if="manufacturerForm.status == 'Verified' && !manufacturerForm.fileUploaded">
+      <label>Agreement *</label>
+      <div class="file-upload-area">
+        <input 
+          type="file" 
+          @change="handleManufacturerFileUpload"
+          accept=".pdf,.jpg,.png"
+          
+          :required="!manufacturerForm.fileUploaded"
+          class="file-input-hidden"
+          id="document-upload"
+          
+        >
+      </div>
+      <div v-if="selectedManufacturerFile" class="selected-file">
+        <span class="file-name">{{ selectedManufacturerFile.name }}</span>
+        <button @click="selectedManufacturerFile = null" class="btn-remove-file">×</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1004,15 +1024,25 @@
     </div>
 
     <!-- Agreement Upload -->
-    <div class="form-group" v-if="distributorForm.status == 'Verified'">
+    <div class="form-group" v-if="distributorForm.status == 'Verified' && !distributorForm.fileUploaded">
       <label>Agreement *</label>
-      <input 
-        type="file"
-        class="form-file"
-        accept=".pdf,.doc,.docx"
-        @change="handleDistributorAgreementUpload"
-        required
-      />
+      <div class="file-upload-area">
+        <input 
+          type="file" 
+          @change="handleDistributorFileUpload"
+          accept=".pdf,.jpg,.png"
+          
+          :required="!distributorForm.fileUploaded"
+          class="file-input-hidden"
+          id="document-upload"
+          
+        >
+      </div>
+      <div v-if="selectedDistributorFile" class="selected-file">
+        <span class="file-name">{{ selectedDistributorFile.name }}</span>
+        <button @click="selectedDistributorFile = null" class="btn-remove-file">×</button>
+      </div>
+
     </div>
 
   </div>
@@ -1073,6 +1103,8 @@ import { apiService, type LeadData } from '../services/api'
 const router = useRouter()
 const { manufacturers, distributors } = useBusinessLogic()
 const { alertState, showError, showSuccess, handleConfirm, handleCancel } = useAlert()
+const selectedDistributorFile = ref<File | null>(null);
+const selectedManufacturerFile = ref<File | null>(null);
 
 // Form state
 const leadCategory = ref<'manufacturer' | 'super-stockist' | 'distributor'>('manufacturer')
@@ -1153,7 +1185,8 @@ const manufacturerForm = reactive({
   investmentCapacityMax: '',
   creditPeriodRequired: '',
    agreement: null as File | null,
-   status: '',
+   status: 'Open',
+   fileUploaded: false
 })
 
 // Distributor/Super Stockist form
@@ -1168,11 +1201,10 @@ const distributorForm = reactive({
   source: '',
   leadOwner: '',
   lastName: '',
-  // status: '',
-   status: '', // ✅ New field
+  status: 'Open',
   agreement: null as File | null,
  gstNumber:'',
-  type: '',
+  type: leadCategory,
   staffStrength: '',
   companyName: '',
   brandsCount: '',
@@ -1200,26 +1232,27 @@ const distributorForm = reactive({
   investmentCapacityMin: '',
   investmentCapacityMax: '',
   creditPeriodRequired: '',
-  salesSupport :''
+  salesSupport :'',
+  fileUploaded: false
 })
-const handleAgreementUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0] || null
+// const handleAgreementUpload = (event: Event) => {
+//   const target = event.target as HTMLInputElement
+//   const file = target.files?.[0] || null
 
-  if (file) {
-    manufacturerForm.agreement = file  // ✅ Only set for manufacturer
-    console.log('Manufacturer Agreement selected:', file.name)
-  }
-}
-const handleDistributorAgreementUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0] || null
+//   if (file) {
+//     manufacturerForm.agreement = file  // ✅ Only set for manufacturer
+//     console.log('Manufacturer Agreement selected:', file.name)
+//   }
+// }
+// const handleDistributorAgreementUpload = (event: Event) => {
+//   const target = event.target as HTMLInputElement
+//   const file = target.files?.[0] || null
 
-  if (file) {
-    distributorForm.agreement = file
-    console.log('Distributor Agreement selected:', file.name)
-  }
-}
+//   if (file) {
+//     distributorForm.agreement = file
+//     console.log('Distributor Agreement selected:', file.name)
+//   }
+// }
 
 
 
@@ -1371,6 +1404,22 @@ const handleFileUpload = (event: Event) => {
   }
 }
 
+const handleManufacturerFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    selectedManufacturerFile.value = target.files[0];
+    // We'll handle the file upload separately in the uploadDocument function
+  }
+};
+
+const handleDistributorFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    selectedDistributorFile.value = target.files[0];
+    // We'll handle the file upload separately in the uploadDocument function
+  }
+};
+
 const resetForm = () => {
   // Reset address form
   Object.keys(addressForm).forEach(key => {
@@ -1459,8 +1508,38 @@ const validateForm = (): { isValid: boolean; errors: string[] } => {
   }
 }
 
+const uploadFileToFrappe = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('is_private', '1');
+  
+  const response = await fetch('/api/method/upload_file', {
+    method: 'POST',
+    body: formData,
+  });
+  
+  if (!response.ok) {
+    throw new Error('File upload failed');
+  }
+  
+  const result = await response.json();
+  return result.message.file_url;
+};
+
 // Submit form
 const submitForm = async () => {
+
+  let fileUrl: any;
+  if (selectedDistributorFile.value) {
+    fileUrl = await uploadFileToFrappe(selectedDistributorFile.value);
+    distributorForm.fileUploaded = true;
+  }
+  
+  if (selectedManufacturerFile.value) {
+    fileUrl = await uploadFileToFrappe(selectedManufacturerFile.value);
+    manufacturerForm.fileUploaded = true;
+  }
+
   let mappingData = {};
   if (props.lead) {
     if (leadCategory.value == "distributor") {
@@ -1499,6 +1578,8 @@ const submitForm = async () => {
         custom_maximum_investment_capacity: distributorForm.investmentCapacityMax,
         custom_credit_period_required: distributorForm.creditPeriodRequired,
         custom_sales_support_provided: distributorForm.salesSupport,
+        agreement: fileUrl,
+        custom_file_uploaded: distributorForm.fileUploaded,
 
         // Address Form
         custom_dist_address: addressForm.streetAddress,
@@ -1535,7 +1616,9 @@ const submitForm = async () => {
         custom_investment_capacity_min: manufacturerForm.investmentCapacityMin,
         custom_maximum_investment_capacity: manufacturerForm.investmentCapacityMax,
         custom_credit_period_required: manufacturerForm.creditPeriodRequired,
-        custom_new_status: distributorForm.status,
+        custom_new_status: manufacturerForm.status,
+        agreement: fileUrl,
+        custom_file_uploaded: distributorForm.fileUploaded,
 
         // Address fields
         custom_address: addressForm.streetAddress,
@@ -1670,6 +1753,8 @@ const submitForm = async () => {
         // =======
 
         // Contact Details
+        agreement: fileUrl,
+        custom_new_status: leadCategory.value === 'manufacturer' ? manufacturerForm.status : distributorForm.status,
         custom_lead_category: leadCategory.value == 'manufacturer' ? 'Manufacturer Lead': 'SS / Distributor Lead',
         custom_salutations: leadData.contactInfo.custom_salutations,
         job_title: leadData.contactInfo.designation,
@@ -1958,6 +2043,7 @@ onMounted(async () => {
         distributorForm.investmentCapacityMax = data.data.custom_maximum_investment_capacity;
         distributorForm.creditPeriodRequired = data.data.custom_credit_period_required;
         distributorForm.salesSupport = data.data.custom_sales_support_provided;
+        distributorForm.fileUploaded = data.data.custom_file_uploaded;
         addressForm.streetAddress = data.data.custom_dist_address;
         addressForm.pincode = data.data.custom_dist_pincode;
         addressForm.city = data.data.custom_dist_city;
@@ -1999,7 +2085,8 @@ onMounted(async () => {
         manufacturerForm.investmentCapacityMax = data.data.custom_maximum_investment_capacity;
         manufacturerForm.creditPeriodRequired = data.data.custom_credit_period_required;
         // manufacturerForm.agreement = null as File | null;
-        distributorForm.status = data.data.custom_new_status;
+        manufacturerForm.status = data.data.custom_new_status;
+        manufacturerForm.fileUploaded = data.data.custom_file_uploaded;
         addressForm.streetAddress = data.data.custom_address;
         addressForm.pincode = data.data.custom_pincode;
         addressForm.city = data.data.city;

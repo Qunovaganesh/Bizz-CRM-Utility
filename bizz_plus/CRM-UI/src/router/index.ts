@@ -5,6 +5,7 @@ import Prospect from '../views/Prospect.vue';
 import Customer from '../views/Customer.vue';
 import ViewOnly from '../views/ViewOnly.vue';
 import Registration from '../views/Registration.vue';
+import Interaction from '../views/Interaction.vue';
 
 const routes = [
   {
@@ -49,6 +50,15 @@ const routes = [
     props: true,
     meta: {
       title: 'Customer Management'
+    }
+  },
+  {
+    path: '/interaction:id/:name/:category/:status',
+    name: 'Interaction',
+    component: Interaction,
+    props: true,
+    meta: {
+      title: 'Lead Interaction'
     }
   },
   {
