@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <div class="page-header">
-      <h1>Manufacturer-Distributor Managementt</h1>
+      <h1>Manufacturer-Distributor Management</h1>
       <p>Manage your business relationships and workflow processes</p>
       <div class="header-actions">
         <button class="btn-add-new" @click="$router.push('/')">
@@ -184,15 +184,19 @@
           </div>
           <div class="entity-details">
             <h3>{{ selectedEntityItem?.name || 'Unknown' }}</h3>
-            <p class="entity-edit" @click="editEntity">✏️ Edit</p>
+               
             <p class="entity-location">📍 {{ selectedEntityItem?.district || 'Unknown' }}, {{ selectedEntityItem?.state || 'Unknown' }}</p>
             <p class="entity-category">📦 {{ selectedEntityItem?.category || 'Unknown' }}</p>
             <span :class="getStatusBadgeClass(selectedEntityItem?.status || 'unknown')">
               {{ selectedEntityItem?.status || 'Unknown' }}
             </span>
-            <button class="btn-primary" @click="handleNavigation">
+            <!-- <button class="btn-primary" @click="handleNavigation">
               Interact
-            </button>
+            </button> -->
+            <div class="entity-actions">
+            <button class="btn-primary" @click="editEntity">✏️ Edit</button>
+            <button class="btn-primary" @click="handleNavigation">Interact</button>
+          </div>
           </div>
           
           <!-- Lead Mapping Statistics Cards -->
@@ -553,23 +557,52 @@
         </div>
       </div>
 
-      <!-- Data Table -->
-      <DataTable
-        :title="tableTitle"
-        :columns="tableColumns"
-        :data="filteredPairedList"
-        @action-click="handleActionClick"
-        @view-click="handleViewClick"
-      >
-        <template #actions>
-          <div class="table-summary">
-            <span class="summary-count">{{ filteredPairedList.length }}</span>
-            <span class="summary-text">{{ selectedEntity === 'manufacturer' ? 'distributors' : 'manufacturers' }} found</span>
-          </div>
-        </template>
-      </DataTable>
-    </div>
+    <DataTable
+      :title="tableTitle"
+      :columns="tableColumns"
+      :data="filteredAndSearchedList"
+      @action-click="handleActionClick"
+  @view-click="handleViewClick"
+>
+  <template #actions>
+ 
+    <div class="actions-row">
+  <div class="search-wrapper">
+    <svg class="search-icon" viewBox="0 0 24 24">
+      <path
+        fill="currentColor"
+        d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 
+        6.5 6.5 0 109.5 16a6.471 6.471 0 004.23-1.57l.27.28v.79l5 
+        4.99L20.49 19l-4.99-5zm-6 0C8.01 14 6 11.99 6 9.5S8.01 
+        5 10.5 5 15 7.01 15 9.5 12.99 14 10.5 14z"
+      />
+    </svg>
+    <input
+      type="text"
+      v-model="searchQuery"
+      placeholder="Search..."
+      class="search-input"
+    />
   </div>
+<!-- 
+  <span class="summary-count">{{ filteredAndSearchedList.length }}</span>
+  <span class="summary-text">
+    {{ selectedEntity === 'manufacturer' ? 'distributors' : 'manufacturers' }} found
+  </span> -->
+    <div class="summary-container">
+    <span class="summary-count">{{ filteredAndSearchedList.length }}</span>
+    <span class="summary-text">
+      {{ selectedEntity === 'manufacturer' ? 'distributors' : 'manufacturers' }} found
+    </span>
+  </div>
+</div>
+
+  </template>
+</DataTable>
+
+    
+  </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -612,6 +645,20 @@ const selectedEntityItem = ref<Manufacturer | Distributor | null>(null)
 const selectedToggle = ref('commission')
 
 const lastDate: Record<string, string> = {}
+const searchQuery = ref('')
+
+const filteredAndSearchedList = computed(() => {
+  const list = filteredPairedList?.value || filteredPairedList || []
+  if (!searchQuery.value) return list
+
+  const q = searchQuery.value.toLowerCase()
+  return list.filter(item => {
+    return (
+      (item.name && item.name.toLowerCase().includes(q)) ||
+      (item.category && item.category.toLowerCase().includes(q))
+    )
+  })
+})
 
 const timeFilters = [
   'Today',
@@ -1890,8 +1937,171 @@ watch(selectedEntityItem, (newItem, oldItem) => {
   margin-bottom: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+.associated-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 
-.btn-primary {
+.associated-header h2 {
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0;
+}
+
+/* .actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+
+  gap: 16px; /* space between items 
+}
+
+.search-input {
+  flex-grow: 1; 
+  max-width: 250px; 
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  
+
+}
+
+.summary-count {
+  font-weight: 700;
+  font-size: 1.1em;
+  color: #333;
+   margin-left: -5px;
+}
+
+.summary-text {
+  color: #666;
+  margin-right: 40px;
+  font-size: 1em;
+} */
+/* .actions-row {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.search-input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  max-width: 250px;
+  flex: 1;
+  
+  margin-right: 20rem;
+} */
+.actions-row {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+    background-color: #f9f9f9;
+  
+  
+}
+
+.search-wrapper {
+  position: relative;
+  max-width: 800px;
+  width: 100%;
+  flex: 1;
+    margin-right: 18rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px; /* space for icon */
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  max-width: 100%;
+
+  color: #333;
+  background-color: #f9f9f9;
+  transition: border-color 0.2s ease;
+
+  
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+
+.summary-count {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.summary-text {
+  color: #666;
+  font-size: 1rem;
+}
+
+
+  
+  
+ 
+
+@media (max-width: 600px) {
+  .actions-row {
+    flex-direction: column;
+    align-items: center;  /* center children horizontally */
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .search-wrapper {
+    max-width: 90%;     /* narrower search bar */
+    flex: none;
+    margin-right: 15px;
+  }
+
+  .search-input {
+    font-size: 16px;
+    padding: 10px 12px 10px 40px;
+    
+  }
+
+  /* Wrap summary count and summary text in a flex container */
+  .summary-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .summary-count,
+  .summary-text {
+    font-size: 14px;
+    text-align: center;
+    margin: 0;
+  }
+}
+
+
+/* .btn-primary {
   background: #1c1c1e;
   color: white;
   padding: 8px 12px;
@@ -1903,12 +2113,69 @@ watch(selectedEntityItem, (newItem, oldItem) => {
   border: none;
   min-width: 80px;
   gap: 8px;
+} */
+
+/* .btn-primary:hover {
+  background: #000000;
+  transform: translateY(-1px);
+} */
+ .entity-info-card {
+  display: flex;
+  align-items: flex-start;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #d2d2d7;
+}
+
+.entity-avatar {
+  width: 48px;
+  height: 48px;
+  background: #000;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.entity-details h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.entity-location,
+.entity-category {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.entity-actions {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.btn-primary {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: #000000;
-  transform: translateY(-1px);
+  background-color: #222;
 }
+
 
 .dropdown-label {
   display: block;
@@ -2612,7 +2879,9 @@ watch(selectedEntityItem, (newItem, oldItem) => {
     grid-template-columns: repeat(2, 1fr);
     margin: 0 8px;
   }
+  
 }
+
 
 .stats-card {
   display: flex;
@@ -2805,7 +3074,21 @@ watch(selectedEntityItem, (newItem, oldItem) => {
     text-align: left;
   }
   
-  
+  .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+  }
+
+  .summary-count,
+  .summary-text {
+    font-size: 15px;
+  }
+
   .header-actions {
     position: static;
     margin-top: 16px;

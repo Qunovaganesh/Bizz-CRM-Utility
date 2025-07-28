@@ -295,7 +295,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 // import { useRouter } from 'vue-router';
 import type { Interaction } from '../types';
 
@@ -339,6 +339,10 @@ const selectedInteraction = ref<Interaction | null>(null);
 const isMobile = ref(false);
 const userOptions = ref<{ name: string }[]>([]);
 
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
 const newInteraction = ref({
   interactedBy: 'Current User',
   dateInteracted: new Date().toISOString().split('T')[0],
@@ -381,13 +385,23 @@ const getModeClass = (mode: string) => {
 };
 
 onMounted(async () => {
-    try {
+
+  fetchInteractions();
+
+  try {
     const res = await fetch('/api/method/bizz_plus.api.api.get_users')
     const data = await res.json()
     userOptions.value = data.message
   } catch (err) {
     console.error("Failed to fetch users", err)
   }
+
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile);
 })
 
 const viewNotes = (interaction: any) => {
@@ -453,7 +467,7 @@ const resetForm = () => {
     mode: '',
     notes: '',
     hasReminder: false,
-    reminderDate: '',
+    reminderDate: new Date().toISOString().split('T')[0],
     attachments: [],
     assignedTo: ''
   };

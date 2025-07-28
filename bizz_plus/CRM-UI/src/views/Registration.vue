@@ -3,6 +3,12 @@
     <div class="page-header">
       <h1>{{ props.lead ? "Update Lead" : "New Lead Registration" }}</h1>
       <p>{{ props.lead ? "Update the lead in the system" : "Register a new lead in the system" }}</p>
+       <div class="header-actions">
+      <button class="btn-add-new" @click="$router.push('/dashboard')">
+ <span>🏠</span>  Go to Dashboard
+</button>
+      </div>
+
     </div>
 
     <!-- Lead Category Toggle -->
@@ -1053,7 +1059,7 @@
 
 
       <!-- Form Actions -->
-      <div class="form-actions">
+      <!-- <div class="form-actions">
         <button type="button" class="btn-navigate" @click="navigateToDashboard">
           Go to Dashboard
         </button>
@@ -1063,7 +1069,32 @@
         <button type="submit" class="btn-primary" :disabled="isSubmitting">
           {{ props.lead ? "Update" : "Register" }}
         </button>
-      </div>
+      </div> -->
+      <div class="form-actions">
+        <button
+    v-if="manufacturerForm.id || distributorForm.id"
+    type="button"
+    class="btn-interact"
+    @click="handleInteract"
+  >
+    Interact
+  </button>
+  <button type="button" class="btn-navigate" @click="navigateToDashboard">
+    Go to Dashboard
+  </button>
+
+  <button type="button" class="btn-secondary" @click="resetForm">
+    Reset Form
+  </button>
+
+  <!-- Interact Button -->
+  
+
+  <button type="submit" class="btn-primary" :disabled="isSubmitting">
+    {{ props.lead ? "Update" : "Register" }}
+  </button>
+</div>
+
 
     </form>
 
@@ -1139,6 +1170,34 @@ const fetchCategories = async () => {
     isLoadingCategories.value = false
   }
 }
+const handleInteract = () => {
+  let type = null;
+  let id = null;
+  let lead_name = null;
+  let status = null;
+
+  if (manufacturerForm.id) {
+    type = 'manufacturer';
+    id = manufacturerForm.id;
+    lead_name = manufacturerForm.companyName;
+    status = manufacturerForm.status;
+  } else {
+    type = 'distributor';
+    id = distributorForm.id;
+    lead_name = distributorForm.name;
+    status = distributorForm.status;
+  }
+
+  router.push({ 
+    name: 'Interaction', 
+    params: { 
+      id: id,
+      name: lead_name,
+      category: type,
+      status: status
+    }
+  });
+};
 
 // Address form (common across all types)
 const addressForm = reactive({
@@ -1151,6 +1210,7 @@ const addressForm = reactive({
 
 // Manufacturer form
 const manufacturerForm = reactive({
+  id: '',
   custom_salutations: '',
   designation: '',
   phone2: '',
@@ -1191,6 +1251,7 @@ const manufacturerForm = reactive({
 
 // Distributor/Super Stockist form
 const distributorForm = reactive({
+  id: '',
   custom_salutations: '',
   designation: '',
   phone2: '',
@@ -1528,6 +1589,27 @@ const uploadFileToFrappe = async (file: File): Promise<string> => {
 
 // Submit form
 const submitForm = async () => {
+
+  await fetch('/api/resource/States', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "state_name": addressForm.state
+    })
+  });
+
+  await fetch('/api/resource/Districts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      "district_name": addressForm.district,
+      "state": addressForm.state
+    })
+  });
 
   let fileUrl: any;
   if (selectedDistributorFile.value) {
@@ -1950,7 +2032,7 @@ const submitForm = async () => {
             state: addressForm.state,
             category: manufacturerForm.categories[0] || 'General',
             subCategory: manufacturerForm.subCategories[0] || 'General',
-            status: 'Registration' as const,
+            status: 'Verified' as const,
             registrationDate: new Date().toISOString(),
             daysSinceStatus: 0,
           }
@@ -1964,7 +2046,7 @@ const submitForm = async () => {
             state: addressForm.state,
             category: distributorForm.categories[0] || 'General',
             subCategory: distributorForm.subCategories[0] || 'General',
-            status: 'Registration' as const,
+            status: 'Verified' as const,
             registrationDate: new Date().toISOString(),
             daysSinceStatus: 0,
           }
@@ -2002,6 +2084,7 @@ onMounted(async () => {
       
       if (data.data.custom_lead_category == "SS / Distributor Lead") {
         leadCategory.value = "distributor";
+        distributorForm.id = data.data.name;
         distributorForm.custom_salutations = data.data.salutation;
         distributorForm.designation = data.data.job_title;
         distributorForm.phone2 = data.data.phone;
@@ -2051,6 +2134,7 @@ onMounted(async () => {
         addressForm.state = data.data.custom_dist_state;
       } else {
         leadCategory.value = "manufacturer";
+        manufacturerForm.id = data.data.name;
         manufacturerForm.custom_salutations = data.data.salutation;
         manufacturerForm.designation = data.data.job_title;
         manufacturerForm.phone2 = data.data.phone;
@@ -2111,7 +2195,49 @@ onMounted(async () => {
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
+.btn-interact {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  min-width: 100px;
+  min-height: 36px;
+}
 
+.btn-interact:hover {
+  background-color: #005fcc;
+}
+.btn-add-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #1c1c1e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-add-new:hover {
+  background: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(28, 28, 30, 0.3);
+}
+.header-actions {
+  position: absolute;
+  top: 20px;
+  right: 80px;
+  display: flex;
+  gap: 12px;
+}
 .page-header {
   text-align: center;
   margin-bottom: 32px;
@@ -2317,7 +2443,7 @@ onMounted(async () => {
   min-height: 36px;
 }
 
-.btn-primary {
+.btn-primary ,.btn-interact{
   background: #1c1c1e;
   color: white;
 }
@@ -2339,7 +2465,7 @@ onMounted(async () => {
   border: 1px solid #d2d2d7;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover{
   background: #e8e8ed;
   transform: translateY(-1px);
 }
@@ -2353,7 +2479,11 @@ onMounted(async () => {
   background: #000000;
   transform: translateY(-1px);
 }
-
+.btn-interact:hover {
+  background-color: black;
+  color: white;
+  transform: translateY(-1px);
+}
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -2393,12 +2523,41 @@ onMounted(async () => {
   .registration-page {
     padding: 16px;
   }
-  
+  /* .header-actions{
+    position: static;
+    margin-bottom: 16px;
+    justify-content: center;
+  }
   .page-header h1 {
     font-size: 24px;
+    margin-top: 20px;
   }
   
   .page-header p {
+    font-size: 16px;
+    margin-top: 20px;
+  } */
+   .page-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-actions {
+    position: static;
+    order: 1;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 {
+    order: 2;
+    font-size: 24px;
+  }
+
+  .page-header p {
+    order: 3;
     font-size: 16px;
   }
   
@@ -2466,7 +2625,7 @@ onMounted(async () => {
   
   .btn-primary,
   .btn-secondary,
-  .btn-navigate {
+  .btn-navigate.btn-interact {
     padding: 6px 16px;
     font-size: 14px;
     min-height: 32px;

@@ -6,7 +6,7 @@ export interface Manufacturer {
   state: string;
   category: string;
   subCategory: string;
-  status: 'Registration' | 'Lead' | 'Prospect' | 'Customer' | 'View';
+  status: 'Verified' | 'Lead' | 'Prospect' | 'Customer' | 'View';
   registrationDate: string;
   daysSinceStatus: number;
   [key: string]: any;
@@ -20,7 +20,7 @@ export interface Distributor {
   state: string;
   category: string;
   subCategory: string;
-  status: 'Registration' | 'Lead' | 'Prospect' | 'Customer' | 'View';
+  status: 'Verified' | 'Lead' | 'Prospect' | 'Customer' | 'View';
   registrationDate: string;
   daysSinceStatus: number;
   [key: string]: any;

@@ -775,7 +775,7 @@ const resetForm = () => {
     mode: '',
     notes: '',
     hasReminder: false,
-    reminderDate: '',
+    reminderDate: new Date().toISOString().split('T')[0],
     attachments: [],
     assignedTo: ''
   };

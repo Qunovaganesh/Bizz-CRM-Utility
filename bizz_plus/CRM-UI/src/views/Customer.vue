@@ -161,7 +161,29 @@
                   </div>
 
                   <div class="form-group">
-                    <label>Commission Amount (₹)</label>
+                    <label>GST (%)</label>
+                    <input 
+                      type="number" 
+                      v-model="newDocument.gst_percentage" 
+                      placeholder="Enter GST percentage"
+                      class="modern-input"
+                      readonly
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label>GST Amount (₹)</label>
+                    <input 
+                      type="number" 
+                      v-model="newDocument.gst_amount" 
+                      readonly
+                      placeholder="Auto-calculated"
+                      class="modern-input readonly"
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label>Total Commission Amount (₹)</label>
                     <input 
                       type="number" 
                       v-model="newDocument.commission_amount" 
@@ -592,6 +614,8 @@ const newDocument = ref<any>({
   payment_reference_number: '',
   payment_amount: 0,
   payment_method: '',
+  gst_percentage: 18, // change 18 when gst percentage changes
+  gst_amount: 0,
   payment_date: new Date().toISOString().split('T')[0],
   remarks: ''
 });
@@ -875,8 +899,16 @@ const calculateCommission = () => {
     newDocument.value.commission_amount = 
       (newDocument.value.amount * newDocument.value.commission_percent) / 100;
   } else {
+
     newDocument.value.commission_amount = 
-      (newDocument.value.payment_amount * newDocument.value.commission_percent) / 100;
+      ((newDocument.value.payment_amount * newDocument.value.commission_percent) / 100)
+
+    newDocument.value.gst_amount = (
+      newDocument.value.commission_amount * 0.18 // change 0.18 when gst percentage changes
+    ).toFixed(2)
+
+    newDocument.value.commission_amount = 
+      (parseFloat(newDocument.value.commission_amount) + parseFloat(newDocument.value.gst_amount))
   }
 };
 
@@ -956,6 +988,8 @@ const uploadDocument = async () => {
       newDocumentEntry.payment_reference_number = newDocument.value.payment_reference_number;
       newDocumentEntry.amount = newDocument.value.payment_amount;
       newDocumentEntry.commission_percent = newDocument.value.commission_percent || 0;
+      newDocumentEntry.gst_amount = newDocument.value.gst_amount || 0;
+      newDocumentEntry.gst_percentage = newDocument.value.gst_percentage || 0;
       newDocumentEntry.commission_amount = newDocument.value.commission_amount || 0;
       newDocumentEntry.payment_method = newDocument.value.payment_method || '';
       newDocumentEntry.payment_date = newDocument.value.payment_date || new Date().toISOString().split('T')[0];
@@ -1032,6 +1066,8 @@ const resetForm = () => {
     amount: 0,
     commission_percent: 0,
     commission_amount: 0,
+    gst_amount: 0,
+    gst_percentage: 18, // change 18 when gst percentage changes
     payment_reference_number: '',
     payment_amount: 0,
     payment_method: '',
