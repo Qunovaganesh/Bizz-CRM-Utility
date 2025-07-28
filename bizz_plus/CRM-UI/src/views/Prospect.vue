@@ -1,32 +1,34 @@
 <template>
   <div class="prospect-page">
     <!-- Floating Header -->
-    <div class="floating-header">
+     <div class="floating-header">
       <div class="relationship-header">
-        <h1>Prospect Management</h1>
+        <div class="title">Prospect Management</div>
         <div class="relationship-info">
-          <span :class="isManufacturerProspect ? 'manufacturer selected-entity' : 'manufacturer'">
-            {{ manufacturerName }}
-            <span class="entity-type">🏭 Manufacturer</span>
-          </span>
+          <div :class="isManufacturerProspect ? 'manufacturer' : 'manufacturer'" class="flex ">
+            <span class="entity-type"><span style="font-weight: 600;">Manufacturer: </span>{{ manufacturerName }}</span>
+            <span class="entity-type-mob"><span style="font-weight: 600;">Mfr: </span>{{ manufacturerName }}</span>
+            
+          </div>
           <span class="connector">⇄</span>
-          <span :class="!isManufacturerProspect ? 'distributor selected-entity' : 'distributor'">
-            {{ distributorName }}
-            <span class="entity-type">🏪 Distributor</span>
-          </span>
-          <span :class="getStatusBadgeClass(prospectStatus)">{{ prospectStatus }}</span>
+          <div :class="!isManufacturerProspect ? 'distributor' : 'distributor'">
+            <span class="entity-type"><span style="font-weight: 600;">Distributor: </span>{{ distributorName }}</span>
+            <span class="entity-type-mob"><span style="font-weight: 600;">Dist: </span>{{ distributorName }}</span>
+            
+          </div>
+          <span :class="getStatusBadgeClass(prospectStatus)" class="header-status">{{ prospectStatus }}</span>
           <span v-if="currentLeadMapping?.last_status_change" class="status-date">
             Since {{ formatDate(currentLeadMapping.last_status_change) }}
           </span>
         </div>
       </div>
-      <p>Manage terms & conditions and agreement generation</p>
+      <p class="relationship-description">Manage terms & conditions and agreement generation</p>
     </div>
 
     <!-- Floating Back Button -->
     <div class="floating-back-button">
       <button class="btn-floating-back" @click="$router.go(-1)">
-        ← Back
+        <
       </button>
     </div>
 
@@ -937,7 +939,7 @@ onMounted(async () => {
 .prospect-page {
   max-width: 1200px;
   margin: 0 auto;
- background-color: white;
+  background-color: #f5f5f7;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -949,23 +951,26 @@ onMounted(async () => {
   right: 0;
   background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-bottom: 1px solid #d2d2d7;
-  padding: 20px;
+  padding: 0px 20px 0 20px;
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-
- 
- 
+  text-align: center;
+  .relationship-description {
+    margin-bottom: 8px;
+  }
 }
 
 .content-wrapper {
-  margin-top: 200px;
+  position: relative;
+  margin-top: 145px;
+  background-color: white;
   padding: 24px;
 }
 
 .floating-back-button {
   position: fixed;
   top: 20px;
-  right: 20px;
+  left: 20px;
   z-index: 1000;
 }
 
@@ -973,11 +978,12 @@ onMounted(async () => {
   background: #1c1c1e;
   color: white;
   border: none;
-  padding: 12px 20px;
-  border-radius: 25px;
+  padding:8px 16px !important;
+  height: 30px !important;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700 !important;
   box-shadow: 0 4px 20px rgba(28, 28, 30, 0.3);
   transition: all 0.3s ease;
 }
@@ -988,7 +994,7 @@ onMounted(async () => {
   box-shadow: 0 6px 25px rgba(28, 28, 30, 0.4);
 }
 
-.relationship-header h1 {
+.relationship-header .title {
   color: #1d1d1f;
   font-size: 28px;
   font-weight: 700;
@@ -998,38 +1004,57 @@ onMounted(async () => {
 .relationship-info {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 8px;
 }
 
 .manufacturer {
-  background: #e8f4fd;
+  /* background: #e8f4fd; */
   color: #1e40af;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+  /* font-weight: 600; */
   font-size: 14px;
   border: 1px solid #bfdbfe;
+  width: 45%;
+  max-width: 255px;
 }
 
 .distributor {
-background-color: #f4e3d7;      /* Light tan background */
+/* background-color: #f4e3d7;      Light tan background */
   color: #3e2723;                 /* Deep espresso brown text */
-  border: 1px solid #5d4037;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
+  border: 1px solid #dac2bb;
+  padding: 2px 8px;
+  border-radius: 8px;
+  /* font-weight: 600; */
   font-size: 14px;
-  border: 1px solid #fde68a;
+  /* border: 1px solid #fde68a; */
+  width: 45%;
+  max-width: 255px;
+}
+.entity-type{
+  display: block;
+}
+.entity-type-mob{
+  display: none;
 }
 
 .connector {
+  /* display: none; */
   color: #86868b;
   font-size: 18px;
   font-weight: bold;
+  /* @media (min-width: 768px) {
+    display: block;
+  } */
 }
-
+.header-status {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
 .status-badge {
   padding: 8px 16px;
   border-radius: 20px;
@@ -1040,31 +1065,31 @@ background-color: #f4e3d7;      /* Light tan background */
 }
 
 .status-registration {
-  background: #ede9fe;
+  /* background: #ede9fe; */
   color: #7c3aed;
   border: 1px solid #c4b5fd;
 }
 
 .status-lead {
-  background: #fef3c7;
+  /* background: #fef3c7; */
   color: #d97706;
   border: 1px solid #fcd34d;
 }
 
 .status-prospect {
-  background: #e8f4fd;
+  /* background: #e8f4fd; */
   color: #1e40af;
   border: 1px solid #bfdbfe;
 }
 
 .status-customer {
-  background: #d1fae5;
+  /* background: #d1fae5; */
   color: #059669;
   border: 1px solid #86efac;
 }
 
 .status-view {
-  background: #f3f4f6;
+  /* background: #f3f4f6; */
   color: #6b7280;
   border: 1px solid #d1d5db;
 }
@@ -1671,17 +1696,29 @@ background-color: #f4e3d7;      /* Light tan background */
   }
   
   .content-wrapper {
-    margin-top: 38px;
+    margin-top: 150px;
     padding: 16px;
   }
   
   .terms-container {
     max-height: 400px;
   }
+  .entity-type{
+    display: none;
+  }
+  .entity-type-mob{
+    display: block;
+  }
+  .relationship-header .title {
+    line-height: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    width: 55%;
+    margin: 10px auto;
+  }
   
   .relationship-info {
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     word-break: break-word;
   }
@@ -1692,21 +1729,26 @@ background-color: #f4e3d7;      /* Light tan background */
   }
 
   .floating-header {
-     position: static;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #d2d2d7;
-  padding: 20px;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-bottom: 1px solid #d2d2d7;
+    padding: 8px 20px 0 20px;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    .relationship-description {
+      margin-bottom: 8px;
+    }
   }
   .floating-back-button {
     top: 10px;
-    right: 10px;
+    left: 10px;
     font-size: 10px;
   }
+  
   .modal-content {
     width: 95%;
   }
@@ -1757,6 +1799,10 @@ background-color: #f4e3d7;      /* Light tan background */
   
   .upload-icon {
     font-size: 36px;
+  }
+  .content-wrapper {
+    margin-top: 158px;
+    padding: 16px;
   }
 }
 </style>

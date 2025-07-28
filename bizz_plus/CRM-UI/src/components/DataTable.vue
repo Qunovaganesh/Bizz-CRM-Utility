@@ -494,18 +494,21 @@ onUnmounted(() => {
 }
 
 .status-lead {
-  background: #fef3c7;
+  /* background: #fef3c7; */
   color: #92400e;
+  border: 1px solid #f2d45d;
 }
 
 .status-prospect {
-  background: #dbeafe;
+  /* background: #dbeafe; */
   color: #1e40af;
+  border: 1px solid #dbeafe;
 }
 
 .status-customer {
-  background: #d1fae5;
+  /* background: #; */
   color: #065f46;
+  border: 1px solid #065f46;
 }
 
 .status-view {
@@ -514,8 +517,9 @@ onUnmounted(() => {
 }
 
 .status-registration {
-  background: #ede9fe;
+  /* background: #ede9fe; */
   color: #7c3aed;
+  border: 1px solid #7c3aed;
 }
 
 /* Mobile Cards */
