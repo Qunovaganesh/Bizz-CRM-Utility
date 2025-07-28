@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{parent_lead_name}-{mapped_lead_name}",
  "creation": "2025-07-11 16:16:26.186494",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -8,26 +9,37 @@
  "field_order": [
   "parent_lead",
   "mapped_lead",
-  "last_status_change",
+  "parent_lead_name",
+  "mapped_lead_name",
+  "column_break_pmbx",
+  "last_date",
   "status",
+  "terms_and_conditions_section",
   "terms_and_conditions",
   "signed_agreement",
+  "tax_invoices_section",
   "tax_invoices",
-  "payments"
+  "payments_section",
+  "payments",
+  "stages_section",
+  "verified_owner",
+  "lead_owner",
+  "prospect_owner",
+  "customer_owner",
+  "column_break_jiyt",
+  "verified_date",
+  "lead_date",
+  "prospect_date",
+  "customer_date"
  ],
  "fields": [
   {
-   "fieldname": "last_status_change",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Last Status Change"
-  },
-  {
+   "default": "Verified",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Registration\nLead\nProspect\nCustomer\nView"
+   "options": "Verified\nLead\nProspect\nCustomer\nView"
   },
   {
    "fieldname": "parent_lead",
@@ -46,7 +58,6 @@
   {
    "fieldname": "terms_and_conditions",
    "fieldtype": "Table",
-   "label": "Terms and Conditions",
    "options": "Lead Mapping TnC"
   },
   {
@@ -57,23 +68,127 @@
   {
    "fieldname": "tax_invoices",
    "fieldtype": "Table",
-   "label": "Tax Invoices",
    "options": "Lead Mapping Tax Invoice"
   },
   {
    "fieldname": "payments",
    "fieldtype": "Table",
-   "label": "Payments",
    "options": "Lead Mapping Payment"
+  },
+  {
+   "fieldname": "column_break_pmbx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "terms_and_conditions_section",
+   "fieldtype": "Section Break",
+   "label": "Terms and Conditions"
+  },
+  {
+   "fieldname": "tax_invoices_section",
+   "fieldtype": "Section Break",
+   "label": "Tax Invoices"
+  },
+  {
+   "fieldname": "payments_section",
+   "fieldtype": "Section Break",
+   "label": "Payments"
+  },
+  {
+   "fieldname": "stages_section",
+   "fieldtype": "Section Break",
+   "label": "Stages"
+  },
+  {
+   "fieldname": "lead_owner",
+   "fieldtype": "Link",
+   "label": "Lead Owner",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prospect_owner",
+   "fieldtype": "Link",
+   "label": "Prospect Owner",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_owner",
+   "fieldtype": "Link",
+   "label": "Customer Owner",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jiyt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "lead_date",
+   "fieldtype": "Datetime",
+   "label": "Lead Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "prospect_date",
+   "fieldtype": "Datetime",
+   "label": "Prospect Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer_date",
+   "fieldtype": "Datetime",
+   "label": "Customer Date",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "parent_lead.title",
+   "fetch_if_empty": 1,
+   "fieldname": "parent_lead_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Parent Lead Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "mapped_lead.title",
+   "fetch_if_empty": 1,
+   "fieldname": "mapped_lead_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Mapped Lead Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verified_owner",
+   "fieldtype": "Link",
+   "label": "Verified Owner",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verified_date",
+   "fieldtype": "Datetime",
+   "label": "Verified Date",
+   "read_only": 1
+  },
+  {
+   "default": "Today",
+   "fieldname": "last_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Last Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-13 05:41:48.674483",
+ "modified": "2025-07-28 23:41:26.679562",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Mapping",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -85,6 +200,30 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Brand Pilot",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Super Stockiests and Distributor Pilots",
    "share": 1,
    "write": 1
   }

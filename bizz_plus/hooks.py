@@ -249,7 +249,8 @@ doctype_list_js = {"Lead" : "public/js/lead_list.js",
 doc_events = {
 	"Lead": {
 		"on_update": "bizz_plus.api.pincode_api.after_insert_or_update_lead",
-		
+      "before_save": "bizz_plus.bizz_plus.overrides.lead.before_save",
+      "after_insert": "bizz_plus.bizz_plus.overrides.lead.after_insert"
 	},
    "Expense Entry":{
 	   "on_update":"bizz_plus.api.pincode_api.notify",

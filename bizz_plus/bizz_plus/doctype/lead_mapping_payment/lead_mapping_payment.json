@@ -9,6 +9,8 @@
   "payment_reference_number",
   "amount",
   "commission_percent",
+  "gst_percentage",
+  "gst_amount",
   "commission_amount",
   "attachment",
   "payment_method",
@@ -63,13 +65,23 @@
    "fieldtype": "Text",
    "in_list_view": 1,
    "label": "Remarks"
+  },
+  {
+   "fieldname": "gst_percentage",
+   "fieldtype": "Percent",
+   "label": "GST Percentage"
+  },
+  {
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-13 18:00:14.935297",
+ "modified": "2025-07-28 22:23:26.912911",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Mapping Payment",

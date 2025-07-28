@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"FOoGm9p8wb\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Bizz+ Business Development Team</span>\",\"col\":12}},{\"id\":\"ZuIHukrjLB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead\",\"col\":9}},{\"id\":\"1Rq3SlAgqb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Expenses Claims\",\"col\":9}},{\"id\":\"0-ylEN1cH5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CRM\",\"col\":9}}]",
+ "content": "[{\"id\":\"FOoGm9p8wb\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Bizz+ Business Development Team</span>\",\"col\":12}},{\"id\":\"1Rq3SlAgqb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Expenses Claims\",\"col\":3}},{\"id\":\"0-ylEN1cH5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"CRM\",\"col\":3}},{\"id\":\"80l99S1D71\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Entity Wise\",\"col\":3}}]",
  "creation": "2025-06-27 16:37:24.943351",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Bizz+ Business Development Team",
  "links": [],
- "modified": "2025-07-14 23:20:54.975936",
+ "modified": "2025-07-26 04:01:24.594751",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Bizz+ Business Development Team",
@@ -45,10 +45,10 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Lead",
-   "link_to": "Lead",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "label": "Entity Wise",
+   "link_to": "Entity Wise",
+   "report_ref_doctype": "Lead Mapping",
+   "type": "Report"
   },
   {
    "color": "Grey",

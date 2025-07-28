@@ -1,0 +1,163 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "BI.-.MM.-.YYYY.-.#####",
+ "creation": "2025-07-26 19:35:53.656925",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "lead",
+  "lead_name",
+  "status",
+  "assigned_by",
+  "assigned_by_name",
+  "assigned_to",
+  "assigned_to_name",
+  "column_break_rcpj",
+  "company",
+  "posting_date",
+  "interaction_mode",
+  "reminder_date",
+  "notes_section",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "Lead",
+   "options": "Lead"
+  },
+  {
+   "fetch_from": "lead.custom_new_status",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "fieldname": "column_break_rcpj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "notes_section",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text"
+  },
+  {
+   "fieldname": "assigned_by",
+   "fieldtype": "Link",
+   "label": "Assigned By",
+   "options": "User"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned To",
+   "options": "User"
+  },
+  {
+   "fieldname": "reminder_date",
+   "fieldtype": "Date",
+   "label": "Reminder Date"
+  },
+  {
+   "fieldname": "interaction_mode",
+   "fieldtype": "Data",
+   "label": "Interaction Mode"
+  },
+  {
+   "fetch_from": "assigned_by.full_name",
+   "fetch_if_empty": 1,
+   "fieldname": "assigned_by_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Assigned By Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "assigned_to.full_name",
+   "fetch_if_empty": 1,
+   "fieldname": "assigned_to_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Assigned To Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "lead.title",
+   "fetch_if_empty": 1,
+   "fieldname": "lead_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Lead Name"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-28 23:16:22.246204",
+ "modified_by": "Administrator",
+ "module": "Bizz Plus",
+ "name": "Bizz Interaction",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Brand Pilot",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Super Stockiests and Distributor Pilots",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,14 +1,20 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "LI.-.MM.-.YYYY.-.#####",
  "creation": "2025-07-12 16:16:05.148095",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "interaction_mode",
   "interaction_notes",
-  "reminder_date",
+  "section_break_gbhd",
   "lead_owner",
+  "lead_owner_name",
+  "assigned_to",
+  "assigned_to_name",
+  "column_break_cuko",
+  "reminder_date",
   "parent_lead",
   "mapped_lead"
  ],
@@ -33,6 +39,7 @@
    "fieldname": "lead_owner",
    "fieldtype": "Link",
    "label": "Lead Owner",
+   "link_filters": "[[\"User\",\"enabled\",\"=\",1]]",
    "options": "User"
   },
   {
@@ -46,15 +53,49 @@
    "fieldtype": "Link",
    "label": "Mapped Lead",
    "options": "Lead"
+  },
+  {
+   "fieldname": "section_break_gbhd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned To",
+   "link_filters": "[[\"User\",\"enabled\",\"=\",1]]",
+   "options": "User"
+  },
+  {
+   "fieldname": "column_break_cuko",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "assigned_to.full_name",
+   "fetch_if_empty": 1,
+   "fieldname": "assigned_to_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Assigned To Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "lead_owner.full_name",
+   "fetch_if_empty": 1,
+   "fieldname": "lead_owner_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Lead Owner Name",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-12 16:21:47.846521",
+ "modified": "2025-07-23 01:12:53.908496",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Interaction",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
