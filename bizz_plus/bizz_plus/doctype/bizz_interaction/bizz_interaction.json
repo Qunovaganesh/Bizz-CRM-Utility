@@ -18,6 +18,7 @@
   "posting_date",
   "interaction_mode",
   "reminder_date",
+  "posting_datetime",
   "notes_section",
   "notes"
  ],
@@ -45,7 +46,6 @@
    "options": "Company"
   },
   {
-   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
@@ -107,12 +107,18 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Lead Name"
+  },
+  {
+   "fieldname": "posting_datetime",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Posting Datetime"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-28 23:16:22.246204",
+ "modified": "2025-07-29 22:42:02.429251",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Bizz Interaction",

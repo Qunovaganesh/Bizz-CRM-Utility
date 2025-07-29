@@ -33,6 +33,14 @@ frappe.query_reports["Entity Wise"] = {
 			"reqd": 1,
 		},
 		{
+			"label": "Report Type",
+			"fieldname": "report_type",
+			"fieldtype": "Select",
+			"options": ["Payments", "Invoice", "Bizz Interaction", "Lead Interaction", "Status Changes"],
+			"default": "Payments",
+			"reqd": 1
+		},
+		{
 			"label": "Lead",
 			"fieldname": "lead",
 			"fieldtype": "Link",
@@ -113,12 +121,6 @@ frappe.query_reports["Entity Wise"] = {
 				frappe.query_report.set_filter_value("lead", "");
 				frappe.query_report.refresh();
 			}
-		},
-		{
-			"label": "Show Bizz Interaction",
-			"fieldname": "show_bizz_interaction",
-			"fieldtype": "Check",
-			"default": 0
 		}
 	]
 };

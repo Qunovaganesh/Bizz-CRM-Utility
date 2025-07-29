@@ -7,6 +7,11 @@
  "engine": "InnoDB",
  "field_order": [
   "interaction_mode",
+  "status",
+  "column_break_wakt",
+  "posting_date",
+  "posting_datetime",
+  "section_break_dslb",
   "interaction_notes",
   "section_break_gbhd",
   "lead_owner",
@@ -16,7 +21,9 @@
   "column_break_cuko",
   "reminder_date",
   "parent_lead",
-  "mapped_lead"
+  "parent_lead_name",
+  "mapped_lead",
+  "mapped_lead_name"
  ],
  "fields": [
   {
@@ -27,8 +34,7 @@
   },
   {
    "fieldname": "interaction_notes",
-   "fieldtype": "Long Text",
-   "label": "Interaction Notes"
+   "fieldtype": "Long Text"
   },
   {
    "fieldname": "reminder_date",
@@ -86,12 +92,55 @@
    "hidden": 1,
    "label": "Lead Owner Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_datetime",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Posting Datetime"
+  },
+  {
+   "fieldname": "section_break_dslb",
+   "fieldtype": "Section Break",
+   "label": "Interaction Notes"
+  },
+  {
+   "fieldname": "column_break_wakt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "parent_lead.title",
+   "fetch_if_empty": 1,
+   "fieldname": "parent_lead_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Parent Lead Name"
+  },
+  {
+   "fetch_from": "mapped_lead.title",
+   "fetch_if_empty": 1,
+   "fieldname": "mapped_lead_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Mapped Lead Name"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-23 01:12:53.908496",
+ "modified": "2025-07-29 23:06:23.687629",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Interaction",

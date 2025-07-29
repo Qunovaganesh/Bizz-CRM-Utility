@@ -1,10 +1,9 @@
 # Copyright (c) 2025, sandip.pandit and contributors
 # For license information, please see license.txt
 
-import frappe
+# import frappe
 from frappe.model.document import Document
-from frappe.utils import now
 
-class BizzInteraction(Document):
-    def before_save(self):
-        self.posting_datetime = now()
+
+class LeadMappingTerms(Document):
+	pass

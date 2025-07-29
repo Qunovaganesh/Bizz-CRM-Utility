@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import now
 
 
 class LeadInteraction(Document):
@@ -13,3 +14,6 @@ class LeadInteraction(Document):
             message = f"Here is a reminder set by yourself"
             
             frappe.sendmail(recipients=[self.lead_owner], subject=subject, message=message)
+            
+    def before_save(self):
+        self.posting_datetime = now()

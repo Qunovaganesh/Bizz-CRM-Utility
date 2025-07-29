@@ -11,6 +11,8 @@
   "commission_percent",
   "commission_amount",
   "invoice_date",
+  "invoice_by",
+  "invoice_by_name",
   "attachment"
  ],
  "fields": [
@@ -47,13 +49,27 @@
    "fieldname": "invoice_date",
    "fieldtype": "Date",
    "label": "Invoice Date"
+  },
+  {
+   "fieldname": "invoice_by",
+   "fieldtype": "Link",
+   "label": "Invoice By",
+   "options": "User"
+  },
+  {
+   "fetch_from": "invoice_by.full_name",
+   "fetch_if_empty": 1,
+   "fieldname": "invoice_by_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Invoice By Name"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-25 01:03:02.274845",
+ "modified": "2025-07-29 23:33:04.394819",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Lead Mapping Tax Invoice",

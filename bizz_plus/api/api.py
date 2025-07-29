@@ -1,4 +1,4 @@
-import frappe
+import frappe, json
 from pypika import functions, Order
 from frappe.utils import flt, now, time_diff, today, add_days, getdate, get_first_day, get_last_day, get_year_start, get_year_ending, add_to_date
 
@@ -115,3 +115,16 @@ def get_date_range(timeline):
         to_date = get_year_ending(today)
         
     return getdate(from_date), getdate(to_date)
+
+@frappe.whitelist()
+def update_clause(terms, parent_lead, mapped_lead):
+    lead_mapping = frappe.get_doc("Lead Mapping", {"parent_lead": parent_lead, "mapped_lead": mapped_lead})
+    
+    lead_mapping.set("terms_and_conditions", [])
+    for row in terms:
+        lead_mapping.append("terms_and_conditions", {
+            "clause": row.get("clause"),
+            "response": row.get("response")
+        })
+        
+    lead_mapping.save()
