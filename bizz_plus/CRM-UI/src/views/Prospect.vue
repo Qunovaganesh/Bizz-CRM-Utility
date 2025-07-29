@@ -585,7 +585,7 @@ const closePreview = () => {
   showPreviewModal.value = false;
 };
 
-const confirmGeneration = () => {
+const confirmGeneration = async() => {
   const updatedAgreement = {
     ...agreement.value,
     status: 'Generated' as const,
@@ -596,6 +596,34 @@ const confirmGeneration = () => {
   updateAgreement(updatedAgreement);
   showPreviewModal.value = false;
   console.log('Agreement generated successfully');
+
+  let mapped_lead = null;
+  let parent_lead = null;
+
+  if (selectedEntityData.value.custom_lead_category === 'SS / Distributor Lead') {
+    parent_lead = props.id;
+    mapped_lead = props.parentId;
+  } else {
+    mapped_lead = props.id;
+    parent_lead = props.parentId;
+  }
+
+  let response = await fetch("/api/method/bizz_plus.api.api.update_clause", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      "terms": agreement.value.terms,
+      "parent_lead": parent_lead,
+      "mapped_lead": mapped_lead
+    })
+  })
+  
+  if (response.ok) {
+    console.log("Terms Updated")
+  }
+
 };
 
 const downloadAgreement = () => {
@@ -1006,7 +1034,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   margin-bottom: 8px;
 }
 

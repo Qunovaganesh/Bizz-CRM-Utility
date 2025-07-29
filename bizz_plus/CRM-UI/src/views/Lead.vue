@@ -719,7 +719,8 @@ const submitNotes = async () => {
       parent_lead: parent,
       mapped_lead: mapped,
       lead_owner: data.message,
-      assigned_to: newInteraction.value.assignedTo
+      assigned_to: newInteraction.value.assignedTo,
+      status: leadStatus.value
     };
 
     console.log('Submitting interaction:', interactionData);
@@ -949,7 +950,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   margin-bottom: 8px;
 }
 

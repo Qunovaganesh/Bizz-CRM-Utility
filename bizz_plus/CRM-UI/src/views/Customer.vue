@@ -976,6 +976,9 @@ const uploadDocument = async () => {
       __unedited: false
     };
 
+    const res = await fetch('/api/method/frappe.auth.get_logged_user')
+    const data = await res.json();
+
     // Add specific fields based on upload type
     if (uploadType.value === 'taxinvoice') {
       newDocumentEntry.invoice_number = newDocument.value.invoice_number;
@@ -984,6 +987,7 @@ const uploadDocument = async () => {
       newDocumentEntry.commission_amount = newDocument.value.commission_amount || 0;
       newDocumentEntry.invoice_date = newDocument.value.invoice_date || new Date().toISOString().split('T')[0];
       newDocumentEntry.remarks = newDocument.value.remarks || '';
+      newDocumentEntry.invoice_by = data.message;
     } else {
       newDocumentEntry.payment_reference_number = newDocument.value.payment_reference_number;
       newDocumentEntry.amount = newDocument.value.payment_amount;
@@ -992,6 +996,7 @@ const uploadDocument = async () => {
       newDocumentEntry.gst_percentage = newDocument.value.gst_percentage || 0;
       newDocumentEntry.commission_amount = newDocument.value.commission_amount || 0;
       newDocumentEntry.payment_method = newDocument.value.payment_method || '';
+      newDocumentEntry.payment_by = data.message;
       newDocumentEntry.payment_date = newDocument.value.payment_date || new Date().toISOString().split('T')[0];
       newDocumentEntry.remarks = newDocument.value.remarks || '';
     }
@@ -1394,7 +1399,7 @@ onUnmounted(() => {
 
 <style scoped>
 .customer-page {
-  max-width: 1400px;
+  /* max-width: 1400px; */
   margin: 0 auto;
   background: #f5f5f7;
   min-height: 100vh;
@@ -1477,7 +1482,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   margin-bottom: 8px;
 }
 
@@ -1666,7 +1671,7 @@ onUnmounted(() => {
 }
 
 /* Responsive tweaks */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .invoice-section,
   .invoice-list,
   .customer-actions,
@@ -1701,7 +1706,7 @@ onUnmounted(() => {
   .btn-action-small {
     padding: 12px 18px;
     font-size: 15px;
-    width: 100%;
+    /* width: 100%; */
     min-height: 44px;
   }
 }
@@ -1981,7 +1986,7 @@ onUnmounted(() => {
 }
 
 /* Mobile-specific */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .form-actions {
     flex-direction: column;
     align-items: stretch; /* buttons take full width */
@@ -2143,7 +2148,7 @@ onUnmounted(() => {
 }
 
 /* On mobile, hide table and show cards */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .table-wrapper {
     display: none; /* hide table on small screens */
   }
@@ -2615,7 +2620,7 @@ onUnmounted(() => {
   margin-top: 16px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .customer-content {
     grid-template-columns: 1fr;
     gap: 24px;
