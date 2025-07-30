@@ -52,7 +52,7 @@
                     <th>Interacted By</th>
                     <th>Assigned To</th>
                     <th>Date</th>
-                    <th>Time Elapsed</th>
+                    <th>Days Elapsed</th>
                     <th>Mode</th>
                     <th>Reminder Date</th>
                     <th>Actions</th>
@@ -137,7 +137,7 @@
                   <span class="value">{{ formatDate(row.creation) }}</span>
                 </div>
                 <div class="card-row">
-                  <span class="label">Time Elapsed:</span>
+                  <span class="label">Days Elapsed:</span>
                   <span class="value">{{ getTimeElapsed(row.creation) }}</span>
                 </div>
                 <div class="card-row">
@@ -894,6 +894,7 @@ onUnmounted(() => {
   border: none;
   padding:8px 16px !important;
   height: 30px !important;
+  min-height: 30px !important;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -1903,6 +1904,10 @@ onUnmounted(() => {
 @media (max-width: 480px) {
   .table-container {
     display: none;
+  }
+  .relationship-header .title {
+    font-size: 18px;
+    margin-bottom: 8px;
   }
    .floating-back-button {
     top: 10px;

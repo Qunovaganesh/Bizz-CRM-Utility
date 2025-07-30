@@ -1006,8 +1006,9 @@ onMounted(async () => {
   background: #1c1c1e;
   color: white;
   border: none;
-  padding:8px 16px !important;
+  padding:0px 16px !important;
   height: 30px !important;
+  min-height: 30px !important;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -1801,6 +1802,10 @@ onMounted(async () => {
   }
   .term-card {
     padding: 16px;
+  }
+  .relationship-header .title {
+    font-size: 18px;
+    margin-bottom: 8px;
   }
   
   .modal-header,

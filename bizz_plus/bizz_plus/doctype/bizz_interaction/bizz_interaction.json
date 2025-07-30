@@ -46,6 +46,7 @@
    "options": "Company"
   },
   {
+   "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "label": "Posting Date",
@@ -118,7 +119,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-29 22:42:02.429251",
+ "modified": "2025-07-30 22:03:08.897321",
  "modified_by": "Administrator",
  "module": "Bizz Plus",
  "name": "Bizz Interaction",

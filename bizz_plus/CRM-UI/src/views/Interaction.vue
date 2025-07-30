@@ -47,7 +47,7 @@
                       <th>Interacted By</th>
                       <th>Assigned To</th>
                       <th>Date</th>
-                      <th>Time Elapsed</th>
+                      <th>Days Elapsed</th>
                       <th>Mode</th>
                       <th>Reminder Date</th>
                       <th>Actions</th>
@@ -132,7 +132,7 @@
                     <span class="value">{{ formatDate(row.posting_date) }}</span>
                   </div>
                   <div class="card-row">
-                    <span class="label">Time Elapsed:</span>
+                    <span class="label">Days Elapsed:</span>
                     <span class="value">{{ getTimeElapsed(row.posting_date) }}</span>
                   </div>
                   <div class="card-row">

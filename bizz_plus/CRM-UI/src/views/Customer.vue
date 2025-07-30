@@ -1456,6 +1456,7 @@ onUnmounted(() => {
   border: none;
   padding:8px 16px !important;
   height: 30px !important;
+  min-height: 30px !important;
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
@@ -2780,7 +2781,7 @@ onUnmounted(() => {
   }
   
   .relationship-header .title {
-    font-size: 24px;
+    font-size: 18px;
     margin-bottom: 8px;
   }
   

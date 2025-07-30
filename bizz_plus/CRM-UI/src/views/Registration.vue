@@ -4,6 +4,14 @@
       <h1>{{ props.lead ? "Update Lead" : "New Lead Registration" }}</h1>
       <p>{{ props.lead ? "Update the lead in the system" : "Register a new lead in the system" }}</p>
        <div class="header-actions">
+        <div class="actions-dropdown" ref="dropdown">
+        <button class="btn-actions btn-add-new" @click="toggleActionsMenu" v-if="manufacturerForm.id || distributorForm.id">Actions</button>
+        <div class="dropdown-menu" v-if="showMenu">
+          <button @click="handleInteract" v-if="manufacturerForm.id || distributorForm.id">Interact</button>
+          <button @click="downloadCatalogue" v-if="manufacturerForm.catalogue">Catalogue</button>
+          <button @click="downloadAgreement" v-if="manufacturerForm.agreement || distributorForm.agreement">Agreement</button>
+        </div>
+      </div>
       <button class="btn-add-new" @click="$router.push('/dashboard')">
  <span>🏠</span>  Go to Dashboard
 </button>
@@ -317,7 +325,7 @@
               <label>Catalogue</label>
               <input 
                 type="file" 
-
+                
                 @change="handleFileUpload"
                 class="form-file"
                 accept=".pdf,.doc,.docx"
@@ -1071,7 +1079,7 @@
         </button>
       </div> -->
       <div class="form-actions">
-        <button
+        <!-- <button
     v-if="manufacturerForm.id || distributorForm.id"
     type="button"
     class="btn-interact"
@@ -1081,9 +1089,9 @@
   </button>
   <button type="button" class="btn-navigate" @click="navigateToDashboard">
     Go to Dashboard
-  </button>
+  </button> -->
 
-  <button type="button" class="btn-secondary" @click="resetForm">
+  <button type="button" class="btn-secondary" @click="resetForm" v-if="!props.lead">
     Reset Form
   </button>
 
@@ -1122,7 +1130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBusinessLogic } from '../composables/useBusinessLogic'
 import { useAlert } from '../composables/useAlert'
@@ -1136,6 +1144,10 @@ const { manufacturers, distributors } = useBusinessLogic()
 const { alertState, showError, showSuccess, handleConfirm, handleCancel } = useAlert()
 const selectedDistributorFile = ref<File | null>(null);
 const selectedManufacturerFile = ref<File | null>(null);
+const catalogue = ref<File | null>(null);
+
+const showMenu = ref(false)
+const dropdown = ref<HTMLElement | null>(null)
 
 // Form state
 const leadCategory = ref<'manufacturer' | 'super-stockist' | 'distributor'>('manufacturer')
@@ -1170,6 +1182,62 @@ const fetchCategories = async () => {
     isLoadingCategories.value = false
   }
 }
+
+function toggleActionsMenu() {
+  showMenu.value = !showMenu.value
+}
+
+const downloadCatalogue = async() => {
+  const decodedLabel = atob(manufacturerForm.catalogue);
+  const uint8Array = new Uint8Array(decodedLabel.length);
+
+  for (let i = 0; i < decodedLabel.length; i++) {
+    uint8Array[i] = decodedLabel.charCodeAt(i);
+  }
+
+  const blob = new Blob([uint8Array], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${manufacturerForm.companyName}_catalogue.pdf`
+  link.click();
+}
+
+function downloadAgreement() {
+  let file = null;
+  let fileName = null;
+  if (leadCategory.value == "manufacturer") {
+    file = manufacturerForm.agreement;
+    fileName = `${manufacturerForm.companyName}_agreement.pdf`
+  } else {
+    file = distributorForm.agreement;
+    fileName = `${distributorForm.name}_agreement.pdf`
+  }
+
+  const decodedLabel = atob(file);
+  const uint8Array = new Uint8Array(decodedLabel.length);
+
+  for (let i = 0; i < decodedLabel.length; i++) {
+    uint8Array[i] = decodedLabel.charCodeAt(i);
+  }
+
+  const blob = new Blob([uint8Array], { type: 'application/pdf' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  link.click();
+  
+}
+
+function handleClickOutside(event: any) {
+  if (dropdown.value && !dropdown.value.contains(event.target)) {
+    showMenu.value = false
+  }
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleClickOutside)
+})
+
 const handleInteract = () => {
   let type = null;
   let id = null;
@@ -1244,9 +1312,10 @@ const manufacturerForm = reactive({
   investmentCapacityMin: '',
   investmentCapacityMax: '',
   creditPeriodRequired: '',
-   agreement: null as File | null,
+   agreement: '',
    status: 'Open',
-   fileUploaded: false
+   fileUploaded: false,
+   catalogue: ''
 })
 
 // Distributor/Super Stockist form
@@ -1263,7 +1332,7 @@ const distributorForm = reactive({
   leadOwner: '',
   lastName: '',
   status: 'Open',
-  agreement: null as File | null,
+  agreement: '',
  gstNumber:'',
   type: leadCategory,
   staffStrength: '',
@@ -1294,7 +1363,7 @@ const distributorForm = reactive({
   investmentCapacityMax: '',
   creditPeriodRequired: '',
   salesSupport :'',
-  fileUploaded: false
+  fileUploaded: false,
 })
 // const handleAgreementUpload = (event: Event) => {
 //   const target = event.target as HTMLInputElement
@@ -1461,7 +1530,7 @@ const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   if (target.files && target.files.length > 0) {
     // Handle file upload logic here
-    console.log('File uploaded:', target.files[0].name)
+    catalogue.value = target.files[0];
   }
 }
 
@@ -1510,9 +1579,9 @@ const resetForm = () => {
   isLocationAutoFilled.value = false
 }
 
-const navigateToDashboard = () => {
-  router.push('/dashboard')
-}
+// const navigateToDashboard = () => {
+//   router.push('/dashboard')
+// }
 
 // Form validation helper
 const validateForm = (): { isValid: boolean; errors: string[] } => {
@@ -1612,6 +1681,7 @@ const submitForm = async () => {
   });
 
   let fileUrl: any;
+  let catalogueUrl: any;
   if (selectedDistributorFile.value) {
     fileUrl = await uploadFileToFrappe(selectedDistributorFile.value);
     distributorForm.fileUploaded = true;
@@ -1620,6 +1690,10 @@ const submitForm = async () => {
   if (selectedManufacturerFile.value) {
     fileUrl = await uploadFileToFrappe(selectedManufacturerFile.value);
     manufacturerForm.fileUploaded = true;
+  }
+
+  if (catalogue.value) {
+    catalogueUrl = await uploadFileToFrappe(catalogue.value);
   }
 
   let mappingData = {};
@@ -1701,6 +1775,7 @@ const submitForm = async () => {
         custom_new_status: manufacturerForm.status,
         agreement: fileUrl,
         custom_file_uploaded: distributorForm.fileUploaded,
+        custom_catalogue: catalogueUrl,
 
         // Address fields
         custom_address: addressForm.streetAddress,
@@ -1733,7 +1808,7 @@ const submitForm = async () => {
         showError(`Please fix the following errors:\n\n${errors.map(err => `• ${err}`).join('\n')}`, 'Validation Error')
         return
       }
-
+      // start of registeration fields logic
       // Prepare lead data for API
       const leadData: LeadData = {
         leadCategory: leadCategory.value,
@@ -1829,6 +1904,8 @@ const submitForm = async () => {
         },
       }
 
+      // actual json build to send it to backend
+      // backend field: frontend field
       const erpLeadObj: any = {
         // =======
         // Manufacturer
@@ -1853,12 +1930,6 @@ const submitForm = async () => {
         custom_brand_name_3: leadCategory.value === 'manufacturer' ? manufacturerForm.brandName3 : '',
         custom_inspirational: leadCategory.value === 'manufacturer' ? manufacturerForm.inspirational : '',
 
-        // Address
-        custom_address: leadData.address.streetAddress,
-        custom_pincode: leadData.address.pincode,
-        city: leadData.address.city,
-        custom_districts: leadData.address.district,
-        custom_states: leadData.address.state,
 
         // Presense
         custom_no_of_current_distributors: leadCategory.value === 'manufacturer' ? manufacturerForm.currentDistributors : '',
@@ -1943,6 +2014,20 @@ const submitForm = async () => {
       ? distributorForm.annualRevenue || ''
       : '',
     
+      }
+
+      if (leadCategory.value == "manufacturer") {
+        erpLeadObj['custom_address'] = addressForm.streetAddress;
+        erpLeadObj['custom_pincode'] = addressForm.pincode;
+        erpLeadObj['city'] = addressForm.city;
+        erpLeadObj['custom_districts'] = addressForm.district;
+        erpLeadObj['custom_states'] = addressForm.state;
+      } else {
+        erpLeadObj['custom_dist_address'] = addressForm.streetAddress;
+        erpLeadObj['custom_dist_pincode'] = addressForm.pincode;
+        erpLeadObj['custom_dist_city'] = addressForm.city;
+        erpLeadObj['custom_dist_state'] = addressForm.district;
+        erpLeadObj['custom_dist_district0'] = addressForm.state;
       }
 
       // Add categories as child doctype entries
@@ -2077,6 +2162,8 @@ const submitForm = async () => {
 // Fetch categories on component mount
 onMounted(async () => {
 
+  window.addEventListener('click', handleClickOutside)
+
   if (props.lead) {
     try {
       const response = await fetch(`/api/resource/Lead/${props.lead}?fields=["*"]`);
@@ -2132,6 +2219,7 @@ onMounted(async () => {
         addressForm.city = data.data.custom_dist_city;
         addressForm.district = data.data.custom_dist_district0;
         addressForm.state = data.data.custom_dist_state;
+        distributorForm.agreement = data.data.custom_agreement_code;
       } else {
         leadCategory.value = "manufacturer";
         manufacturerForm.id = data.data.name;
@@ -2176,6 +2264,8 @@ onMounted(async () => {
         addressForm.city = data.data.city;
         addressForm.district = data.data.custom_districts;
         addressForm.state = data.data.custom_states;
+        manufacturerForm.agreement = data.data.custom_agreement_code;
+        manufacturerForm.catalogue = data.data.custom_catalogue_code;
       }
     } catch {
       console.log("Error while fetching lead")
@@ -2187,6 +2277,45 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-actions {
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.dropdown-menu button {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f2f2f2;
+}
+
 .registration-page {
   max-width: 1200px;
   margin: 0 auto;
